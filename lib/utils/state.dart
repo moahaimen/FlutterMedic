@@ -1,10 +1,10 @@
+import 'dart:convert';
+
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scoped_model/scoped_model.dart';
-
-import 'dart:convert' as json;
 
 import '../models/brand.dart';
 import '../models/category.dart';
@@ -46,12 +46,12 @@ class StateModel extends Model {
   bool get productsLoading => this._productsLoading;
 
   Product get selectedProduct =>
-      this._products.firstWhere((element) => element.id == _selectedProduct);
+      this._products.firstWhere((e) => e.id == _selectedProduct);
 
   Product get selectedOrFirstProduct {
     if (_products == null || _products.length == 0) return null;
 
-    final i = _products.firstWhere((element) => element.id == _selectedProduct);
+    final i = _products.firstWhere((e) => e.id == _selectedProduct);
 
     if (i != null) return i;
     return _products.first;
@@ -60,7 +60,7 @@ class StateModel extends Model {
   List<Product> get products => List.from(this._products);
 
   List<Product> get mainProducts =>
-      List.from(this._products.where((element) => element.isMain));
+      List.from(this._products.where((e) => e.isMain));
 
   ///
   /// Cart Management
@@ -155,58 +155,57 @@ class StateModel extends Model {
   }
 
   ///
-  ///
+  /// Restore the stored version of order
   ///
   Future<void> restoreStoredOrder() async {
-    final prefs = await SharedPreferences.getInstance();
+//    TODO Use Shared Preferences
+//    final prefs = await SharedPreferences.getInstance();
 
-    if (prefs.hasString('_order')) {
-      final String orderString = prefs.getString('_order');
-      final Map<String, dynamic> orderData = json.jsonDecode(orderString);
-      final Order order = Order.fromJson(orderData);
-    }
+//    if (prefs.containsKey('_order')) {
+//      final String orderString = prefs.getString('_order');
+//      final Map<String, dynamic> orderData = json.jsonDecode(orderString);
+//      final Order order = Order.fromJson(orderData, this);
+
+//      this._order = order;
+//      print(this._order);
+//    }
   }
 
   ///
-  /// Upload order
+  /// Persist the active version of order
   ///
-  Future<bool> uploadOrder() {
+  Future<void> persistOrder() async {
+//    TODO use Shared Preferences
+
+//    final prefs = await SharedPreferences.getInstance();
+
+//    final orderString = json.jsonEncode(this._order.toJson());
+//    prefs.setString('_order', orderString);
+  }
+
+  ///
+  /// Post order
+  ///
+  Future<bool> postOrder() {
     this._orderUploading = true;
     this.notifyListeners();
 
-    Map<String, dynamic> data = new Map();
-    Map<String, dynamic> clientData = new Map();
-    Map<String, dynamic> productsData = new Map();
-
-    clientData['name'] = this._order.client.name;
-    clientData['email'] = this._order.client.email;
-    clientData['phone'] = this._order.client.phone;
-    clientData['province'] = this._order.client.province;
-    clientData['address'] = this._order.client.address;
-    clientData['note'] = this._order.client.note;
-    clientData['userId'] = this._order.client.userId;
-
-    this._order.products.forEach((element) {
-      productsData['product_id'] = element.product.id;
-      productsData['quantity'] = element.quantity;
-    });
-
-    data['promo_code'] = this._order.promoCode;
-    data['client'] = clientData;
-    data['products'] = productsData;
-
-    print(json.jsonEncode(data));
-
-    return Http.post(DotEnv().env['postOrderUrl'], data)
+    return Http.post(DotEnv().env['postOrderUrl'], this._order.toJson())
         .then((dynamic response) {
-      this._orderUploading = false;
-      this.notifyListeners();
+      print(response);
 
-      return response != null;
+//      this._orderUploading = false;
+//
+//      this.clearOrder();
+//      this.notifyListeners();
+//      return response != null;
     });
   }
 
-  void addOrderProductItem(OrderProduct item) {
+  ///
+  /// Insert the item into list of order's products
+  ///
+  Future<void> addProductToOrder(OrderProduct item) async {
     if (item == null || item.product == null) {
       return;
     }
@@ -214,26 +213,73 @@ class StateModel extends Model {
       this._order = new Order(client: null, products: []);
     }
     this._order.products.add(item);
+    await this.persistOrder();
     notifyListeners();
   }
 
-  void setOrderProducts(List<OrderProduct> products) {
-    this._order.products = products;
+  ///
+  /// Update quantity of a specific orders' product
+  ///
+  Future<void> setOrderProductQuantity(int productId, int quantity) async {
+    final item =
+    this._order.products.firstWhere((e) => e.product.id == productId);
+    item?.quantity = quantity;
+    await this.persistOrder();
+    notifyListeners();
   }
 
-  void setOrderProduct(int productId, int quantity) {
-    final item = this
-        ._order
-        .products
-        .firstWhere((element) => element.product.id == productId);
-    item.quantity = quantity;
+  Future<void> removeProductFromOrder(int productId) async {
+    this._order.products.removeWhere((e) => e.product.id == productId);
+    await this.persistOrder();
+    notifyListeners();
   }
 
-  void setOrderClient(OrderClient client) {
+  Future<void> setOrderClient(OrderClient client) async {
     this._order.client = client;
+    await this.persistOrder();
+    notifyListeners();
   }
 
-  void setOrderPromoCode(String promoCode) {
+  OrderClient getOrderClient() {
+    if (this._order.client == null) {
+      this._order.client = new OrderClient(
+          name: null,
+          email: null,
+          phone: null,
+          province: null,
+          address: null);
+    }
+    return this._order.client;
+  }
+
+  Future<void> setOrderPromoCode(String promoCode) async {
     this._order.promoCode = promoCode;
+    await this.persistOrder();
+    notifyListeners();
+  }
+
+  Future<void> clearOrder() async {
+//    TODO use Shared Preferences
+//    final prefs = await SharedPreferences.getInstance();
+//    prefs.remove('_order');
+    this._order = null;
+    notifyListeners();
+  }
+
+  ///
+  /// Count number of items in Current Order
+  ///
+  String get orderItemsCount {
+    if (this._order == null ||
+        this._order.products == null ||
+        this._order.products.length == 0) {
+      return '0';
+    }
+
+    return order.products
+        .map((e) => e.quantity)
+        .toList()
+        .reduce((value, element) => value + element)
+        .toString();
   }
 }

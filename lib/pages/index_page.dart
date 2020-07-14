@@ -16,13 +16,14 @@ class IndexPageState extends State<IndexPage> {
     super.initState();
 
     _model = ScopedModel.of<StateModel>(context);
-    _model.addListener(() {
-      if (!_model.categoriesLoading &&
-          !_model.brandsLoading &&
-          !_model.productsLoading) {
-        this.goto(Router.home);
-      }
-    });
+    _model.addListener(_shouldWeGotoHome);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _model.removeListener(_shouldWeGotoHome);
   }
 
   @override
@@ -39,7 +40,15 @@ class IndexPageState extends State<IndexPage> {
     );
   }
 
+  void _shouldWeGotoHome() {
+    if (!_model.categoriesLoading &&
+        !_model.brandsLoading &&
+        !_model.productsLoading) {
+      this.goto(Router.home);
+    }
+  }
+
   void goto(String url) {
-    Navigator.of(context).pushReplacementNamed(url);
+    Navigator.pushReplacementNamed(context, url);
   }
 }

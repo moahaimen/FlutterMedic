@@ -1,5 +1,4 @@
 import 'package:badges/badges.dart';
-import 'package:drugStore/models/order.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -29,32 +28,22 @@ class Toolbar {
       actions: [
         ScopedModelDescendant<StateModel>(
           builder: (BuildContext context, Widget child, StateModel model) =>
-              GestureDetector(
-            child: Badge(
-                position: BadgePosition(bottom: 0, left: 0),
-                shape: BadgeShape.circle,
-                borderRadius: 5,
-                child: Icon(Icons.shopping_cart),
-                badgeContent: Text(
-                  _getCartShoppingCount(model.order),
-                  style: TextStyle(
-                    fontSize: 5.5,
-                  ),
-                )),
-            onTap: () => Navigator.of(context).pushNamed(Router.cart),
-          ),
+              Badge(
+                  position: BadgePosition(bottom: 5, left: 5),
+                  shape: BadgeShape.circle,
+                  borderRadius: 5,
+                  child: IconButton(
+                      icon: Icon(Icons.shopping_cart),
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed(Router.cart)),
+                  badgeContent: Text(
+                    model.orderItemsCount,
+                    style: TextStyle(
+                      fontSize: 8,
+                    ),
+                  )),
         ),
       ],
     );
-  }
-
-  static String _getCartShoppingCount(Order order) {
-    int count = 0;
-    if (order != null && order.products != null) {
-      order.products.forEach((element) {
-        count += element.quantity;
-      });
-    }
-    return count.toString();
   }
 }

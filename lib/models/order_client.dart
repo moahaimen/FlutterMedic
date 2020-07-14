@@ -17,6 +17,20 @@ class OrderClient {
         userId: data['user_id']);
   }
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'name': this.name,
+      'email': this.email,
+      'phone': this.phone,
+      'province': this.province,
+      'address': this.address,
+      'note': this.note,
+      'userId': this.userId,
+    };
+
+    return data;
+  }
+
   String name;
   String email;
   String phone;

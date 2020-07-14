@@ -4,30 +4,31 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CartPromoCode extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final void Function(String promoCode) confirmPromoCode;
 
-  CartPromoCode({@required this.formKey, @required this.confirmPromoCode});
+  CartPromoCode({@required this.formKey});
 
   @override
-  State<CartPromoCode> createState() => _CartPromoCodeState(
-        formKey: this.formKey,
-        confirm: this.confirmPromoCode,
-      );
+  State<CartPromoCode> createState() =>
+      _CartPromoCodeState(formKey: this.formKey);
 }
 
 class _CartPromoCodeState extends State<CartPromoCode> {
   final GlobalKey<FormState> formKey;
-  final void Function(String promoCode) confirm;
 
-  bool _active = false;
+  bool _verefying = false;
+  bool _active = true;
 
-  _CartPromoCodeState({@required this.formKey, @required this.confirm});
+  _CartPromoCodeState({@required this.formKey});
 
   Widget _buildPromoCodeField() {
     return TextFormField(
         decoration: InputDecoration(labelText: "Promo Code"),
-        validator: _checkPromoCodeValidation,
-        onSaved: _savePromoCodeInState);
+        onChanged: _checkPromoCodeActivation,
+        validator: (String value) =>
+        _verefying
+            ? 'Verefying...'
+            : !_active ? 'Code not active' : _checkPromoCodeValidation,
+        onSaved: _save);
   }
 
   String _checkPromoCodeValidation(String value) {
@@ -44,19 +45,30 @@ class _CartPromoCodeState extends State<CartPromoCode> {
     return null;
   }
 
-  void _savePromoCodeInState(String value) {
-    Http.get(DotEnv().env['checkPromoCodeUrl']).then((value) {
-      try {
+  void _checkPromoCodeActivation(String value) {
+    setState(() => _verefying = true);
+    Http.get(DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', value)).then(
+          (response) {
+        print('xx $response');
+        if (response != null) {
+          final data = response as Map<String, dynamic>;
+          if (data['id'] != null) {
+            setState(() {
+              this._active = true;
+              this._verefying = false;
+            });
+            return;
+          }
+        }
         setState(() {
-          this._active = true;
-        });
-      } catch (e) {
-        setState(() {
+          this._verefying = false;
           this._active = false;
         });
-      }
-    });
+      },
+    );
   }
+
+  void _save(String value) {}
 
   @override
   Widget build(BuildContext context) {
@@ -64,17 +76,8 @@ class _CartPromoCodeState extends State<CartPromoCode> {
       margin: EdgeInsets.zero,
       child: Form(
         key: formKey,
-        child: ListView(
-          shrinkWrap: true,
-          reverse: false,
-          children: <Widget>[
-            _buildPromoCodeField(),
-            Chip(
-              label: Text(
-                  this._active ? "Valid" : "Code doesn't match our records"),
-              avatar: Icon(this._active ? Icons.check_circle : Icons.close),
-            )
-          ],
+        child: Card(
+          child: _buildPromoCodeField(),
         ),
       ),
     );

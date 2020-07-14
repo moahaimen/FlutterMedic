@@ -1,5 +1,9 @@
+import 'package:badges/badges.dart';
+import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../models/product.dart';
 
@@ -32,22 +36,35 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
             // Function callback for stretch
             return;
           },
-          expandedHeight: 320.0,
+          expandedHeight: 380.0,
           flexibleSpace: FlexibleSpaceBar(
             stretchModes: <StretchMode>[
               StretchMode.zoomBackground,
               StretchMode.blurBackground,
               StretchMode.fadeTitle,
             ],
-//            centerTitle: true,
-//            title: Text("XX"),
-            background: _buildListOfAttachments(),
+            background: _buildAttachmentsList(),
           ),
           actions: [
-            IconButton(
-              color: Theme.of(context).primaryColorDark,
-              icon: Icon(Icons.add_shopping_cart),
-              onPressed: _askAddToCart,
+            ScopedModelDescendant<StateModel>(
+              builder: (BuildContext context, Widget child, StateModel model) =>
+                  Badge(
+                    badgeColor: Colors.lightGreen,
+                    position: BadgePosition(bottom: 5, left: 5),
+                    shape: BadgeShape.circle,
+                    borderRadius: 5,
+                    child: IconButton(
+                        color: Theme
+                            .of(context)
+                            .accentColor,
+                        icon: Icon(Icons.shopping_cart),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed(Router.cart)),
+                    badgeContent: Text(
+                      model.orderItemsCount,
+                      style: TextStyle(fontSize: 8),
+                    ),
+                  ),
             )
           ],
         ),
@@ -82,7 +99,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
     );
   }
 
-  Widget _buildListOfAttachments() {
+  Widget _buildAttachmentsList() {
     final children = [
       Container(
         width: MediaQuery.of(context).size.width,
@@ -91,18 +108,19 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Details of ${this.product.name}".toUpperCase(),
-                style: TextStyle(
-                    color: Theme.of(context).primaryColorDark,
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w500),
-              ),
+                  "Details of ${this.product.name}".toUpperCase(),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headline1
+                      .copyWith(color: Colors.black)),
               Text(
                 'Swipe to the left or the right',
-                style: TextStyle(
-                    color: Theme.of(context).primaryColorDark,
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w200),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline4
+                    .copyWith(color: Colors.black),
               ),
             ],
           ),
@@ -115,10 +133,10 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         .product
         .attachments
         .map((e) => Container(
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width,
-              child: Image.network(e.url, fit: BoxFit.cover),
-            ))
+      color: Colors.white,
+      width: MediaQuery.of(context).size.width,
+      child: Image.network(e.url, fit: BoxFit.cover),
+    ))
         .toList());
 
     return ListView(
@@ -129,14 +147,13 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
   }
 
   Widget _buildSliverListItem(String title, String content) {
-    return Container(
-//      decoration: BoxDecoration(border: BorderRadius.zero),
+    return Card(
+      shadowColor: Colors.white30,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
       color: Colors.white,
       child: ListTile(
         leading: Icon(
-          Icons.label,
+          Icons.clear_all,
           size: 25.0,
           color: Theme.of(context).primaryColorDark,
         ),
@@ -144,13 +161,9 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         subtitle: Text(
           title,
           style:
-              TextStyle(color: Theme.of(context).accentColor, fontSize: 15.0),
+          TextStyle(color: Theme.of(context).accentColor, fontSize: 15.0),
         ),
       ),
     );
-  }
-
-  void _askAddToCart() {
-    AskAddToCartModal.show(context, this.product);
   }
 }

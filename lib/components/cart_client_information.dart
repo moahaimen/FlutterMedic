@@ -1,23 +1,26 @@
-import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
 class CartClientInformation extends StatefulWidget {
-  final OrderClient client;
   final GlobalKey<FormState> formKey;
+  final StateModel model;
 
-  CartClientInformation({@required this.formKey, @required this.client});
+  CartClientInformation({@required this.formKey, @required this.model});
 
   @override
   State<CartClientInformation> createState() =>
-      _CartClientInformationState(formKey: this.formKey, client: this.client);
+      _CartClientInformationState(formKey: this.formKey, model: this.model);
 }
 
 class _CartClientInformationState extends State<CartClientInformation> {
   final GlobalKey<FormState> formKey;
+
+//  final StateModel model;
   final OrderClient client;
 
-  _CartClientInformationState({@required this.formKey, @required this.client});
+  _CartClientInformationState({@required this.formKey, @required model})
+      : client = model.getOrderClient();
 
   Widget _buildFormField(
     String title,
@@ -26,15 +29,17 @@ class _CartClientInformationState extends State<CartClientInformation> {
     String Function(String value) validator,
   ) {
     return Container(
-        child: TextFormField(
-            decoration: InputDecoration(labelText: title),
-            validator: validator,
-            onSaved: saver));
+      child: TextFormField(
+          decoration: InputDecoration(labelText: title),
+          autovalidate: true,
+          validator: validator,
+          onSaved: saver),
+    );
   }
 
   String _typicalStringValidator(String value, String regex, int min, int max,
-      {bool required}) {
-    if (required != null && required == true && value.isEmpty) {
+      {bool required = true}) {
+    if (required == true && value.isEmpty) {
       return "Required field";
     }
     if (value.length < min) {
@@ -43,7 +48,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
     if (value.length > max) {
       return "Maximum allowed length is $max";
     }
-    if (!RegExp(regex).hasMatch(value)) {
+    if (required && !RegExp(regex).hasMatch(value)) {
       return "Invalid field text pattern";
     }
     return null;
@@ -77,16 +82,20 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 'Email',
                 'email',
                 (value) => this.client.email = value,
-                (value) =>
-                    _typicalStringValidator(value, r'^[A-Za-z0-9]+$', 3, 32)),
+                    (value) =>
+                    _typicalStringValidator(
+                        value,
+                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                        8,
+                        32)),
             SizedBox(height: 10.0),
             // Name
             _buildFormField(
                 'Phone',
                 'phone',
                 (value) => this.client.phone = value,
-                (value) =>
-                    _typicalStringValidator(value, r'^[A-Za-z0-9]+$', 3, 32)),
+                    (value) =>
+                    _typicalStringValidator(value, r'^[0-9]+$', 10, 12)),
             SizedBox(height: 10.0),
             // Name
             _buildFormField(

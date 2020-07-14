@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
 
 import 'product.dart';
+import '../utils/state.dart';
 
 class OrderProduct {
-  static OrderProduct fromJson(Map<String, dynamic> data) {
+  static OrderProduct fromJson(Map<String, dynamic> data, StateModel model) {
     return new OrderProduct(
-        product: Product.fromJson(data['product']), quantity: data['quantity']);
+      product: model.products.firstWhere((e) => e.id == data['product_id']),
+      quantity: data['quantity'],
+    );
   }
 
-  Product product;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'product_id': this.product.id,
+      'quantity': this.quantity,
+    };
+
+    return data;
+  }
+
   int quantity;
+  final Product product;
 
   OrderProduct({@required this.product, @required this.quantity});
 
-  int get subTotal => this.quantity != null && this.product != null
-      ? this.quantity * this.product.price
-      : 0;
+  int get subTotal {
+    if (this.quantity == null && this.product == null) {
+      return 0;
+    }
+    return this.quantity * this.product.price;
+  }
 }

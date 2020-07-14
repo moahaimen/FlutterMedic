@@ -28,9 +28,15 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
     return Row(
       children: [
         IconButton(
-          icon: Icon(Icons.remove),
+          color: Theme
+              .of(context)
+              .accentColor,
+          icon: Icon(
+            Icons.remove_circle,
+            size: 32,
+          ),
           onPressed: _decreasePiecesCount,
-          padding: EdgeInsets.symmetric(horizontal: 32),
+          padding: EdgeInsets.symmetric(horizontal: 2),
         ),
         Expanded(
           child: Text(
@@ -40,9 +46,15 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
           ),
         ),
         IconButton(
-          icon: Icon(Icons.add),
+          color: Theme
+              .of(context)
+              .accentColor,
+          icon: Icon(
+            Icons.add_circle,
+            size: 32,
+          ),
           onPressed: _increasePiecesCount,
-          padding: EdgeInsets.symmetric(horizontal: 32),
+          padding: EdgeInsets.symmetric(horizontal: 2),
         )
       ],
     );

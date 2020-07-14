@@ -62,7 +62,7 @@ class HomePageState extends State<HomePage> {
           title: Text("Home"),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.category),
+          icon: Icon(Icons.widgets),
           title: Text("Categories"),
         ),
       ],
@@ -71,6 +71,7 @@ class HomePageState extends State<HomePage> {
       selectedItemColor: Theme.of(context).accentColor,
       iconSize: 32.0,
       type: BottomNavigationBarType.shifting,
+      onTap: (int index) => _pageController.jumpToPage(index),
     );
   }
 

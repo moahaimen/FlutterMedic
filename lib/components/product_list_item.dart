@@ -31,6 +31,7 @@ class ProductListItemState extends State<ProductListItem> {
           fit: BoxFit.scaleDown,
           scale: .75,
         ),
+        borderOnForeground: true,
       ),
       onTap: _gotoProductDetails,
       onLongPressUp: _askAddToCart,
