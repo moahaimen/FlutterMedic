@@ -7,7 +7,7 @@ import '../models/category.dart';
 import 'category_list_item.dart';
 
 class CategoriesListView extends StatelessWidget {
-  final int _columnCount = 2;
+  final int _columnCount = 3;
 
   Widget _buildCategoriesList(bool loading, List<Category> categories) {
     if (loading) {
@@ -24,7 +24,6 @@ class CategoriesListView extends StatelessWidget {
 
     return AnimationLimiter(
       child: GridView.count(
-        childAspectRatio: 5 / 3,
         crossAxisCount: _columnCount,
         children: List.generate(
           categories.length,

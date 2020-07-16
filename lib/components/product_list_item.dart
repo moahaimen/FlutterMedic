@@ -1,3 +1,4 @@
+import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -26,10 +27,21 @@ class ProductListItemState extends State<ProductListItem> {
     return GestureDetector(
       key: new ValueKey(this.product.id),
       child: Card(
-        child: Image.network(
-          this.product.image.url,
-          fit: BoxFit.scaleDown,
-          scale: .75,
+        child: Column(
+          children: [
+            Expanded(
+              child: Image.network(
+                this.product.image.url,
+                fit: BoxFit.fill,
+                scale: .75,
+              ),
+            ),
+            Text(this.product.title),
+            Text(this.product.price.toString()),
+            AddToCartButton(
+              id: this.product.id,
+            ),
+          ],
         ),
         borderOnForeground: true,
       ),

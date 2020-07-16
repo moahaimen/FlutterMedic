@@ -1,6 +1,6 @@
-import 'package:drugStore/models/category.dart';
 import 'package:drugStore/models/attachment.dart';
 import 'package:drugStore/models/brand.dart';
+import 'package:drugStore/models/category.dart';
 
 class Product {
   static Product fromJson(Map<String, dynamic> data) {
@@ -47,7 +47,8 @@ class Product {
       this.category,
       this.isMain);
 
-  String get title => this.name.substring(0, 2).toUpperCase();
+  String get title =>
+      this.name.length >= 20 ? '${this.name.substring(0, 17)}...' : this.name;
 
   Attachment get image => this
       .attachments

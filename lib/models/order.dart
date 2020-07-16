@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../utils/state.dart';
 import 'order_client.dart';
 import 'order_product.dart';
-import '../utils/state.dart';
 
 class Order {
   static Order fromJson(Map<String, dynamic> data, StateModel model) {
@@ -34,4 +34,11 @@ class Order {
     @required this.products,
     this.promoCode,
   });
+
+  int get total =>
+      products != null && products.length > 0
+          ? products
+          .map((e) => e.subTotal)
+          .reduce((value, element) => value + element)
+          : 0;
 }

@@ -1,3 +1,4 @@
+import 'package:drugStore/pages/home_page.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:flutter/material.dart';
 
@@ -5,9 +6,9 @@ class _RouteData {
   final String name;
   final String title;
   final IconData iconData;
-  final bool replacement;
+  final dynamic arguments;
 
-  _RouteData({this.name, this.title, this.iconData, this.replacement});
+  _RouteData({this.name, this.title, this.iconData, this.arguments});
 }
 
 class DrawerBuilder {
@@ -16,28 +17,25 @@ class DrawerBuilder {
         name: Router.home,
         title: 'Home',
         iconData: Icons.home,
-        replacement: true),
+        arguments: PageId.Home),
     _RouteData(
-        name: Router.products,
-        title: 'Products',
+        name: Router.home,
+        title: 'Brands',
+        iconData: Icons.account_balance,
+        arguments: PageId.Brands),
+    _RouteData(
+        name: Router.home,
+        title: 'Categories',
         iconData: Icons.widgets,
-        replacement: true),
+        arguments: PageId.Categories),
     _RouteData(
-        name: Router.cart,
+        name: Router.products, title: 'Products', iconData: Icons.widgets),
+    _RouteData(
+        name: Router.home,
         title: 'Cart',
         iconData: Icons.shopping_cart,
-        replacement: false),
+        arguments: PageId.Cart),
   ];
-
-  static TextStyle _makeTextStyle(String route, ThemeData theme) {
-    return theme.textTheme.headline3.copyWith(
-      fontWeight: Router.current == route ? FontWeight.w800 : FontWeight.w500,
-      color:
-      Router.current == route ? theme.accentColor : theme.primaryColorDark,
-      decorationColor:
-      Router.current == route ? theme.accentColor : theme.primaryColorDark,
-    );
-  }
 
   static Drawer build(BuildContext context, String route) {
     final themeData = Theme.of(context);
@@ -54,72 +52,60 @@ class DrawerBuilder {
     );
   }
 
-  static List<Widget> _buildListOfRoutes(BuildContext context,
-      ThemeData themeData) {
-    List<Widget> routes = [];
+  static Widget _buildDrawerListItem(BuildContext ctx, _RouteData e,
+      ThemeData theme) {
+    return ListTile(
+      leading: Icon(
+        e.iconData,
+        color: theme.primaryColorDark,
+      ),
+      title: Text(
+        e.title,
+        style: theme.textTheme.bodyText1,
+      ),
+      onTap: () =>
+          Navigator.of(ctx)
+              .pushReplacementNamed(e.name, arguments: e.arguments),
+    );
+  }
 
+  static List<Widget> _buildListOfRoutes(BuildContext ctx, ThemeData theme) {
     // Header
-    routes.add(
-      DrawerHeader(
-        decoration: BoxDecoration(
-          color: Theme
-              .of(context)
-              .primaryColorDark,
-          borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(32.0),
+    final Widget header = DrawerHeader(
+      decoration: BoxDecoration(
+        color: theme.primaryColorDark,
+        borderRadius: BorderRadius.only(
+          bottomRight: Radius.circular(35.0),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 22.0, horizontal: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Drugs Store'.toUpperCase(),
+            style: theme.textTheme.headline3.copyWith(color: theme.accentColor),
           ),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 25.0, horizontal: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Drugs Store'.toUpperCase(),
-              style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .accentColor,
-                fontSize: 24,
-              ),
-            ),
-            SizedBox(
-              height: 4.0,
-            ),
-            Text(
-              'Hello, client!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-            Spacer(),
-            Text("molardentalmaterials.com"),
-          ],
-        ),
+          SizedBox(
+            height: 4.0,
+          ),
+          Text(
+            'Hello, client!',
+            style:
+            theme.textTheme.bodyText1.copyWith(color: theme.primaryColor),
+          ),
+          Text(
+            "molardentalmaterials.com",
+            style: theme.textTheme.caption.copyWith(color: theme.primaryColor),
+          ),
+        ],
       ),
     );
 
-    // Routes
-    routes.addAll(_routes
-        .map((e) =>
-        ListTile(
-          leading: Icon(e.iconData),
-              title: Text(
-                e.title,
-                style: _makeTextStyle(e.name, themeData),
-              ),
-          onTap: Router.current == e.name
-              ? null
-              : () {
-            if (e.replacement) {
-              Navigator.of(context).pushReplacementNamed(e.name);
-            } else {
-              Navigator.of(context).pushNamed(e.name);
-            }
-          },
-        ))
-        .toList());
-
+    final List<Widget> routes = [];
+    routes.add(header);
+    routes.addAll(
+        _routes.map((e) => _buildDrawerListItem(ctx, e, theme)).toList());
     return routes;
   }
 }

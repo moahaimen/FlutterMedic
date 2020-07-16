@@ -1,3 +1,5 @@
+import 'package:drugStore/pages/home_page.dart';
+import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/ui/carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -10,25 +12,19 @@ import 'brand_list_item.dart';
 import 'category_list_item.dart';
 
 class HomePageContent extends StatelessWidget {
-  final void Function(int index) gotoTab;
-
-  HomePageContent(this.gotoTab);
+  HomePageContent();
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget widget, StateModel model) {
-        return RefreshIndicator(
-          onRefresh: () {
-            return model.fetchProducts();
-          },
-          child: ListView(
-            children: [
-              _buildMainProductsWidget(model.mainProducts),
-              _buildTopFiveBrandsWidget(context, model.topBrands),
-              _buildTopFiveCategoriesWidget(model.topCategories),
-            ],
-          ),
+        return ListView(
+          shrinkWrap: true,
+          children: [
+            _buildMainProductsWidget(model.mainProducts),
+            _buildTopFiveBrandsWidget(context, model.topBrands),
+            _buildTopFiveCategoriesWidget(context, model.topCategories),
+          ],
         );
       },
     );
@@ -41,19 +37,28 @@ class HomePageContent extends StatelessWidget {
   Widget _buildTopFiveBrandsWidget(BuildContext context, List<Brand> brands) {
     return Column(
       children: [
-        Row(
-          children: [
-            Text(
-              "Top Brands",
-//              style: Theme.of(context).textTheme.headline1,
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () => this.gotoTab(0),
-              icon: Icon(Icons.expand_more),
-//              label: Text("See more"),
-            ),
-          ],
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            children: [
+              Text(
+                "Top Brands",
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline5,
+              ),
+              Spacer(),
+              IconButton(
+                onPressed: () =>
+                    Navigator.of(context).pushReplacementNamed(
+                      Router.home,
+                      arguments: PageId.Brands,
+                    ),
+                icon: Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
         ),
         Container(
           height: 150.0,
@@ -61,10 +66,10 @@ class HomePageContent extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             children: brands
                 .map<Widget>((e) => Container(
-                      width: 150,
-                      height: 150,
-                      child: BrandListItem(brand: e),
-                    ))
+              width: 150,
+              height: 150,
+              child: BrandListItem(brand: e),
+            ))
                 .toList(),
           ),
         ),
@@ -72,21 +77,32 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildTopFiveCategoriesWidget(List<Category> categories) {
+  Widget _buildTopFiveCategoriesWidget(BuildContext context,
+      List<Category> categories) {
     return Column(
       children: [
-        Row(
-          children: [
-            Text(
-              "Top Categories",
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () => this.gotoTab(2),
-              icon: Icon(Icons.expand_more),
-//              label: Text("See more"),
-            ),
-          ],
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            children: [
+              Text(
+                "Top Categories",
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline5,
+              ),
+              Spacer(),
+              IconButton(
+                onPressed: () =>
+                    Navigator.of(context).pushReplacementNamed(
+                      Router.home,
+                      arguments: PageId.Categories,
+                    ),
+                icon: Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
         ),
         Container(
           height: 150.0,
@@ -94,10 +110,10 @@ class HomePageContent extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             children: categories
                 .map<Widget>((e) => Container(
-                      width: 150,
-                      height: 150,
-                      child: CategoryListItem(category: e),
-                    ))
+              width: 150,
+              height: 150,
+              child: CategoryListItem(category: e),
+            ))
                 .toList(),
           ),
         ),

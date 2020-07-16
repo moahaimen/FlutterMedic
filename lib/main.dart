@@ -3,8 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'partials/router.dart';
+import 'partials/theme.dart';
 import 'utils/state.dart';
-import 'partials/theme.dart' as theme;
 
 void main() async {
   await DotEnv().load('assets/.env');
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     final state = StateModel();
     final app = MaterialApp(
       title: this.appTitle,
-      theme: theme.getThemeData(),
+      theme: ThemeBuilder.getTheme(),
       initialRoute: Router.index,
       routes: Router.routes(),
       onGenerateRoute: Router.onGenerateRoute,

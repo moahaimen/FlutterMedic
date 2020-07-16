@@ -6,13 +6,19 @@ import '../partials/drawer.dart';
 import '../partials/router.dart';
 
 class ProductsPage extends StatelessWidget {
+  final Map<String, dynamic> filter;
+
+  ProductsPage({this.filter = const {}});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerBuilder.build(context, Router.products),
       appBar: Toolbar.get(title: Router.products),
       body: Container(
-        child: ProductsListView(),
+        child: ProductsListView(
+          filter: this.filter,
+        ),
       ),
     );
   }

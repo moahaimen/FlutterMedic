@@ -3,6 +3,8 @@ import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import 'home_page.dart';
+
 class IndexPage extends StatefulWidget {
   @override
   IndexPageState createState() => new IndexPageState();
@@ -49,6 +51,6 @@ class IndexPageState extends State<IndexPage> {
   }
 
   void goto(String url) {
-    Navigator.pushReplacementNamed(context, url);
+    Navigator.pushReplacementNamed(context, url, arguments: PageId.Home);
   }
 }

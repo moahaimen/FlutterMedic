@@ -7,7 +7,7 @@ import '../utils/state.dart';
 import 'brand_list_item.dart';
 
 class BrandsListView extends StatelessWidget {
-  final int _columnCount = 2;
+  final int _columnCount = 3;
 
   Widget _buildBrandsList(bool loading, List<Brand> brands) {
     if (loading) {
@@ -24,10 +24,11 @@ class BrandsListView extends StatelessWidget {
 
     return AnimationLimiter(
       child: GridView.count(
+        childAspectRatio: 2 / 3,
         crossAxisCount: _columnCount,
         children: List.generate(
           brands.length,
-          (int index) {
+              (int index) {
             return AnimationConfiguration.staggeredGrid(
               position: index,
               duration: const Duration(milliseconds: 375),

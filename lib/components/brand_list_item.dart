@@ -12,15 +12,22 @@ class BrandListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Card(
-        child: Image.network(
-          this.brand.photoUrl,
-          fit: BoxFit.fitWidth,
+        child: Column(
+          children: [
+            Expanded(
+              child: Image.network(
+                this.brand.photoUrl,
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+            Text(this.brand.name),
+          ],
         ),
       ),
       onTap: () => Navigator.of(context).pushNamed(
         Router.products,
         arguments: {
-          brand: this.brand,
+          'brand': this.brand,
         },
       ),
     );

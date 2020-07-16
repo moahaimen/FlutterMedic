@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart';
+import 'package:drugStore/pages/home_page.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -29,19 +30,18 @@ class Toolbar {
         ScopedModelDescendant<StateModel>(
           builder: (BuildContext context, Widget child, StateModel model) =>
               Badge(
-                  position: BadgePosition(bottom: 5, left: 5),
-                  shape: BadgeShape.circle,
-                  borderRadius: 5,
-                  child: IconButton(
-                      icon: Icon(Icons.shopping_cart),
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed(Router.cart)),
-                  badgeContent: Text(
-                    model.orderItemsCount,
-                    style: TextStyle(
-                      fontSize: 8,
-                    ),
-                  )),
+                position: BadgePosition(bottom: 5, left: 5),
+                shape: BadgeShape.circle,
+                borderRadius: 5,
+                child: IconButton(
+                  icon: Icon(Icons.shopping_cart),
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(
+                          Router.home, arguments: PageId.Cart),
+                ),
+                badgeContent: Text(model.orderItemsCount),
+                badgeColor: Colors.transparent,
+              ),
         ),
       ],
     );

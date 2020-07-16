@@ -33,7 +33,6 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
               .accentColor,
           icon: Icon(
             Icons.remove_circle,
-            size: 32,
           ),
           onPressed: _decreasePiecesCount,
           padding: EdgeInsets.symmetric(horizontal: 2),
@@ -51,7 +50,6 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
               .accentColor,
           icon: Icon(
             Icons.add_circle,
-            size: 32,
           ),
           onPressed: _increasePiecesCount,
           padding: EdgeInsets.symmetric(horizontal: 2),

@@ -1,26 +1,13 @@
-import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
-class CartClientInformation extends StatefulWidget {
-  final GlobalKey<FormState> formKey;
-  final StateModel model;
+class CartClientInformation extends StatelessWidget {
+  final StateModel state;
+  final Map<String, dynamic> data;
+  final GlobalKey<FormState> form;
 
-  CartClientInformation({@required this.formKey, @required this.model});
-
-  @override
-  State<CartClientInformation> createState() =>
-      _CartClientInformationState(formKey: this.formKey, model: this.model);
-}
-
-class _CartClientInformationState extends State<CartClientInformation> {
-  final GlobalKey<FormState> formKey;
-
-//  final StateModel model;
-  final OrderClient client;
-
-  _CartClientInformationState({@required this.formKey, @required model})
-      : client = model.getOrderClient();
+  CartClientInformation({@required this.state, @required this.form})
+      : this.data = state.client.toJson();
 
   Widget _buildFormField(
     String title,
@@ -30,6 +17,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
   ) {
     return Container(
       child: TextFormField(
+          initialValue: data[key],
           decoration: InputDecoration(labelText: title),
           autovalidate: true,
           validator: validator,
@@ -62,71 +50,73 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
     return Card(
       margin: EdgeInsets.zero,
-      child: Form(
-        key: formKey,
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: paddingWidth),
-          shrinkWrap: true,
-          reverse: false,
-          children: <Widget>[
-            // Name
-            _buildFormField(
-                'Name',
-                'name',
-                (value) => this.client.name = value,
-                (value) =>
-                    _typicalStringValidator(value, r'^[A-Za-z0-9 ]+$', 3, 32)),
-            SizedBox(height: 10.0),
-            // Name
-            _buildFormField(
-                'Email',
-                'email',
-                (value) => this.client.email = value,
-                    (value) =>
-                    _typicalStringValidator(
-                        value,
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-                        8,
-                        32)),
-            SizedBox(height: 10.0),
-            // Name
-            _buildFormField(
-                'Phone',
-                'phone',
-                (value) => this.client.phone = value,
-                    (value) =>
-                    _typicalStringValidator(value, r'^[0-9]+$', 10, 12)),
-            SizedBox(height: 10.0),
-            // Name
-            _buildFormField(
-                'Province',
-                'province',
-                (value) => this.client.province = value,
-                (value) =>
-                    _typicalStringValidator(value, r'^[A-Za-z0-9]+$', 3, 32)),
-            SizedBox(height: 10.0),
-            // Name
-            _buildFormField(
-                'Address',
-                'address',
-                (value) => this.client.address = value,
-                (value) =>
-                    _typicalStringValidator(value, r'^[A-Za-z0-9 ]+$', 12, 64)),
-            SizedBox(height: 10.0),
-            _buildFormField(
-                'Notes',
-                'notes',
-                (value) => this.client.note = value,
-                (value) => _typicalStringValidator(
-                    value, r'^[A-Za-z0-9 ]+$', 0, 300,
-                    required: false)),
-            SizedBox(height: 10.0),
-            // Save
-          ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: paddingWidth),
+        child: Form(
+          key: form,
+          child: Column(
+            children: <Widget>[
+              // Name
+              _buildFormField(
+                  'Name',
+                  'name',
+                      (value) => this.data['name'] = value,
+                      (value) =>
+                      _typicalStringValidator(
+                          value, r'^[A-Za-z0-9 ]+$', 3, 32)),
+              SizedBox(height: 10.0),
+              // Name
+              _buildFormField(
+                  'Email',
+                  'email',
+                      (value) => this.data['email'] = value,
+                      (value) =>
+                      _typicalStringValidator(
+                          value,
+                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                          8,
+                          32)),
+              SizedBox(height: 10.0),
+              // Name
+              _buildFormField(
+                  'Phone',
+                  'phone',
+                      (value) => this.data['phone'] = value,
+                      (value) =>
+                      _typicalStringValidator(value, r'^[0-9]+$', 14, 14)),
+              SizedBox(height: 10.0),
+              // Name
+              _buildFormField(
+                  'Province',
+                  'province',
+                      (value) => this.data['province'] = value,
+                      (value) =>
+                      _typicalStringValidator(
+                          value, r'^[A-Za-z0-9 ]+$', 3, 32)),
+              SizedBox(height: 10.0),
+              // Name
+              _buildFormField(
+                  'Address',
+                  'address',
+                      (value) => this.data['address'] = value,
+                      (value) =>
+                      _typicalStringValidator(
+                          value, r'^[A-Za-z0-9 ,-_]+$', 12, 64)),
+              SizedBox(height: 10.0),
+              _buildFormField(
+                  'Notes',
+                  'notes',
+                      (value) => this.data['notes'] = value,
+                      (value) =>
+                      _typicalStringValidator(
+                          value, r'^[A-Za-z0-9 ]+$', 0, 300,
+                          required: false)),
+              SizedBox(height: 10.0),
+              // Save
+            ],
+          ),
         ),
       ),
     );
   }
-
-  void save() {}
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../pages/cart_page.dart';
-import '../pages/index_page.dart';
 import '../pages/home_page.dart';
+import '../pages/index_page.dart';
 import '../pages/login_page.dart';
-import '../pages/register_page.dart';
 import '../pages/product_details_page.dart';
 import '../pages/products_page.dart';
+import '../pages/register_page.dart';
 
 class Router {
   static String current;
@@ -30,18 +29,39 @@ class Router {
       login: (BuildContext ctx) => _routePageBuilder(ctx, login, LoginPage()),
       register: (BuildContext ctx) =>
           _routePageBuilder(ctx, login, RegisterPage()),
-      // Home
-      home: (BuildContext ctx) => _routePageBuilder(ctx, home, HomePage()),
-      // Products
-      products: (BuildContext ctx) =>
-          _routePageBuilder(ctx, products, ProductsPage()),
       productDetails: (BuildContext ctx) =>
           _routePageBuilder(ctx, productDetails, ProductDetailsPage()),
-      cart: (BuildContext ctx) => _routePageBuilder(ctx, cart, CartPage()),
+//      cart: (BuildContext ctx) => _routePageBuilder(ctx, cart, CartPage()),
     };
   }
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+    // Home
+      case home:
+        return MaterialPageRoute(
+          builder: (BuildContext context) =>
+              HomePage(
+                id: settings.arguments,
+              ),
+        );
+    // Cart
+      case cart:
+        return MaterialPageRoute(
+          builder: (BuildContext context) =>
+              HomePage(
+                id: PageId.Cart,
+              ),
+        );
+    // Products
+      case products:
+        return MaterialPageRoute(
+          builder: (BuildContext context) =>
+              ProductsPage(
+                filter: settings.arguments ?? new Map<String, dynamic>(),
+              ),
+        );
+    }
     return null;
   }
 
@@ -50,7 +70,7 @@ class Router {
   ///
   static Route<dynamic> onUnknownRoute(RouteSettings settings) {
     return MaterialPageRoute(
-      builder: (BuildContext context) => HomePage(),
+      builder: (BuildContext context) => HomePage(id: PageId.Home),
     );
   }
 

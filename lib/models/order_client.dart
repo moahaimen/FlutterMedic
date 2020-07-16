@@ -13,7 +13,7 @@ class OrderClient {
         phone: data['phone'],
         province: data['province'],
         address: data['address'],
-        note: data['note'],
+        notes: data['note'],
         userId: data['user_id']);
   }
 
@@ -24,7 +24,7 @@ class OrderClient {
       'phone': this.phone,
       'province': this.province,
       'address': this.address,
-      'note': this.note,
+      'note': this.notes,
       'userId': this.userId,
     };
 
@@ -36,7 +36,7 @@ class OrderClient {
   String phone;
   String province;
   String address;
-  String note;
+  String notes;
   String userId;
 
   OrderClient({
@@ -45,7 +45,7 @@ class OrderClient {
     @required this.phone,
     @required this.province,
     @required this.address,
-    this.note,
+    this.notes,
     this.userId,
   });
 }

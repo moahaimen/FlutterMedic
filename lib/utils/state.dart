@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
@@ -158,14 +156,13 @@ class StateModel extends Model {
   /// Restore the stored version of order
   ///
   Future<void> restoreStoredOrder() async {
-//    TODO Use Shared Preferences
 //    final prefs = await SharedPreferences.getInstance();
 
 //    if (prefs.containsKey('_order')) {
 //      final String orderString = prefs.getString('_order');
-//      final Map<String, dynamic> orderData = json.jsonDecode(orderString);
+//      final Map<String, dynamic> orderData = jsonDecode(orderString);
 //      final Order order = Order.fromJson(orderData, this);
-
+//
 //      this._order = order;
 //      print(this._order);
 //    }
@@ -175,11 +172,9 @@ class StateModel extends Model {
   /// Persist the active version of order
   ///
   Future<void> persistOrder() async {
-//    TODO use Shared Preferences
-
 //    final prefs = await SharedPreferences.getInstance();
 
-//    final orderString = json.jsonEncode(this._order.toJson());
+//    final orderString = jsonEncode(this._order.toJson());
 //    prefs.setString('_order', orderString);
   }
 
@@ -192,13 +187,13 @@ class StateModel extends Model {
 
     return Http.post(DotEnv().env['postOrderUrl'], this._order.toJson())
         .then((dynamic response) {
-      print(response);
+      print("post order => $response");
 
-//      this._orderUploading = false;
-//
-//      this.clearOrder();
-//      this.notifyListeners();
-//      return response != null;
+      this._orderUploading = false;
+
+      this.clearOrder();
+      this.notifyListeners();
+      return response != null;
     });
   }
 
@@ -215,6 +210,37 @@ class StateModel extends Model {
     this._order.products.add(item);
     await this.persistOrder();
     notifyListeners();
+  }
+
+  Future<bool> addProductToOrderById(int productId, int quantity) async {
+    if (productId == null || quantity == null) {
+      return false;
+    }
+    if (this._order == null) {
+      this._order = new Order(client: null, products: []);
+    }
+    final product =
+    this._products.firstWhere((element) => element.id == productId);
+
+    if (product == null) {
+      return false;
+    }
+    final item = new OrderProduct(product: product, quantity: quantity);
+    this._order.products.add(item);
+    await this.persistOrder();
+    notifyListeners();
+    return true;
+  }
+
+  bool hasOrderItem(int productId) {
+    if (productId == null || this._order == null) {
+      return false;
+    }
+
+    return this
+        ._order
+        .products
+        .any((element) => element.product.id == productId);
   }
 
   ///
@@ -240,7 +266,10 @@ class StateModel extends Model {
     notifyListeners();
   }
 
-  OrderClient getOrderClient() {
+  OrderClient get client {
+    if (this._order == null) {
+      this._order = new Order(client: null, products: []);
+    }
     if (this._order.client == null) {
       this._order.client = new OrderClient(
           name: null,
@@ -259,7 +288,6 @@ class StateModel extends Model {
   }
 
   Future<void> clearOrder() async {
-//    TODO use Shared Preferences
 //    final prefs = await SharedPreferences.getInstance();
 //    prefs.remove('_order');
     this._order = null;
@@ -281,5 +309,24 @@ class StateModel extends Model {
         .toList()
         .reduce((value, element) => value + element)
         .toString();
+  }
+
+  ///
+  /// Verify promo code activation
+  ///
+  Future<bool> verifyPromoCodeActivation(String promoCode) async {
+    final String url =
+    DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
+    return Http.get(url).then(
+          (response) {
+        if (response != null) {
+          final data = response as Map<String, dynamic>;
+          if (data['id'] != null) {
+            return true;
+          }
+        }
+        return false;
+      },
+    );
   }
 }
