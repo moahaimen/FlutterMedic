@@ -19,11 +19,53 @@ class _CartState extends State<Cart> {
   static int currentStep = 0;
   static CartStepsManager manager;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  StepState _getProductsStepState(StateModel state) {
+    if (currentStep == 0) {
+      return StepState.editing;
+    } else if (state.order.products.length > 0) {
+      return StepState.complete;
+    } else {
+      return StepState.indexed;
+    }
+  }
+
+  StepState _getClientStepState(StateModel state) {
+    final c = state.order.client;
+    if (currentStep == 1) {
+      return StepState.editing;
+    } else if (c != null &&
+        c.name != null &&
+        c.address != null &&
+        c.province != null &&
+        c.phone != null &&
+        c.email != null) {
+      return StepState.complete;
+    } else {
+      return StepState.indexed;
+    }
+  }
+
+  StepState _getPromoCodeStepState(StateModel state) {
+    if (currentStep == 2) {
+      return StepState.editing;
+    } else if (state.order.promoCode != null) {
+      return StepState.complete;
+    } else {
+      return StepState.indexed;
+    }
+  }
+
   Widget _buildCartWidget(BuildContext context, StateModel state) {
     final List<CartStep> steps = [
       // Products step
       CartProductsStep(
         step: new Step(
+          state: _getProductsStepState(state),
           title: Text('Products'),
           content: CartProductsList(state: state),
         ),
@@ -31,6 +73,7 @@ class _CartState extends State<Cart> {
       // Client Information
       CartClientStep(
         step: new Step(
+          state: _getClientStepState(state),
           title: Text('Client'),
           content: CartClientInformation(
             state: state,
@@ -41,6 +84,7 @@ class _CartState extends State<Cart> {
       // Promo Code
       CartPromoCodeStep(
         step: new Step(
+          state: _getPromoCodeStepState(state),
           title: Text('Promo Code'),
           content: CartPromoCode(
             state: state,
@@ -126,9 +170,7 @@ class _CartState extends State<Cart> {
         ScopedModelDescendant<StateModel>(
           builder: (BuildContext context, Widget child, StateModel state) =>
               RaisedButton(
-                child: state.orderUploading
-                    ? CircularProgressIndicator()
-                    : Text('Continue'),
+                child: Text(state.orderUploading ? 'Uploading...' : 'Continue'),
                 onPressed: state.orderUploading ? null : onStepContinue,
               ),
         ),

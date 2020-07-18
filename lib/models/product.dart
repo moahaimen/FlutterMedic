@@ -5,11 +5,7 @@ import 'package:drugStore/models/category.dart';
 class Product {
   static Product fromJson(Map<String, dynamic> data) {
     final brand = new Brand(data['brand']['name'], data['brand']['photoUrl']);
-    final category = new Category(
-        data['category']['name'],
-        data['category']['description'],
-        data['category']['icon'],
-        data['category']['color']);
+    final category = Category.fromJson(data['category']);
 
     final List<Attachment> attachments = (data['attachments'] as List<dynamic>)
         .map((e) => new Attachment(
@@ -53,7 +49,14 @@ class Product {
   String get title =>
       this.name.length >= 20 ? '${this.name.substring(0, 17)}...' : this.name;
 
-  Attachment get image => this
-      .attachments
-      .firstWhere((element) => element.type == AttachmentType.Image);
+  Attachment get image {
+    if (this.attachments == null || this.attachments.length == 0) {
+      return null;
+    }
+    final xx = this
+        .attachments
+        .firstWhere((element) => element.type == AttachmentType.Image);
+
+    return xx;
+  }
 }

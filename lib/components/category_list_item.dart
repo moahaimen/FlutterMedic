@@ -18,6 +18,12 @@ class CategoryListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
+            Expanded(
+              child: Image.network(
+                this.category.icon.url,
+                fit: BoxFit.fitWidth,
+              ),
+            ),
             Text(
               this.category.name,
               textAlign: TextAlign.center,

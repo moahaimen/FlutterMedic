@@ -3,18 +3,11 @@ import 'package:flutter/material.dart';
 
 class CartClientInformation extends StatelessWidget {
   final StateModel state;
-  final Map<String, dynamic> data = {
-    'name': 'mhd',
-    'email': 'mhd@mail.com',
-    'phone': '00963992209763',
-    'province': 'Damascus',
-    'address': 'Midan, Damascus, Syria',
-  };
+  final Map<String, dynamic> data;
   final GlobalKey<FormState> form;
 
-  CartClientInformation({@required this.state, @required this.form});
-
-//      : this.data = state.client.toJson();
+  CartClientInformation({@required this.state, @required this.form})
+      : this.data = state.client.toJson();
 
   Widget _buildFormField(String title,
       String key,

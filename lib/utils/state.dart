@@ -109,15 +109,8 @@ class StateModel extends Model {
         return;
       }
 
-      this._categories = categories
-          .map<Category>((e) =>
-      new Category(
-        e['name'],
-        e['description'],
-        e['icon'],
-        e['color'],
-      ))
-          .toList();
+      this._categories =
+          categories.map<Category>((e) => Category.fromJson(e)).toList();
 
       this._categoriesLoading = false;
       this.notifyListeners();

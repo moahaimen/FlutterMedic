@@ -65,27 +65,15 @@ class _CarouselState extends State<Carousel>
                           height: 200,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              product.image.url,
-//                              loadingBuilder: (BuildContext context,
-//                                  Widget child, ImageChunkEvent e) {
-//                                return Center(
-//                                  child: Container(
-//                                    width: double.infinity,
-//                                    height: double.infinity,
-//                                    color: themeData.primaryColor,
-//                                    child: Center(
-//                                      child: CircularProgressIndicator(
-//                                        valueColor: AlwaysStoppedAnimation(
-//                                            themeData.accentColor),
-//                                      ),
-//                                    ),
-//                                  ),
-//                                );
-//                              },
-                              height: 300.0,
-                              fit: BoxFit.cover,
-                            ),
+                            child: product.image != null
+                                ? Image.network(product.image.url,
+                                height: 300.0, fit: BoxFit.cover)
+                                : Center(
+                                child: Text("NO ATTACHMENENTS",
+                                    style: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .caption)),
                           ),
                         ),
                       ),
