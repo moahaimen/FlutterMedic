@@ -16,7 +16,7 @@ class StateModel extends Model {
   //
   // Brands
   //
-  bool _brandsLoading;
+  bool _brandsLoading = false;
   List<Brand> _brands;
 
   bool get brandsLoading => this._brandsLoading;
@@ -28,7 +28,7 @@ class StateModel extends Model {
   //
   // Categories
   //
-  bool _categoriesLoading;
+  bool _categoriesLoading = false;
   List<Category> _categories;
 
   bool get categoriesLoading => this._categoriesLoading;
@@ -40,7 +40,7 @@ class StateModel extends Model {
   //
   // Products
   //
-  bool _productsLoading;
+  bool _productsLoading = false;
   var _selectedProduct;
   List<Product> _products;
 
@@ -67,7 +67,7 @@ class StateModel extends Model {
   /// Cart Management
   ///
   bool _orderRestoring = true;
-  bool _orderUploading;
+  bool _orderUploading = false;
   Order _order;
 
   bool get orderUploading => this._orderUploading;
