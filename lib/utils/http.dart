@@ -3,8 +3,18 @@ import 'dart:convert' as json;
 import 'package:http/http.dart' as http;
 
 class Http {
-  static Future<dynamic> get(String url) async {
-    return http.get(url).catchError(_onError).then((http.Response response) {
+  static Future<dynamic> get(String url, {Map<String, String> headers}) async {
+    if (headers == null) {
+      headers = new Map();
+    }
+    headers['content-Type'] = 'application/json';
+    headers['accept'] = 'application/json';
+
+    return http.get(url, headers: headers).catchError(_onError).then((
+        http.Response response) {
+      if (response == null) {
+        return null;
+      }
       if (response.statusCode != 200) {
         return null;
       }

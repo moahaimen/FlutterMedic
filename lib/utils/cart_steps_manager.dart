@@ -85,15 +85,15 @@ class CartPromoCodeStep extends CartStep {
         order.products != null &&
         order.products.length > 0 &&
         order.client != null &&
-        widget.data['code'].length == 8 &&
-        widget.data['active'] == true;
+        (widget.data['code'] == null ||
+            (widget.data['code'].length == 8 && widget.active));
   }
 
   @override
   void save(StateModel state) {
     final promoCode = this.step.content as CartPromoCode;
 
-    promoCode.form.currentState.save();
+//    promoCode.form.currentState.save();
     state.setOrderPromoCode(promoCode.data['code']);
     print('Promocode: ${state.order.promoCode}');
   }

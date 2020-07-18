@@ -45,7 +45,8 @@ class IndexPageState extends State<IndexPage> {
   void _shouldWeGotoHome() {
     if (!_model.categoriesLoading &&
         !_model.brandsLoading &&
-        !_model.productsLoading) {
+        !_model.productsLoading &&
+        !_model.orderRestoring) {
       this.goto(Router.home);
     }
   }

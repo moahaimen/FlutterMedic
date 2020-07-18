@@ -1,6 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:drugStore/partials/router.dart';
-import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
+import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -83,17 +83,28 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
   }
 
   Widget _buildAddToCartButton() {
+//    return Container(
+//      margin: EdgeInsets.zero,
+//      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
+//      color: Colors.white,
+//      child: ListTile(
+//        title: RaisedButton.icon(
+//          onPressed: () => AskAddToCartModal.show(context, this.product),
+//          icon: Icon(Icons.add_shopping_cart),
+//          label: Text("Add to cart"),
+//          color: Theme.of(context).accentColor,
+//          padding: EdgeInsets.symmetric(vertical: 12.0),
+//        ),
+//      ),
+//    );
+
     return Container(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
       color: Colors.white,
       child: ListTile(
-        title: RaisedButton.icon(
-          onPressed: () => AskAddToCartModal.show(context, this.product),
-          icon: Icon(Icons.add_shopping_cart),
-          label: Text("Add to cart"),
-          color: Theme.of(context).accentColor,
-          padding: EdgeInsets.symmetric(vertical: 12.0),
+        title: AddToCartButton(
+          id: this.product.id,
         ),
       ),
     );
@@ -107,8 +118,8 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                  "Details of ${this.product.name}".toUpperCase(),
+              Text("Details of ${this.product.name}".toUpperCase(),
+                  textAlign: TextAlign.center,
                   style: Theme
                       .of(context)
                       .textTheme
@@ -116,6 +127,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                       .copyWith(color: Colors.black)),
               Text(
                 'Swipe to the left or the right',
+                textAlign: TextAlign.center,
                 style: Theme
                     .of(context)
                     .textTheme
@@ -134,7 +146,10 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         .attachments
         .map((e) => Container(
       color: Colors.white,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: Image.network(e.url, fit: BoxFit.cover),
     ))
         .toList());
@@ -161,7 +176,9 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         subtitle: Text(
           title,
           style:
-          TextStyle(color: Theme.of(context).accentColor, fontSize: 15.0),
+          TextStyle(color: Theme
+              .of(context)
+              .accentColor, fontSize: 15.0),
         ),
       ),
     );

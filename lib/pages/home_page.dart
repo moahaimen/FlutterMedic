@@ -1,6 +1,6 @@
 import 'package:drugStore/components/cart.dart';
 import 'package:drugStore/components/home_page_content.dart';
-import 'package:drugStore/partials/app_bar.dart';
+import 'package:drugStore/partials/toolbar.dart';
 import 'package:flutter/material.dart';
 
 import '../components/brands_list_view.dart';
@@ -55,11 +55,11 @@ class HomePageState extends State<HomePage> {
       child: Scaffold(
         key: _scaffold,
         drawer: DrawerBuilder.build(context, Router.home),
-        appBar: Toolbar.get(title: this._page.title),
+        appBar: Toolbar.get(title: this._page.title, context: context),
         body: Container(
           child: PageView(
             controller: _pageController,
-            physics: BouncingScrollPhysics(),
+            physics: PageScrollPhysics(),
             onPageChanged: (index) =>
                 setState(() => _page.id = PageId.values[index]),
             children: <Widget>[

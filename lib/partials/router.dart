@@ -1,3 +1,4 @@
+import 'package:drugStore/pages/search_page.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/home_page.dart';
@@ -19,6 +20,7 @@ class Router {
   static const String products = '/products/';
   static const String productDetails = '/products/:id/details/';
   static const String cart = '/cart/';
+  static const String search = '/search/';
 
   static Map<String, Widget Function(BuildContext)> routes() {
     return {
@@ -29,6 +31,8 @@ class Router {
       login: (BuildContext ctx) => _routePageBuilder(ctx, login, LoginPage()),
       register: (BuildContext ctx) =>
           _routePageBuilder(ctx, login, RegisterPage()),
+      search: (BuildContext ctx) =>
+          _routePageBuilder(ctx, search, SearchPage()),
       productDetails: (BuildContext ctx) =>
           _routePageBuilder(ctx, productDetails, ProductDetailsPage()),
 //      cart: (BuildContext ctx) => _routePageBuilder(ctx, cart, CartPage()),
@@ -74,8 +78,8 @@ class Router {
     );
   }
 
-  static Widget _routePageBuilder(
-      BuildContext context, String route, Widget widget) {
+  static Widget _routePageBuilder(BuildContext context, String route,
+      Widget widget) {
     current = route;
     return widget;
   }

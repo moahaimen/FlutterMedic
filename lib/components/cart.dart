@@ -1,3 +1,5 @@
+import 'package:drugStore/pages/home_page.dart';
+import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/utils/cart_steps_manager.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +97,18 @@ class _CartState extends State<Cart> {
     step.save(state);
     setState(() {
       step.state = StepState.complete;
+      if (currentStep == manager.steps.length - 1) {
+        state.postOrder().then((ok) {
+          if (ok) {
+            Toast.show('Order submitted succesfully', context);
+            Navigator.of(context)
+                .pushReplacementNamed(Router.home, arguments: PageId.Home);
+            return;
+          } else {
+            Toast.show('Failed to submit the order', context);
+          }
+        });
+      }
       if (currentStep < manager.steps.length - 1) {
         currentStep++;
       }
@@ -109,9 +123,14 @@ class _CartState extends State<Cart> {
       {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
     return Row(
       children: [
-        RaisedButton(
-          child: Text('Continue'),
-          onPressed: onStepContinue,
+        ScopedModelDescendant<StateModel>(
+          builder: (BuildContext context, Widget child, StateModel state) =>
+              RaisedButton(
+                child: state.orderUploading
+                    ? CircularProgressIndicator()
+                    : Text('Continue'),
+                onPressed: state.orderUploading ? null : onStepContinue,
+              ),
         ),
         SizedBox(
           width: 5,

@@ -3,22 +3,33 @@ import 'package:flutter/material.dart';
 
 class CartClientInformation extends StatelessWidget {
   final StateModel state;
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> data = {
+    'name': 'mhd',
+    'email': 'mhd@mail.com',
+    'phone': '00963992209763',
+    'province': 'Damascus',
+    'address': 'Midan, Damascus, Syria',
+  };
   final GlobalKey<FormState> form;
 
-  CartClientInformation({@required this.state, @required this.form})
-      : this.data = state.client.toJson();
+  CartClientInformation({@required this.state, @required this.form});
 
-  Widget _buildFormField(
-    String title,
-    String key,
-    void Function(String value) saver,
-    String Function(String value) validator,
-  ) {
+//      : this.data = state.client.toJson();
+
+  Widget _buildFormField(String title,
+      String key,
+      void Function(String value) saver,
+      String Function(String value) validator,
+      Color color) {
     return Container(
       child: TextFormField(
           initialValue: data[key],
-          decoration: InputDecoration(labelText: title),
+          decoration: InputDecoration(
+            labelText: title,
+            labelStyle: TextStyle(color: color),
+          ),
+          cursorColor: color,
+          textInputAction: TextInputAction.done,
           autovalidate: true,
           validator: validator,
           onSaved: saver),
@@ -62,8 +73,10 @@ class CartClientInformation extends StatelessWidget {
                   'name',
                       (value) => this.data['name'] = value,
                       (value) =>
-                      _typicalStringValidator(
-                          value, r'^[A-Za-z0-9 ]+$', 3, 32)),
+                      _typicalStringValidator(value, r'^[A-Za-z0-9 ]+$', 3, 32),
+                  Theme
+                      .of(context)
+                      .accentColor),
               SizedBox(height: 10.0),
               // Name
               _buildFormField(
@@ -75,7 +88,10 @@ class CartClientInformation extends StatelessWidget {
                           value,
                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                           8,
-                          32)),
+                          32),
+                  Theme
+                      .of(context)
+                      .accentColor),
               SizedBox(height: 10.0),
               // Name
               _buildFormField(
@@ -83,7 +99,10 @@ class CartClientInformation extends StatelessWidget {
                   'phone',
                       (value) => this.data['phone'] = value,
                       (value) =>
-                      _typicalStringValidator(value, r'^[0-9]+$', 14, 14)),
+                      _typicalStringValidator(value, r'^[0-9]+$', 14, 14),
+                  Theme
+                      .of(context)
+                      .accentColor),
               SizedBox(height: 10.0),
               // Name
               _buildFormField(
@@ -91,8 +110,10 @@ class CartClientInformation extends StatelessWidget {
                   'province',
                       (value) => this.data['province'] = value,
                       (value) =>
-                      _typicalStringValidator(
-                          value, r'^[A-Za-z0-9 ]+$', 3, 32)),
+                      _typicalStringValidator(value, r'^[A-Za-z0-9 ]+$', 3, 32),
+                  Theme
+                      .of(context)
+                      .accentColor),
               SizedBox(height: 10.0),
               // Name
               _buildFormField(
@@ -101,7 +122,10 @@ class CartClientInformation extends StatelessWidget {
                       (value) => this.data['address'] = value,
                       (value) =>
                       _typicalStringValidator(
-                          value, r'^[A-Za-z0-9 ,-_]+$', 12, 64)),
+                          value, r'^[A-Za-z0-9 ,-_]+$', 12, 64),
+                  Theme
+                      .of(context)
+                      .accentColor),
               SizedBox(height: 10.0),
               _buildFormField(
                   'Notes',
@@ -110,7 +134,10 @@ class CartClientInformation extends StatelessWidget {
                       (value) =>
                       _typicalStringValidator(
                           value, r'^[A-Za-z0-9 ]+$', 0, 300,
-                          required: false)),
+                          required: false),
+                  Theme
+                      .of(context)
+                      .accentColor),
               SizedBox(height: 10.0),
               // Save
             ],

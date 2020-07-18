@@ -1,4 +1,4 @@
-import 'package:drugStore/partials/app_bar.dart';
+import 'package:drugStore/partials/toolbar.dart';
 import 'package:flutter/material.dart';
 
 import '../components/products_list_view.dart';
@@ -14,7 +14,7 @@ class ProductsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerBuilder.build(context, Router.products),
-      appBar: Toolbar.get(title: Router.products),
+      appBar: Toolbar.get(title: Router.products, context: context),
       body: Container(
         child: ProductsListView(
           filter: this.filter,

@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/brand.dart';
 import '../models/category.dart';
@@ -63,10 +66,13 @@ class StateModel extends Model {
   ///
   /// Cart Management
   ///
+  bool _orderRestoring = true;
   bool _orderUploading;
   Order _order;
 
   bool get orderUploading => this._orderUploading;
+
+  bool get orderRestoring => this._orderRestoring;
 
   Order get order => this._order;
 
@@ -80,13 +86,12 @@ class StateModel extends Model {
     this._products = [];
 
     this.fetchModelData();
-    this.restoreStoredOrder();
   }
 
   void fetchModelData() {
     this.fetchBrands();
     this.fetchCategories();
-    this.fetchProducts();
+    this.fetchProducts().then((value) => this.restoreStoredOrder());
   }
 
   ///
@@ -98,8 +103,20 @@ class StateModel extends Model {
 
     return Http.get(DotEnv().env['fetchCategoriesUrl'])
         .then((dynamic categories) {
+      if (categories == null) {
+        this._categoriesLoading = false;
+        this.notifyListeners();
+        return;
+      }
+
       this._categories = categories
-          .map<Category>((e) => new Category(e['name'], e['description']))
+          .map<Category>((e) =>
+      new Category(
+        e['name'],
+        e['description'],
+        e['icon'],
+        e['color'],
+      ))
           .toList();
 
       this._categoriesLoading = false;
@@ -115,6 +132,11 @@ class StateModel extends Model {
     this.notifyListeners();
 
     return Http.get(DotEnv().env['fetchBrandsUrl']).then((dynamic result) {
+      if (result == null) {
+        this._brandsLoading = false;
+        this.notifyListeners();
+        return;
+      }
       this._brands = result
           .map<Brand>((e) => new Brand(e['name'], e['attachment']['url']))
           .toList();
@@ -135,6 +157,7 @@ class StateModel extends Model {
       if (products == null) {
         this._productsLoading = false;
         this.notifyListeners();
+        return;
       }
 
       this._products =
@@ -156,26 +179,31 @@ class StateModel extends Model {
   /// Restore the stored version of order
   ///
   Future<void> restoreStoredOrder() async {
-//    final prefs = await SharedPreferences.getInstance();
+    this._orderRestoring = true;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
 
-//    if (prefs.containsKey('_order')) {
-//      final String orderString = prefs.getString('_order');
-//      final Map<String, dynamic> orderData = jsonDecode(orderString);
-//      final Order order = Order.fromJson(orderData, this);
-//
-//      this._order = order;
-//      print(this._order);
-//    }
+    if (prefs.getKeys().contains('_order')) {
+      final String orderString = prefs.getString('_order');
+      final Map<String, dynamic> orderData = jsonDecode(orderString);
+      final Order order = Order.fromJson(orderData, this);
+
+      this._order = order;
+    } else {
+      this._order = Order(client: OrderClient.empty, products: []);
+    }
+    this._orderRestoring = false;
+    notifyListeners();
   }
 
   ///
   /// Persist the active version of order
   ///
   Future<void> persistOrder() async {
-//    final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
 
-//    final orderString = jsonEncode(this._order.toJson());
-//    prefs.setString('_order', orderString);
+    final orderString = jsonEncode(this._order.toJson());
+    return prefs.setString('_order', orderString);
   }
 
   ///
@@ -185,51 +213,57 @@ class StateModel extends Model {
     this._orderUploading = true;
     this.notifyListeners();
 
-    return Http.post(DotEnv().env['postOrderUrl'], this._order.toJson())
+    final base64 = base64Encode(utf8.encode(jsonEncode(this._order.toJson())));
+
+    return Http.get("${DotEnv().env['postOrderUrl']}?o=$base64")
         .then((dynamic response) {
       print("post order => $response");
-
       this._orderUploading = false;
+
+      if (response == null) {
+        this.notifyListeners();
+        return false;
+      }
 
       this.clearOrder();
       this.notifyListeners();
-      return response != null;
+      return true;
     });
   }
 
   ///
   /// Insert the item into list of order's products
   ///
-  Future<void> addProductToOrder(OrderProduct item) async {
+  Future<bool> addProductToOrder(OrderProduct item) async {
+    if (this._order == null) {
+      throw Exception("OrderDoesnotRestored");
+    }
     if (item == null || item.product == null) {
-      return;
-    }
-    if (this._order == null) {
-      this._order = new Order(client: null, products: []);
-    }
-    this._order.products.add(item);
-    await this.persistOrder();
-    notifyListeners();
-  }
-
-  Future<bool> addProductToOrderById(int productId, int quantity) async {
-    if (productId == null || quantity == null) {
       return false;
     }
-    if (this._order == null) {
-      this._order = new Order(client: null, products: []);
-    }
-    final product =
-    this._products.firstWhere((element) => element.id == productId);
-
-    if (product == null) {
-      return false;
-    }
-    final item = new OrderProduct(product: product, quantity: quantity);
     this._order.products.add(item);
     await this.persistOrder();
     notifyListeners();
     return true;
+  }
+
+  Future<bool> addProductToOrderById(int productId, int quantity) async {
+    if (this._order == null) {
+      throw Exception("OrderDoesnotRestored");
+    }
+    if (productId == null || quantity == null) {
+      return false;
+    }
+
+    final product = this._products.firstWhere((e) => e.id == productId);
+    if (product == null) {
+      return false;
+    }
+
+    return this.addProductToOrder(new OrderProduct(
+      product: product,
+      quantity: quantity,
+    ));
   }
 
   bool hasOrderItem(int productId) {
@@ -237,10 +271,7 @@ class StateModel extends Model {
       return false;
     }
 
-    return this
-        ._order
-        .products
-        .any((element) => element.product.id == productId);
+    return this._order.products.any((e) => e.product.id == productId);
   }
 
   ///
@@ -267,16 +298,8 @@ class StateModel extends Model {
   }
 
   OrderClient get client {
-    if (this._order == null) {
-      this._order = new Order(client: null, products: []);
-    }
-    if (this._order.client == null) {
-      this._order.client = new OrderClient(
-          name: null,
-          email: null,
-          phone: null,
-          province: null,
-          address: null);
+    if (this._order == null || this._order.client == null) {
+      throw new Exception("OrderDoesnotRestored");
     }
     return this._order.client;
   }
@@ -288,44 +311,45 @@ class StateModel extends Model {
   }
 
   Future<void> clearOrder() async {
-//    final prefs = await SharedPreferences.getInstance();
-//    prefs.remove('_order');
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('_order');
     this._order = null;
-    notifyListeners();
+
+    this.restoreStoredOrder();
   }
 
   ///
   /// Count number of items in Current Order
   ///
   String get orderItemsCount {
-    if (this._order == null ||
-        this._order.products == null ||
-        this._order.products.length == 0) {
-      return '0';
+    if (this._order == null || this._order.products == null) {
+      throw new Exception("OrderDoesnotRestored");
+    }
+
+    if (this.order.products.length == 0) {
+      return 0.toString();
     }
 
     return order.products
         .map((e) => e.quantity)
         .toList()
-        .reduce((value, element) => value + element)
+        .reduce((value, e) => value + e)
         .toString();
   }
 
   ///
   /// Verify promo code activation
   ///
-  Future<bool> verifyPromoCodeActivation(String promoCode) async {
+  Future<Map<String, dynamic>> verifyPromoCodeActivation(
+      String promoCode) async {
     final String url =
     DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
     return Http.get(url).then(
           (response) {
         if (response != null) {
-          final data = response as Map<String, dynamic>;
-          if (data['id'] != null) {
-            return true;
-          }
+          return response as Map<String, dynamic>;
         }
-        return false;
+        return null;
       },
     );
   }

@@ -17,7 +17,8 @@ class Toolbar {
     '/cart/': 'Cart',
   };
 
-  static AppBar get({String title, Widget child}) {
+  static AppBar get(
+      {String title, Widget child, @required BuildContext context}) {
     final Widget content = child != null
         ? child
         : Text(title == null
@@ -27,6 +28,10 @@ class Toolbar {
     return AppBar(
       title: content,
       actions: [
+        IconButton(
+          icon: Icon(Icons.search),
+          onPressed: () => Navigator.of(context).pushNamed(Router.search),
+        ),
         ScopedModelDescendant<StateModel>(
           builder: (BuildContext context, Widget child, StateModel model) =>
               Badge(
@@ -36,10 +41,12 @@ class Toolbar {
                 child: IconButton(
                   icon: Icon(Icons.shopping_cart),
                   onPressed: () =>
-                      Navigator.of(context).pushNamed(
+                      Navigator.of(context)
+                          .pushReplacementNamed(
                           Router.home, arguments: PageId.Cart),
                 ),
-                badgeContent: Text(model.orderItemsCount),
+                badgeContent: Text(
+                    model.orderRestoring ? '0' : model.orderItemsCount),
                 badgeColor: Colors.transparent,
               ),
         ),

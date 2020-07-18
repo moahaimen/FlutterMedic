@@ -5,8 +5,11 @@ import 'package:drugStore/models/category.dart';
 class Product {
   static Product fromJson(Map<String, dynamic> data) {
     final brand = new Brand(data['brand']['name'], data['brand']['photoUrl']);
-    final category =
-        new Category(data['category']['name'], data['category']['description']);
+    final category = new Category(
+        data['category']['name'],
+        data['category']['description'],
+        data['category']['icon'],
+        data['category']['color']);
 
     final List<Attachment> attachments = (data['attachments'] as List<dynamic>)
         .map((e) => new Attachment(

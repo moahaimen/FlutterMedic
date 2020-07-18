@@ -7,7 +7,8 @@ import 'order_product.dart';
 class Order {
   static Order fromJson(Map<String, dynamic> data, StateModel model) {
     final productsJson = data['products'] as List<dynamic>;
-    final products = productsJson.map((e) => OrderProduct.fromJson(e, model));
+    final products = productsJson.map((e) => OrderProduct.fromJson(e, model))
+        .toList();
 
     final OrderClient client = OrderClient.fromJson(data['client']);
 
@@ -41,4 +42,16 @@ class Order {
           .map((e) => e.subTotal)
           .reduce((value, element) => value + element)
           : 0;
+
+  int totalWithCode(Map<String, dynamic> data) {
+    final type = num.parse(data['type']);
+    final discount = num.parse(data['discount']);
+    final total = this.total;
+
+    if (type == 0) {
+      return (total * ((100 - discount) / 100)).round();
+    } else {
+      return total - discount;
+    }
+  }
 }

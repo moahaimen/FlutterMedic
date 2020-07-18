@@ -60,32 +60,31 @@ class _CarouselState extends State<Carousel>
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: GestureDetector(
-                        child: Hero(
-                          tag: '${product.name}',
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 200,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                product.image.url,
-//                                loadingBuilder: (BuildContext context,
-//                                    Widget child, ImageChunkEvent e) {
-//                                  return Center(
-//                                    child: Container(
-//                                        width: double.infinity,
-//                                        height: double.infinity,
-//                                        color: themeData.primaryColorDark,
-//                                        child: Center(
-//                                            child: CircularProgressIndicator(
-//                                          valueColor: AlwaysStoppedAnimation(
-//                                              themeData.accentColor),
-//                                        ))),
-//                                  );
-//                                },
-                                height: 300.0,
-                                fit: BoxFit.cover,
-                              ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 200,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              product.image.url,
+//                              loadingBuilder: (BuildContext context,
+//                                  Widget child, ImageChunkEvent e) {
+//                                return Center(
+//                                  child: Container(
+//                                    width: double.infinity,
+//                                    height: double.infinity,
+//                                    color: themeData.primaryColor,
+//                                    child: Center(
+//                                      child: CircularProgressIndicator(
+//                                        valueColor: AlwaysStoppedAnimation(
+//                                            themeData.accentColor),
+//                                      ),
+//                                    ),
+//                                  ),
+//                                );
+//                              },
+                              height: 300.0,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
