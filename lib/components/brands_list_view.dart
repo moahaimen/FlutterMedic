@@ -24,7 +24,6 @@ class BrandsListView extends StatelessWidget {
 
     return AnimationLimiter(
       child: GridView.count(
-        childAspectRatio: 2 / 3,
         crossAxisCount: _columnCount,
         children: List.generate(
           brands.length,

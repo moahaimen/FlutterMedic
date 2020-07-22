@@ -11,8 +11,8 @@ class CategoryListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Card(
-        color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -21,11 +21,12 @@ class CategoryListItem extends StatelessWidget {
             Expanded(
               child: Image.network(
                 this.category.icon.url,
-                fit: BoxFit.fitWidth,
+                width: 50,
+                height: 50,
               ),
             ),
             Text(
-              this.category.name,
+              this.category.title,
               textAlign: TextAlign.center,
             ),
           ],

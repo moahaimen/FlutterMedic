@@ -12,23 +12,21 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final String appTitle = "medicalProductsStore";
-
   @override
   Widget build(BuildContext context) {
-    final state = StateModel();
-    final app = MaterialApp(
-      title: this.appTitle,
-      theme: ThemeBuilder.getTheme(),
-      initialRoute: Router.index,
-      routes: Router.routes(),
-      onGenerateRoute: Router.onGenerateRoute,
-      onUnknownRoute: Router.onUnknownRoute,
-    );
+    final String title = "drugsStore";
+    final StateModel state = new StateModel();
 
-    return ScopedModel(
+    return ScopedModel<StateModel>(
       model: state,
-      child: app,
+      child: MaterialApp(
+        title: title,
+        theme: ThemeBuilder.getTheme(),
+        initialRoute: Router.index,
+        routes: Router.routes(),
+        onGenerateRoute: Router.onGenerateRoute,
+        onUnknownRoute: Router.onUnknownRoute,
+      ),
     );
   }
 }

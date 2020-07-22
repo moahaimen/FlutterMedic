@@ -13,8 +13,9 @@ class ProductsListView extends StatelessWidget {
   final Map<String, dynamic> filter;
 
   final int _columnCount = 2;
+  final ScrollPhysics physics;
 
-  ProductsListView({@required this.filter});
+  ProductsListView({@required this.filter, @required this.physics});
 
   Widget _buildProductsList(bool loading, List<Product> products,
       {Brand brand, Category category, String name}) {
@@ -47,8 +48,20 @@ class ProductsListView extends StatelessWidget {
           products.where((element) => element.name.contains(name)).toList();
     }
 
+    // Recheck  after filtering
+    if (products.length == 0) {
+      return Container(
+        height: 300,
+        child: Center(
+          child: Text("Products List is Empty"),
+        ),
+      );
+    }
+
     return AnimationLimiter(
       child: GridView.count(
+        shrinkWrap: true,
+        physics: physics,
         childAspectRatio: 2 / 3,
         crossAxisCount: _columnCount,
         children: List.generate(
@@ -74,6 +87,15 @@ class ProductsListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget widget, StateModel model) {
+        if (this.filter.containsKey('home') && this.filter['home'] == true) {
+          return _buildProductsList(
+            model.productsLoading,
+            model.products,
+            brand: this.filter['brand'],
+            category: this.filter['category'],
+            name: this.filter['name'],
+          );
+        }
         return RefreshIndicator(
           onRefresh: () {
             return model.fetchProducts();

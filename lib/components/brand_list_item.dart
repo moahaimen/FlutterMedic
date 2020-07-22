@@ -20,7 +20,7 @@ class BrandListItem extends StatelessWidget {
                 fit: BoxFit.fitWidth,
               ),
             ),
-            Text(this.brand.name),
+            Text(this.brand.title),
           ],
         ),
       ),

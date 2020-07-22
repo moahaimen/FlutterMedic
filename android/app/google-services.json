@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "452165297139",
+    "firebase_url": "https://drugsstore-210f2.firebaseio.com",
+    "project_id": "drugsstore-210f2",
+    "storage_bucket": "drugsstore-210f2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452165297139:android:4f1c6451c2f9306cc4e886",
+        "android_client_info": {
+          "package_name": "com.example.drugStore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452165297139-hu0pb5oo8r2pr6k631nbmhjrg3ccfen2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXylUpainbKpyqlZjHc1PEk32fAoVoDNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452165297139-hu0pb5oo8r2pr6k631nbmhjrg3ccfen2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -23,8 +23,6 @@ class StateModel extends Model {
 
   List<Brand> get brands => List.from(this._brands);
 
-  List<Brand> get topBrands => List.from(this._brands.take(5));
-
   //
   // Categories
   //
@@ -34,8 +32,6 @@ class StateModel extends Model {
   bool get categoriesLoading => this._categoriesLoading;
 
   List<Category> get categories => List.from(this._categories);
-
-  List<Category> get topCategories => List.from(this.categories.take(5));
 
   //
   // Products
@@ -177,11 +173,15 @@ class StateModel extends Model {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.getKeys().contains('_order')) {
-      final String orderString = prefs.getString('_order');
-      final Map<String, dynamic> orderData = jsonDecode(orderString);
-      final Order order = Order.fromJson(orderData, this);
+      try {
+        final String orderString = prefs.getString('_order');
+        final Map<String, dynamic> orderData = jsonDecode(orderString);
+        final Order order = Order.fromJson(orderData, this);
 
-      this._order = order;
+        this._order = order;
+      } catch (e) {
+        this._order = Order(client: OrderClient.empty, products: []);
+      }
     } else {
       this._order = Order(client: OrderClient.empty, products: []);
     }

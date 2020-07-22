@@ -9,6 +9,7 @@ import '../models/category.dart';
 import '../models/product.dart';
 import '../utils/state.dart';
 import 'brand_list_item.dart';
+import 'categorized_products_list_view.dart';
 import 'category_list_item.dart';
 
 class HomePageContent extends StatelessWidget {
@@ -19,11 +20,24 @@ class HomePageContent extends StatelessWidget {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget widget, StateModel model) {
         return ListView(
-          shrinkWrap: true,
           children: [
             _buildMainProductsWidget(model.mainProducts),
-            _buildTopFiveBrandsWidget(context, model.topBrands),
-            _buildTopFiveCategoriesWidget(context, model.topCategories),
+            SizedBox(
+              height: 10,
+            ),
+            _buildBrandsWidget(context, model.brands),
+//            SizedBox(
+//              height: 10,
+//            ),
+//            _buildMainProductsWidget(model.mainProducts),
+            SizedBox(
+              height: 10,
+            ),
+            _buildCategoriesWidget(context, model.categories),
+            SizedBox(
+              height: 10,
+            ),
+            CategorizedProductsListView(),
           ],
         );
       },
@@ -31,93 +45,70 @@ class HomePageContent extends StatelessWidget {
   }
 
   Widget _buildMainProductsWidget(List<Product> products) {
-    return Carousel();
+    return MyCarousel();
   }
 
-  Widget _buildTopFiveBrandsWidget(BuildContext context, List<Brand> brands) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            children: [
-              Text(
-                "Top Brands",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline5,
-              ),
-              Spacer(),
-              IconButton(
-                onPressed: () =>
-                    Navigator.of(context).pushReplacementNamed(
-                      Router.home,
-                      arguments: PageId.Brands,
-                    ),
-                icon: Icon(Icons.chevron_right),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 150.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: brands
-                .map<Widget>((e) => Container(
+  Widget _buildBrandsWidget(BuildContext context, List<Brand> brands) {
+    return Container(
+      height: 150.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: brands
+            .map<Widget>((e) =>
+            Container(
               width: 150,
               height: 150,
               child: BrandListItem(brand: e),
             ))
-                .toList(),
-          ),
-        ),
-      ],
+            .toList(),
+      ),
     );
   }
 
-  Widget _buildTopFiveCategoriesWidget(BuildContext context,
+  Widget _buildCategoriesWidget(BuildContext context,
       List<Category> categories) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            children: [
-              Text(
-                "Top Categories",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline5,
-              ),
-              Spacer(),
-              IconButton(
-                onPressed: () =>
-                    Navigator.of(context).pushReplacementNamed(
-                      Router.home,
-                      arguments: PageId.Categories,
-                    ),
-                icon: Icon(Icons.chevron_right),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 150.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: categories
-                .map<Widget>((e) => Container(
+    return Container(
+      color: Colors.white,
+      height: 150.0,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length + 1,
+        itemBuilder: (BuildContext context, int index) =>
+            Container(
               width: 150,
               height: 150,
-              child: CategoryListItem(category: e),
-            ))
-                .toList(),
-          ),
+              child: index == 0
+                  ? _buildWatchAllCategoriesWidget(context)
+                  : CategoryListItem(category: categories[index - 1]),
+            ),
+      ),
+    );
+  }
+
+  Widget _buildWatchAllCategoriesWidget(BuildContext context) {
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Icon(Icons.menu, size: 39),
+            ),
+            Text(
+              "Watch All",
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-      ],
+      ),
+      onTap: () =>
+          Navigator.of(context).pushReplacementNamed(
+            Router.home,
+            arguments: PageId.Categories,
+          ),
     );
   }
 }

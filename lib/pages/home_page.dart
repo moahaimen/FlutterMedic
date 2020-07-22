@@ -1,6 +1,7 @@
 import 'package:drugStore/components/cart.dart';
 import 'package:drugStore/components/home_page_content.dart';
 import 'package:drugStore/partials/toolbar.dart';
+import 'package:drugStore/utils/push_notifications_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../components/brands_list_view.dart';
@@ -50,6 +51,9 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Initializing PCM
+    PushNotificationsManager.initialize(context);
+
     return DefaultTabController(
       length: 4,
       child: Scaffold(

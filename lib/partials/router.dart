@@ -46,7 +46,7 @@ class Router {
         return MaterialPageRoute(
           builder: (BuildContext context) =>
               HomePage(
-                id: settings.arguments,
+                id: settings.arguments ?? PageId.Home,
               ),
         );
     // Cart

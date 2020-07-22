@@ -20,5 +20,6 @@ class Category {
 
   Category(this.name, this.description, this.icon);
 
-  String get title => this.name.substring(0, 2).toUpperCase();
+  String get title =>
+      this.name.length >= 12 ? '${this.name.substring(0, 12)}...' : this.name;
 }
