@@ -28,8 +28,6 @@ class _CategorizedProductsListViewState
         final categories = model.categories;
         final theme = Theme.of(context);
 
-        final parentHeight = MediaQuery.of(context).size.height * .8;
-
         return Container(
           color: Colors.white,
           child: Column(

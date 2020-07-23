@@ -2,8 +2,23 @@ import 'package:drugStore/models/notification.dart' as MM;
 import 'package:drugStore/partials/router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+enum PushNotificationMode { Local, Dialog }
 
 class PushNotificationsManager {
+  //
+  // Local notifications plugin channel details
+  //
+  static String id;
+  static String name;
+  static String description;
+
+  //
+  //
+  //
+  static PushNotificationMode mode = PushNotificationMode.Local;
+
   //
   // String
   //
@@ -20,7 +35,6 @@ class PushNotificationsManager {
   static void initialize(BuildContext context) {
     if (_instance == null) {
       _instance = new PushNotificationsManager(context: context);
-      _instance.init();
     }
     _instance.context = context;
   }
@@ -41,25 +55,45 @@ class PushNotificationsManager {
   //
   //
   //
-  static Future<dynamic> backgroundMessageHandler(
-      Map<String, dynamic> message) {
+  static Future<dynamic> backgroundMessageHandler(Map<String, dynamic> message) {
     if (message.containsKey('data')) {
       // Handle data message
       final dynamic data = message['data'];
+      print("backgroundMessageHandler data $data");
     }
 
     if (message.containsKey('notification')) {
       // Handle notification message
       final dynamic notification = message['notification'];
+      print("backgroundMessageHandler notificaion $notification");
     }
+
+    return Future.value(true);
   }
 
   BuildContext context;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final FlutterLocalNotificationsPlugin _plugin =
+  new FlutterLocalNotificationsPlugin();
 
-  PushNotificationsManager({this.context});
+  PushNotificationsManager({this.context}) {
+    _initLocalNotificationsPlugin();
+    _initFirebaseMessaging();
+  }
 
-  Future<void> init() async {
+  void _initLocalNotificationsPlugin() {
+    var androidSettings =
+    new AndroidInitializationSettings('notification_icon');
+
+    var iOSSettings = new IOSInitializationSettings(
+        onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+
+    var settings = new InitializationSettings(androidSettings, iOSSettings);
+
+    _plugin.initialize(settings, onSelectNotification: onSelectNotification);
+  }
+
+  Future<void> _initFirebaseMessaging() async {
     // For iOS request permission first.
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(
@@ -72,7 +106,9 @@ class PushNotificationsManager {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
-        _showDialog(message);
+        mode == PushNotificationMode.Local
+            ? _showNotification(message)
+            : _showDialog(message);
       },
       onBackgroundMessage: backgroundMessageHandler,
       onLaunch: (Map<String, dynamic> message) async {
@@ -124,5 +160,44 @@ class PushNotificationsManager {
     if (Router.current.compareTo(notification.route) != 0) {
       Navigator.pushNamed(context, notification.route);
     }
+  }
+
+  Future _showNotification(Map<String, dynamic> message) async {
+    final notification = parseMessage(message);
+
+    var androidChannelDetails = new AndroidNotificationDetails(
+        id, name, description,
+        importance: Importance.Max, priority: Priority.High);
+    var iOSChannelDetails = new IOSNotificationDetails();
+    var channelSpecifics =
+    new NotificationDetails(androidChannelDetails, iOSChannelDetails);
+    await _plugin.show(
+        0, notification.title, notification.description, channelSpecifics);
+  }
+
+  Future onSelectNotification(String payload) async {
+    Navigator.pushNamed(context, Router.home);
+  }
+
+  Future onDidReceiveLocalNotification(int id, String title, String body,
+      String payload) async {
+    // display a dialog with the notification details, tap ok to go to another page
+    showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+      new AlertDialog(
+        title: new Text(title),
+        content: new Text(body),
+        actions: [
+          FlatButton(
+            child: new Text('Ok'),
+            onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
+              print('clicked!!');
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

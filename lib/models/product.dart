@@ -15,9 +15,9 @@ class Product {
 
     return new Product(
         data['id'],
-        data['name'],
-        data['description'],
-        data['price']['value'],
+        data['name'] ?? '',
+        data['description'] ?? '',
+        data['price']['value'] ?? '',
         DateTime.parse(data['price']['updated_at']),
         attachments,
         brand,

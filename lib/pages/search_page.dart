@@ -14,8 +14,8 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  static SearchStatus _searchStatus = SearchStatus.Clean;
-  static List<Product> _result;
+  SearchStatus _searchStatus = SearchStatus.Clean;
+  List<Product> _result;
 
   Widget _buildResultsList() {
     switch (_searchStatus) {

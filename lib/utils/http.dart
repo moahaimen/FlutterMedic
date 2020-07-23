@@ -10,14 +10,17 @@ class Http {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
-    return http.get(url, headers: headers).catchError(_onError).then((
-        http.Response response) {
+    return http
+        .get(url, headers: headers)
+        .catchError(_onError)
+        .then((http.Response response) {
       if (response == null) {
         return null;
       }
       if (response.statusCode != 200) {
         return null;
       }
+
       return json.jsonDecode(response.body);
     });
   }

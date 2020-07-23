@@ -1,12 +1,11 @@
 import 'package:drugStore/pages/home_page.dart';
 import 'package:drugStore/partials/router.dart';
-import 'package:drugStore/ui/carousel.dart';
+import 'package:drugStore/ui/main_products_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../models/brand.dart';
 import '../models/category.dart';
-import '../models/product.dart';
 import '../utils/state.dart';
 import 'brand_list_item.dart';
 import 'categorized_products_list_view.dart';
@@ -21,7 +20,7 @@ class HomePageContent extends StatelessWidget {
       builder: (BuildContext context, Widget widget, StateModel model) {
         return ListView(
           children: [
-            _buildMainProductsWidget(model.mainProducts),
+            _buildMainProductsWidget(),
             SizedBox(
               height: 10,
             ),
@@ -44,8 +43,8 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildMainProductsWidget(List<Product> products) {
-    return MyCarousel();
+  Widget _buildMainProductsWidget() {
+    return MainProductsCarousel();
   }
 
   Widget _buildBrandsWidget(BuildContext context, List<Brand> brands) {

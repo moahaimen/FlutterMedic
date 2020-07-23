@@ -5,17 +5,16 @@ import 'package:scoped_model/scoped_model.dart';
 import '../models/product.dart';
 import '../utils/state.dart';
 
-class MyCarousel extends StatefulWidget {
+class MainProductsCarousel extends StatefulWidget {
   @override
-  _CarouselState createState() => _CarouselState();
+  _MainProductsCarouselState createState() => _MainProductsCarouselState();
 }
 
-class _CarouselState extends State<MyCarousel> {
+class _MainProductsCarouselState extends State<MainProductsCarousel> {
   @override
   Widget build(BuildContext context) {
     final model = ScopedModel.of<StateModel>(context);
     final themeData = Theme.of(context);
-    final List<Product> products = model.products;
 
     if (model.productsLoading) {
       return Container(
@@ -29,14 +28,16 @@ class _CarouselState extends State<MyCarousel> {
       );
     }
 
-    if (model.products == null || model.products.length == 0) {
+    final List<Product> products = model.mainProducts;
+
+    if (products == null || products.length == 0) {
       return Container(
         width: double.infinity,
         height: 200,
         child: Card(
           child: Center(
             child: Text(
-              "Products List is Empty",
+              "No Products to Show",
             ),
           ),
         ),
@@ -48,17 +49,14 @@ class _CarouselState extends State<MyCarousel> {
         width: 350.0,
         child: Carousel(
           images: products
-              .map((p) =>
-              Image.network(
-                p.image.url,
-                fit: BoxFit.fitWidth,
-              ))
+              .map((p) => Image.network(
+                    p.image.url,
+                    fit: BoxFit.fitWidth,
+                  ))
               .toList(),
           dotSize: 4.0,
           dotSpacing: 15.0,
-          dotColor: Theme
-              .of(context)
-              .accentColor,
+          dotColor: Theme.of(context).accentColor,
           indicatorBgPadding: 5.0,
           dotBgColor: Colors.transparent,
           borderRadius: true,

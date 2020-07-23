@@ -145,6 +145,7 @@ class _CartState extends State<Cart> {
         state.postOrder().then((ok) {
           if (ok) {
             Toast.show('Order submitted succesfully', context);
+            currentStep = 0;
             Navigator.of(context)
                 .pushReplacementNamed(Router.home, arguments: PageId.Home);
             return;

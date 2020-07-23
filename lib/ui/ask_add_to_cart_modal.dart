@@ -1,4 +1,3 @@
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
@@ -93,9 +92,12 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
   }
 
   void _ok() async {
-    await ScopedModel.of<StateModel>(context).addProductToOrder(
-        this._orderProduct);
-    Toast.show('Item added suucessfully', context,);
+    await ScopedModel.of<StateModel>(context)
+        .addProductToOrder(this._orderProduct);
+    Toast.show(
+      'Item added suucessfully',
+      context,
+    );
     Navigator.of(context).pop();
   }
 

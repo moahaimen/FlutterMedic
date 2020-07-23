@@ -75,6 +75,7 @@ class CartProductsList extends StatelessWidget {
 
     return ListView.separated(
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       separatorBuilder: (BuildContext context, int index) => Divider(),
       itemBuilder: (BuildContext context, int index) =>
       index == products.length
