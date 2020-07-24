@@ -57,7 +57,7 @@ class StateModel extends Model {
   List<Product> get products => List.from(this._products);
 
   List<Product> get mainProducts =>
-      List.from(this._products.where((e) => e.isMain));
+      List.from(this._products.where((e) => e.isMain).take(5));
 
   ///
   /// Cart Management
@@ -272,7 +272,7 @@ class StateModel extends Model {
   ///
   Future<void> setOrderProductQuantity(int productId, int quantity) async {
     final item =
-    this._order.products.firstWhere((e) => e.product.id == productId);
+        this._order.products.firstWhere((e) => e.product.id == productId);
     item?.quantity = quantity;
     await this.persistOrder();
     notifyListeners();
@@ -336,9 +336,9 @@ class StateModel extends Model {
   Future<Map<String, dynamic>> verifyPromoCodeActivation(
       String promoCode) async {
     final String url =
-    DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
+        DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
     return Http.get(url).then(
-          (response) {
+      (response) {
         if (response != null) {
           return response as Map<String, dynamic>;
         }

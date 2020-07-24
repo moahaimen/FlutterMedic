@@ -30,15 +30,18 @@ class ProductListItemState extends State<ProductListItem> {
         child: Column(
           children: [
             Expanded(
-              child: this.product.image != null ? Image.network(
-                this.product.image.url,
-                fit: BoxFit.fill,
-                scale: .75,
-              ) :
-              Center(child: Text("NO ATTACHMENENTS", style: Theme
-                  .of(context)
-                  .textTheme
-                  .caption,),),
+              child: this.product.image != null
+                  ? Image.network(
+                      this.product.image.url,
+                      fit: BoxFit.fill,
+                      width: 200,
+                    )
+                  : Center(
+                      child: Text(
+                        "No Attachments",
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
             ),
             Text(this.product.title),
             Text(this.product.price.toString()),

@@ -17,8 +17,8 @@ class BrandListItem extends StatelessWidget {
             Expanded(
               child: Image.network(
                 this.brand.photoUrl,
-                fit: BoxFit.fitWidth,
-                height: 200,
+                fit: BoxFit.fill,
+                width: 150,
               ),
             ),
             Text(this.brand.title),

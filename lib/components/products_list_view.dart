@@ -51,7 +51,6 @@ class ProductsListView extends StatelessWidget {
     // Recheck  after filtering
     if (products.length == 0) {
       return Container(
-        height: 300,
         child: Center(
           child: Text("Products List is Empty"),
         ),
@@ -62,11 +61,11 @@ class ProductsListView extends StatelessWidget {
       child: GridView.count(
         shrinkWrap: true,
         physics: physics,
-        childAspectRatio: 2 / 3,
+        childAspectRatio: 3 / 4,
         crossAxisCount: _columnCount,
         children: List.generate(
           products.length,
-              (int index) {
+          (int index) {
             return AnimationConfiguration.staggeredGrid(
               position: index,
               duration: const Duration(milliseconds: 375),
