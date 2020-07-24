@@ -10,9 +10,10 @@ class PushNotificationsManager {
   //
   // Local notifications plugin channel details
   //
-  static String id;
-  static String name;
-  static String description;
+  static int notificationsCounter = 0;
+  static String id = 'notidication00';
+  static String name = 'drugsStore';
+  static String description = 'drugsStore';
 
   //
   //
@@ -55,7 +56,8 @@ class PushNotificationsManager {
   //
   //
   //
-  static Future<dynamic> backgroundMessageHandler(Map<String, dynamic> message) {
+  static Future<dynamic> backgroundMessageHandler(
+      Map<String, dynamic> message) {
     if (message.containsKey('data')) {
       // Handle data message
       final dynamic data = message['data'];
@@ -74,7 +76,7 @@ class PushNotificationsManager {
   BuildContext context;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin _plugin =
-  new FlutterLocalNotificationsPlugin();
+      new FlutterLocalNotificationsPlugin();
 
   PushNotificationsManager({this.context}) {
     _initLocalNotificationsPlugin();
@@ -83,7 +85,7 @@ class PushNotificationsManager {
 
   void _initLocalNotificationsPlugin() {
     var androidSettings =
-    new AndroidInitializationSettings('notification_icon');
+        new AndroidInitializationSettings('notification_icon');
 
     var iOSSettings = new IOSInitializationSettings(
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
@@ -162,30 +164,42 @@ class PushNotificationsManager {
     }
   }
 
-  Future _showNotification(Map<String, dynamic> message) async {
+  Future<void> _showNotification(Map<String, dynamic> message) async {
     final notification = parseMessage(message);
 
-    var androidChannelDetails = new AndroidNotificationDetails(
-        id, name, description,
-        importance: Importance.Max, priority: Priority.High);
-    var iOSChannelDetails = new IOSNotificationDetails();
-    var channelSpecifics =
-    new NotificationDetails(androidChannelDetails, iOSChannelDetails);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      id,
+      name,
+      description,
+      importance: Importance.Max,
+      priority: Priority.High,
+      ticker: 'ticker',
+    );
+
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
     await _plugin.show(
-        0, notification.title, notification.description, channelSpecifics);
+      notificationsCounter++,
+      notification.title,
+      notification.description,
+      platformChannelSpecifics,
+      payload: notification.route,
+    );
   }
 
   Future onSelectNotification(String payload) async {
     Navigator.pushNamed(context, Router.home);
   }
 
-  Future onDidReceiveLocalNotification(int id, String title, String body,
-      String payload) async {
+  Future onDidReceiveLocalNotification(
+      int id, String title, String body, String payload) async {
     // display a dialog with the notification details, tap ok to go to another page
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
-      new AlertDialog(
+      builder: (BuildContext context) => new AlertDialog(
         title: new Text(title),
         content: new Text(body),
         actions: [
