@@ -57,26 +57,29 @@ class ProductsListView extends StatelessWidget {
       );
     }
 
-    return AnimationLimiter(
-      child: GridView.count(
-        shrinkWrap: true,
-        physics: physics,
-        childAspectRatio: 3 / 4,
-        crossAxisCount: _columnCount,
-        children: List.generate(
-          products.length,
-          (int index) {
-            return AnimationConfiguration.staggeredGrid(
-              position: index,
-              duration: const Duration(milliseconds: 375),
-              columnCount: _columnCount,
-              child: ScaleAnimation(
-                child: FadeInAnimation(
-                  child: ProductListItem(product: products[index]),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: AnimationLimiter(
+        child: GridView.count(
+          shrinkWrap: true,
+          physics: physics,
+          childAspectRatio: 2 / 3,
+          crossAxisCount: _columnCount,
+          children: List.generate(
+            products.length,
+            (int index) {
+              return AnimationConfiguration.staggeredGrid(
+                position: index,
+                duration: const Duration(milliseconds: 375),
+                columnCount: _columnCount,
+                child: ScaleAnimation(
+                  child: FadeInAnimation(
+                    child: ProductListItem(product: products[index]),
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

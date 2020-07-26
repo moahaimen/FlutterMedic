@@ -22,23 +22,27 @@ class BrandsListView extends StatelessWidget {
       );
     }
 
-    return AnimationLimiter(
-      child: GridView.count(
-        crossAxisCount: _columnCount,
-        children: List.generate(
-          brands.length,
-              (int index) {
-            return AnimationConfiguration.staggeredGrid(
-              position: index,
-              duration: const Duration(milliseconds: 375),
-              columnCount: _columnCount,
-              child: ScaleAnimation(
-                child: FadeInAnimation(
-                  child: BrandListItem(brand: brands[index]),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: AnimationLimiter(
+        child: GridView.count(
+          crossAxisCount: _columnCount,
+          childAspectRatio: 5 / 6,
+          children: List.generate(
+            brands.length,
+            (int index) {
+              return AnimationConfiguration.staggeredGrid(
+                position: index,
+                duration: const Duration(milliseconds: 375),
+                columnCount: _columnCount,
+                child: ScaleAnimation(
+                  child: FadeInAnimation(
+                    child: BrandListItem(brand: brands[index]),
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

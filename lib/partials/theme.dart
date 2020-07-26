@@ -12,9 +12,8 @@ class ThemeBuilder {
     return ThemeData(
       primaryColor: primaryColor,
       primaryColorDark: primaryColorDark,
-      colorScheme: ColorScheme.light().copyWith(
-          primary: primaryColor,
-          primaryVariant: primaryColorDark),
+      colorScheme: ColorScheme.light()
+          .copyWith(primary: primaryColor, primaryVariant: primaryColorDark),
       accentColor: accentColor,
       canvasColor: secondaryColor,
       appBarTheme: AppBarTheme(

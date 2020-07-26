@@ -55,6 +55,7 @@ class _CategorizedProductsListViewState
                                 () => this.tapped = categories[index]))),
               ),
               Container(
+                color: Color(0xffefefef),
                 child: ProductsListView(
                   filter: {'category': this.tapped, 'home': true},
                   physics: NeverScrollableScrollPhysics(),

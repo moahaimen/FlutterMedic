@@ -27,28 +27,38 @@ class ProductListItemState extends State<ProductListItem> {
     return GestureDetector(
       key: new ValueKey(this.product.id),
       child: Card(
-        child: Column(
-          children: [
-            Expanded(
-              child: this.product.image != null
-                  ? Image.network(
-                      this.product.image.url,
-                      fit: BoxFit.fill,
-                      width: 200,
-                    )
-                  : Center(
-                      child: Text(
-                        "No Attachments",
-                        style: Theme.of(context).textTheme.caption,
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Container(
+          child: Column(
+            children: [
+              Expanded(
+                child: this.product.image != null
+                    ? Image.network(
+                        this.product.image.url,
+                        alignment: Alignment.center,
+                        fit: BoxFit.fill,
+                        width: 200,
+                      )
+                    : Center(
+                        child: Text(
+                          "No Attachments",
+                          style: Theme.of(context).textTheme.caption,
+                        ),
                       ),
-                    ),
-            ),
-            Text(this.product.title),
-            Text(this.product.price.toString()),
-            AddToCartButton(
-              id: this.product.id,
-            ),
-          ],
+              ),
+              Text(this.product.title),
+              Text(
+                "${this.product.price.toString()} \$",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText2
+                    .copyWith(color: Colors.red),
+              ),
+              AddToCartButton(
+                id: this.product.id,
+              ),
+            ],
+          ),
         ),
         borderOnForeground: true,
       ),

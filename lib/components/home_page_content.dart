@@ -1,3 +1,4 @@
+import 'package:drugStore/components/brand_list_home_item.dart';
 import 'package:drugStore/pages/home_page.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/ui/main_products_carousel.dart';
@@ -49,37 +50,30 @@ class HomePageContent extends StatelessWidget {
 
   Widget _buildBrandsWidget(BuildContext context, List<Brand> brands) {
     return Container(
-      height: 150.0,
+      height: 200.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: brands
-            .map<Widget>((e) =>
-            Container(
-              width: 150,
-              height: 150,
-              child: BrandListItem(brand: e),
-            ))
-            .toList(),
+        children:
+            brands.map<Widget>((e) => BrandListHomeItem(brand: e)).toList(),
       ),
     );
   }
 
-  Widget _buildCategoriesWidget(BuildContext context,
-      List<Category> categories) {
+  Widget _buildCategoriesWidget(
+      BuildContext context, List<Category> categories) {
     return Container(
       color: Colors.white,
       height: 150.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length + 1,
-        itemBuilder: (BuildContext context, int index) =>
-            Container(
-              width: 150,
-              height: 150,
-              child: index == 0
-                  ? _buildWatchAllCategoriesWidget(context)
-                  : CategoryListItem(category: categories[index - 1]),
-            ),
+        itemBuilder: (BuildContext context, int index) => Container(
+          width: 100,
+          height: 100,
+          child: index == 0
+              ? _buildWatchAllCategoriesWidget(context)
+              : CategoryListItem(category: categories[index - 1]),
+        ),
       ),
     );
   }
@@ -103,11 +97,10 @@ class HomePageContent extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () =>
-          Navigator.of(context).pushReplacementNamed(
-            Router.home,
-            arguments: PageId.Categories,
-          ),
+      onTap: () => Navigator.of(context).pushReplacementNamed(
+        Router.home,
+        arguments: PageId.Categories,
+      ),
     );
   }
 }
