@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
@@ -34,18 +35,19 @@ class ProductListItemState extends State<ProductListItem> {
             children: [
               Expanded(
                 child: this.product.image != null
-                    ? Image.network(
-                  this.product.image.url,
-                  alignment: Alignment.center,
-                  fit: BoxFit.fill,
-                  width: 200,
-                )
+                    ? CachedNetworkImage(
+                        imageUrl: this.product.image.url,
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        alignment: Alignment.center,
+                        fit: BoxFit.fill,
+                        width: 200,
+                      )
                     : Center(
-                  child: Text(
-                    AppTranslations.of(context).text("attachments_empty"),
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ),
+                        child: Text(
+                          AppTranslations.of(context).text("attachments_empty"),
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ),
               ),
               Text(this.product.getTitle(context)),
               Text(

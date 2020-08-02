@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:flutter/material.dart';
 
@@ -24,8 +25,9 @@ class BrandListHomeItem extends StatelessWidget {
                     width: .5, color: Theme.of(context).primaryColorDark)),
             child: Column(
               children: [
-                Image.network(
-                  this.brand.photoUrl,
+                CachedNetworkImage(
+                  imageUrl: this.brand.photoUrl,
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                   fit: BoxFit.fitWidth,
                   height: 120,
                 ),

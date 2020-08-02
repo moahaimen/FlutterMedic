@@ -19,8 +19,8 @@ class CartClientInformation extends StatefulWidget {
 }
 
 class _CartClientInformationState extends State<CartClientInformation> {
-  static String _validator(AppTranslations translator, String value,
-      String regex, int min, int max,
+  static String _validator(
+      AppTranslations translator, String value, String regex, int min, int max,
       {bool required = true}) {
     if (required == true && value.isEmpty) {
       return translator.text('required_field');
@@ -35,7 +35,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
     }
   }
 
-  static Widget _buildFormField(String title,
+  static Widget _buildFormField(
+      String title,
       String initialValue,
       void Function(String value) saver,
       String Function(String value) validator,
@@ -75,27 +76,26 @@ class _CartClientInformationState extends State<CartClientInformation> {
     );
   }
 
-  static Future<Province> showProvincesModel(BuildContext context,
-      List<Province> provinces, String title) async {
+  static Future<Province> showProvincesModel(
+      BuildContext context, List<Province> provinces, String title) async {
     return showDialog<Province>(
       context: context,
-      builder: (BuildContext context) =>
-          SimpleDialog(
-            title: Text(title),
-            children: provinces
-                .map((e) =>
-                SimpleDialogOption(
+      builder: (BuildContext context) => SimpleDialog(
+        title: Text(title),
+        children: provinces
+            .map((e) => SimpleDialogOption(
                   onPressed: () {
                     Navigator.pop(context, e);
                   },
                   child: Text(e.getName(context)),
                 ))
-                .toList(),
-          ),
+            .toList(),
+      ),
     );
   }
 
-  static Widget _buildProvinceField(String title,
+  static Widget _buildProvinceField(
+      String title,
       String initialValue,
       void Function(int value) saver,
       BuildContext context,
@@ -117,6 +117,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 borderRadius: BorderRadius.circular(15)),
             padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
             child: TextFormField(
+              readOnly: true,
               controller: controller,
               minLines: 1,
               maxLines: 1,
@@ -129,14 +130,17 @@ class _CartClientInformationState extends State<CartClientInformation> {
               textAlignVertical: TextAlignVertical.center,
               textInputAction: TextInputAction.done,
               autovalidate: true,
-              validator: (String value) {
-                if (value == null || value.isEmpty) {
+              validator: (String v) {
+                if (v == null || v.isEmpty) {
                   return translator.text('required_field');
-                } else if (provinces.indexWhere((e) => e.enName == value) ==
-                    -1) {
-                  return translator.text('province_must_be_valid');
                 } else {
-                  return null;
+                  final index = provinces
+                      .indexWhere((e) => e.enName == v || e.arName == v);
+                  if (index < 0 || index >= provinces.length) {
+                    return translator.text('province_must_be_valid');
+                  } else {
+                    return null;
+                  }
                 }
               },
 //              onSaved: saver,
@@ -206,24 +210,23 @@ class _CartClientInformationState extends State<CartClientInformation> {
             _buildFormField(
                 translator.text('order_client_name'),
                 data['name'],
-                    (value) => data['name'] = value,
-                    (value) => _validator(translator, value, null, 3, 32),
+                (value) => data['name'] = value,
+                (value) => _validator(translator, value, null, 3, 32),
                 theme.accentColor),
             // Phone
             _buildFormField(
                 translator.text('order_client_phone'),
                 data['phone'],
-                    (value) => data['phone'] = value,
-                    (value) =>
-                    _validator(translator, value, r'^[0-9]+$', 14, 14),
+                (value) => data['phone'] = value,
+                (value) => _validator(translator, value, r'^[0-9]+$', 14, 14),
                 theme.accentColor),
             // Province
             _buildProvinceField(
               translator.text('order_client_province'),
               getProvinceOrDefault(data['province']),
-                  (int value) {
+              (int value) {
                 data['province'] = value;
-//                state.setOrderClientProvince(value);
+                state.setOrderClientProvince(value);
               },
               context,
               state.provinces,
@@ -234,19 +237,15 @@ class _CartClientInformationState extends State<CartClientInformation> {
             _buildFormField(
                 translator.text('order_client_address'),
                 data['address'],
-                    (value) => data['address'] = value,
-                    (value) =>
-                    _validator(
-                        translator, value, r'^[A-Za-z0-9 ,-_]+$', 12, 64),
+                (value) => data['address'] = value,
+                (value) => _validator(translator, value, null, 12, 64),
                 theme.accentColor),
             _buildFormField(
                 translator.text('order_client_notes'),
                 data['notes'],
-                    (value) => data['notes'] = value,
-                    (value) =>
-                    _validator(
-                        translator, value, r'^[A-Za-z0-9 أ-ي]+$', 0, 300,
-                        required: false),
+                (value) => data['notes'] = value,
+                (value) => _validator(translator, value, null, 0, 300,
+                    required: false),
                 theme.accentColor),
             // Summary
             _buildOrderSummaryWidget(
@@ -259,19 +258,16 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
   String getProvinceOrDefault(int provinceId) {
     if (provinceId == null) {
-      print("Province id is null");
       return '';
     }
 
     final province =
-    state.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+        state.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
 
     if (province == null) {
-      print("Province id doesnot mtach");
       return '';
     }
 
-    print("Province matched");
     return province.getName(context);
   }
 }

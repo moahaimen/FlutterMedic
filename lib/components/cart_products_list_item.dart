@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drugStore/models/order_product.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,9 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Card(
-        child: Image.network(
-          item.product.image.url,
+        child: CachedNetworkImage(
+          imageUrl: item.product.image.url,
+          errorWidget: (context, url, error) => Icon(Icons.error),
           width: 50.0,
           height: 50.0,
           fit: BoxFit.fill,
@@ -39,19 +41,15 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
           Expanded(
             child: Text(
               item.product.getTitle(context),
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyText1,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
           ScopedModelDescendant<StateModel>(
             builder: (BuildContext context, Widget child, StateModel model) =>
                 IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () =>
-                      model.removeProductFromOrder(item.product.id),
-                ),
+              icon: Icon(Icons.close),
+              onPressed: () => model.removeProductFromOrder(item.product.id),
+            ),
           ),
         ],
       ),

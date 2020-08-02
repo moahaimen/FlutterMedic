@@ -1,6 +1,9 @@
 import 'package:badges/badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_pro/carousel_pro.dart';
 import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/attachment.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/utils/state.dart';
@@ -27,6 +30,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final translator = AppTranslations.of(context);
 
     return CustomScrollView(
@@ -48,36 +52,26 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
               StretchMode.blurBackground,
               StretchMode.fadeTitle,
             ],
-            background: _buildAttachmentsList(),
+            background: _buildAttachmentsList(theme),
           ),
           actions: [
-            IconButton(
-              padding: EdgeInsets.all(5),
-              icon: Icon(
-                Icons.share,
-                size: 30,
-              ),
-              onPressed: () => _shareProduct(translator),
-            ),
             ScopedModelDescendant<StateModel>(
               builder: (BuildContext context, Widget child, StateModel model) =>
                   Badge(
-                    badgeColor: Colors.lightGreen,
-                    position: BadgePosition(bottom: 5, left: 5),
-                    shape: BadgeShape.circle,
-                    borderRadius: 5,
-                    child: IconButton(
-                        color: Theme
-                            .of(context)
-                            .accentColor,
-                        icon: Icon(Icons.shopping_cart, size: 30),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed(Router.cart)),
-                    badgeContent: Text(
-                      model.orderItemsCount,
-                      style: TextStyle(fontSize: 8),
-                    ),
-                  ),
+                badgeColor: Colors.lightGreen,
+                position: BadgePosition(bottom: 5, left: 5),
+                shape: BadgeShape.circle,
+                borderRadius: 5,
+                child: IconButton(
+                    color: theme.accentColor,
+                    icon: Icon(Icons.shopping_cart, size: 30),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(Router.cart)),
+                badgeContent: Text(
+                  model.orderItemsCount,
+                  style: TextStyle(fontSize: 8),
+                ),
+              ),
             )
           ],
         ),
@@ -93,41 +87,62 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                 product.category.getName(context)),
             _buildSliverListItem(
                 translator.text('product_price'), product.price.toString()),
-            _buildAddToCartButton(),
+            _buildProductOptions(translator),
           ]),
         ),
       ],
     );
   }
 
-  Widget _buildAddToCartButton() {
-    return Container(
+  Widget _buildProductOptions(AppTranslations translator) {
+    return Card(
+      shadowColor: Colors.white30,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
       color: Colors.white,
       child: ListTile(
-        title: AddToCartButton(
-          id: this.product.id,
+        title: Row(
+          children: [
+            Expanded(
+              child: AddToCartButton(
+                id: this.product.id,
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: RaisedButton.icon(
+                label: Text(translator.text('share')),
+                icon: Icon(Icons.share, size: 30),
+                onPressed: () => _shareProduct(translator),
+                color: Colors.red,
+                textColor: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildAttachmentsList() {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      physics: PageScrollPhysics(),
-      itemCount: this.product.attachments.length,
-      itemBuilder: (BuildContext context, int index) =>
-          Container(
-            color: Colors.white,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            child: Image.network(this.product.attachments[index].url,
-                fit: BoxFit.contain),
-          ),
+  Widget _buildAttachmentsList(ThemeData theme) {
+    return Container(
+      child: Carousel(
+        images: this
+            .product
+            .attachments
+            .where((a) => a.type == AttachmentType.Image)
+            .map((img) => CachedNetworkImage(
+                  imageUrl: img.url,
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  fit: BoxFit.contain,
+                ))
+            .toList(),
+        dotSize: 4.0,
+        dotSpacing: 15.0,
+        dotColor: theme.accentColor,
+        indicatorBgPadding: 5.0,
+        dotBgColor: Colors.transparent,
+        borderRadius: true,
+      ),
     );
   }
 
@@ -145,9 +160,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         title: Text(content),
         subtitle: Text(title,
             style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .accentColor, fontSize: 15.0)),
+                color: Theme.of(context).accentColor, fontSize: 15.0)),
       ),
     );
   }
@@ -155,8 +168,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
   void _shareProduct(AppTranslations translator) {
     final RenderBox box = context.findRenderObject();
     Share.share(
-        "${translator.text('share_product_message')} ${product.getName(
-            context)} ${Strings.downloadUrl}",
+        "${translator.text('share_product_message')} ${product.getName(context)} ${Strings.downloadUrl}",
         subject: Strings.applicationTitle,
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }

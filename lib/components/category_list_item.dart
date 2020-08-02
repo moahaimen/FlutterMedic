@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +20,9 @@ class CategoryListItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
-              child: Image.network(
-                this.category.icon.url,
+              child: CachedNetworkImage(
+                imageUrl: this.category.icon.url,
+                errorWidget: (context, url, error) => Icon(Icons.error),
                 width: 50,
                 height: 50,
               ),

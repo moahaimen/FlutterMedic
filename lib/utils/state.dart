@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drugStore/localization/application.dart';
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
@@ -244,6 +245,18 @@ class StateModel extends Model {
     });
   }
 
+  //
+  // If the current language 'en' then change to 'ar' and vice versa
+  //
+  Future<void> toggleLanguage() async {
+    final String current = this._settings['locale'];
+
+    this._settings['locale'] = current == 'en' ? 'ar' : 'en';
+    this
+        .setSettings(this._settings)
+        .then((value) => application.setLocale(settings['locale']));
+  }
+
   ///
   /// Fetch list of brands
   ///
@@ -341,7 +354,7 @@ class StateModel extends Model {
     this.notifyListeners();
 
     final base64 =
-    base64Encode(utf8.encode(jsonEncode(this._order.toJson(true))));
+        base64Encode(utf8.encode(jsonEncode(this._order.toJson(true))));
 
     return Http.get("${DotEnv().env['postOrderUrl']}?o=$base64")
         .then((dynamic response) {
@@ -407,7 +420,7 @@ class StateModel extends Model {
   ///
   Future<void> setOrderProductQuantity(int productId, int quantity) async {
     final item =
-    this._order.products.firstWhere((e) => e.product.id == productId);
+        this._order.products.firstWhere((e) => e.product.id == productId);
     item?.quantity = quantity;
     await this.persistOrder();
     notifyListeners();
@@ -437,7 +450,7 @@ class StateModel extends Model {
   ///
   Future<bool> setPromoCode(String promoCode) async {
     final String url =
-    DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
+        DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
     return Http.get(url).then((response) async {
       if (response == null) {
         this._order.promoCode = null;
@@ -481,7 +494,7 @@ class StateModel extends Model {
     }
 
     final province =
-    this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+        this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
 
     this._order.client.province = province;
     notifyListeners();

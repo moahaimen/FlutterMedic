@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:flutter/material.dart';
@@ -50,11 +51,11 @@ class _MainProductsCarouselState extends State<MainProductsCarousel> {
       height: height,
       child: Carousel(
         images: products
-            .map((p) =>
-            Image.network(
-              p.image.url,
-              fit: BoxFit.fitWidth,
-            ))
+            .map((p) => CachedNetworkImage(
+                  imageUrl: p.image.url,
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  fit: BoxFit.fitWidth,
+                ))
             .toList(),
         dotSize: 4.0,
         dotSpacing: 15.0,

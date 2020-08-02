@@ -11,7 +11,8 @@ class OrderClient {
     return new OrderClient(
         name: data['name'],
         phone: data['phone'],
-        province: state.provinces.firstWhere((e) => e.id == data['province']),
+        province: state.provinces
+            .firstWhere((e) => e.id == data['province'], orElse: () => null),
         address: data['address'],
         notes: data['note'],
         userId: data['user_id']);
