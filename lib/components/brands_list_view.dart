@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -9,7 +10,8 @@ import 'brand_list_item.dart';
 class BrandsListView extends StatelessWidget {
   final int _columnCount = 3;
 
-  Widget _buildBrandsList(bool loading, List<Brand> brands) {
+  Widget _buildBrandsList(BuildContext context, bool loading,
+      List<Brand> brands) {
     if (loading) {
       return Center(
         child: CircularProgressIndicator(),
@@ -18,7 +20,7 @@ class BrandsListView extends StatelessWidget {
 
     if (brands == null || brands.length == 0) {
       return Center(
-        child: Text("Brands List is Empty"),
+        child: Text(AppTranslations.of(context).text("brands_list_empty")),
       );
     }
 
@@ -30,7 +32,7 @@ class BrandsListView extends StatelessWidget {
           childAspectRatio: 5 / 6,
           children: List.generate(
             brands.length,
-            (int index) {
+                (int index) {
               return AnimationConfiguration.staggeredGrid(
                 position: index,
                 duration: const Duration(milliseconds: 375),
@@ -56,7 +58,7 @@ class BrandsListView extends StatelessWidget {
           onRefresh: () {
             return model.fetchBrands();
           },
-          child: _buildBrandsList(model.brandsLoading, model.brands),
+          child: _buildBrandsList(context, model.brandsLoading, model.brands),
         );
       },
     );

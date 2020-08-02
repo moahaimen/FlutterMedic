@@ -1,4 +1,5 @@
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -11,15 +12,18 @@ class MainProductsCarousel extends StatefulWidget {
 }
 
 class _MainProductsCarouselState extends State<MainProductsCarousel> {
+  final double height = 200.0;
+
   @override
   Widget build(BuildContext context) {
     final model = ScopedModel.of<StateModel>(context);
     final themeData = Theme.of(context);
+    final translator = AppTranslations.of(context);
 
     if (model.productsLoading) {
       return Container(
         width: double.infinity,
-        height: 200,
+        height: height,
         child: Center(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation(themeData.accentColor),
@@ -33,35 +37,32 @@ class _MainProductsCarouselState extends State<MainProductsCarousel> {
     if (products == null || products.length == 0) {
       return Container(
         width: double.infinity,
-        height: 200,
+        height: height,
         child: Card(
           child: Center(
-            child: Text(
-              "No Products to Show",
-            ),
+            child: Text(translator.text("products_list_empty")),
           ),
         ),
       );
     }
 
     return SizedBox(
-        height: 200.0,
-        width: 350.0,
-        child: Carousel(
-          images: products
-              .map((p) => Image.network(
-                    p.image.url,
-                    fit: BoxFit.fitWidth,
-                  ))
-              .toList(),
-          dotSize: 4.0,
-          dotSpacing: 15.0,
-          dotColor: Theme.of(context).accentColor,
-          indicatorBgPadding: 5.0,
-          dotBgColor: Colors.transparent,
-          borderRadius: true,
-          moveIndicatorFromBottom: 180.0,
-          noRadiusForIndicator: true,
-        ));
+      height: height,
+      child: Carousel(
+        images: products
+            .map((p) =>
+            Image.network(
+              p.image.url,
+              fit: BoxFit.fitWidth,
+            ))
+            .toList(),
+        dotSize: 4.0,
+        dotSpacing: 15.0,
+        dotColor: themeData.accentColor,
+        indicatorBgPadding: 5.0,
+        dotBgColor: Colors.transparent,
+        borderRadius: true,
+      ),
+    );
   }
 }

@@ -52,7 +52,6 @@ class Http {
   }
 
   static void _onError(dynamic err) {
-    print("Hello");
     print(err);
   }
 }

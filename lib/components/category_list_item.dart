@@ -26,7 +26,7 @@ class CategoryListItem extends StatelessWidget {
               ),
             ),
             Text(
-              this.category.title,
+              this.category.getTitle(context),
               textAlign: TextAlign.center,
             ),
           ],

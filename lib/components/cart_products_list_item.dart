@@ -33,11 +33,25 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
           fit: BoxFit.fill,
         ),
       ),
-      title: Row(
+      title: Flex(
+        direction: Axis.horizontal,
         children: [
-          Text(
-            item.product.title,
-            style: Theme.of(context).textTheme.bodyText1,
+          Expanded(
+            child: Text(
+              item.product.getTitle(context),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyText1,
+            ),
+          ),
+          ScopedModelDescendant<StateModel>(
+            builder: (BuildContext context, Widget child, StateModel model) =>
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () =>
+                      model.removeProductFromOrder(item.product.id),
+                ),
           ),
         ],
       ),

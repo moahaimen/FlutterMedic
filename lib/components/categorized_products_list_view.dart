@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -35,25 +36,31 @@ class _CategorizedProductsListViewState
             children: [
               Center(
                 child: Text(
-                  "browse our products".toUpperCase(),
+                  AppTranslations.of(context)
+                      .text("browse_our_products")
+                      .toUpperCase(),
                   style: theme.textTheme.headline2
                       .copyWith(color: theme.accentColor),
                 ),
               ),
+              SizedBox(height: 10),
               Container(
-                height: 50,
+                height: 30,
                 color: Colors.white,
-                child: ListView.builder(
+                child: ListView.separated(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     itemCount: categories.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        SizedBox(width: 6),
                     itemBuilder: (BuildContext context, int index) =>
                         FlatButton(
                             textColor: theme.accentColor,
-                            child: Text(categories[index].name),
+                            child: Text(categories[index].getName(context)),
                             onPressed: () => setState(
-                                () => this.tapped = categories[index]))),
+                                    () => this.tapped = categories[index]))),
               ),
+              SizedBox(height: 10),
               Container(
                 color: Color(0xffefefef),
                 child: ProductsListView(

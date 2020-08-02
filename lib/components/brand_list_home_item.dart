@@ -35,7 +35,7 @@ class BrandListHomeItem extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    this.brand.title,
+                    this.brand.getTitle(context),
                     textAlign: TextAlign.center,
                   ),
                 ),

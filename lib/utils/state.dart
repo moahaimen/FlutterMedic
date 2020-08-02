@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
+import 'package:drugStore/models/order_promo_code.dart';
+import 'package:drugStore/models/province.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +15,40 @@ import '../models/product.dart';
 import 'http.dart';
 
 class StateModel extends Model {
+  //
+  // Provinces
+  //
+  bool _provincesLoading = false;
+  List<Province> _provinces;
+
+  bool get provincesLoading => this._provincesLoading;
+
+  List<Province> get provinces => List.from(this._provinces);
+
+  //
+  // Contact Us
+  //
+  bool _contactUsLoading = false;
+  Map<String, dynamic> _contactUs;
+
+  bool get contactUsLoading => this._contactUsLoading;
+
+  Map<String, dynamic> get contactUs => Map.from(_contactUs);
+
+  //
+  // Settings
+  //
+  bool _settingsLoading = false;
+  final Map<String, dynamic> _defaultSettings = {
+    'locale': 'ar',
+    'notifications': true
+  };
+  Map<String, dynamic> _settings;
+
+  bool get settingsLoading => this._settingsLoading;
+
+  Map<String, dynamic> get settings => Map.from(_settings);
+
   //
   // Brands
   //
@@ -80,6 +116,7 @@ class StateModel extends Model {
     this._brands = [];
     this._categories = [];
     this._products = [];
+    this._provinces = [];
 
     this.fetchModelData();
   }
@@ -88,6 +125,65 @@ class StateModel extends Model {
     this.fetchBrands();
     this.fetchCategories();
     this.fetchProducts().then((value) => this.restoreStoredOrder());
+    this.loadSettings();
+    this.fetchContactUs();
+    this.fetchProvinces();
+  }
+
+  ///
+  /// Fetch contact us information
+  ///
+  Future<void> fetchContactUs() {
+    _contactUsLoading = true;
+    notifyListeners();
+
+    return Http.get(DotEnv().env['fetchContactUsUrl'])
+        .then((dynamic contactUs) {
+      if (contactUs == null) {
+        _contactUsLoading = false;
+        notifyListeners();
+        return;
+      }
+      final List<dynamic> xx = contactUs as List<dynamic>;
+      _contactUs = new Map();
+
+      xx.forEach((e) {
+        if (!_contactUs.containsKey(e['section'])) {
+          _contactUs[e['section']] = new Map();
+        }
+        _contactUs[e['section']][e['key']] = {
+          'en_value': e['en_value'],
+          'ar_value': e['ar_value'],
+          'url': e['url'],
+        };
+      });
+
+      _contactUsLoading = false;
+      notifyListeners();
+    });
+  }
+
+  ///
+  /// Fetch provinces list
+  ///
+  Future<void> fetchProvinces() {
+    _provincesLoading = true;
+    notifyListeners();
+
+    return Http.get(DotEnv().env['fetchProvincesUrl'])
+        .then((dynamic provinces) {
+      if (provinces == null) {
+        this._provincesLoading = false;
+        this.notifyListeners();
+        return;
+      }
+
+      this._provinces =
+          provinces.map<Province>((e) => Province.fromJson(e)).toList();
+
+      this._provincesLoading = false;
+      this.notifyListeners();
+    });
   }
 
   ///
@@ -114,6 +210,41 @@ class StateModel extends Model {
   }
 
   ///
+  /// Load settings from preferences
+  ///
+  Future<void> loadSettings() {
+    this._settingsLoading = true;
+    this.notifyListeners();
+
+    return SharedPreferences.getInstance().then((prefs) {
+      this._settings = prefs.getString('_settings') != null
+          ? json.decode(prefs.getString('_settings'))
+          : _defaultSettings;
+
+      this._settingsLoading = false;
+      this.notifyListeners();
+    });
+  }
+
+  ///
+  /// Upload settings from preferences
+  ///
+  Future<void> setSettings(Map<String, dynamic> newSettings) {
+    this._settingsLoading = true;
+    this.notifyListeners();
+
+    return SharedPreferences.getInstance().then((prefs) {
+      this._settings = newSettings;
+
+      final String value = json.encode(newSettings);
+      prefs.setString('_settings', value);
+
+      this._settingsLoading = false;
+      this.notifyListeners();
+    });
+  }
+
+  ///
   /// Fetch list of brands
   ///
   Future<void> fetchBrands() {
@@ -126,9 +257,7 @@ class StateModel extends Model {
         this.notifyListeners();
         return;
       }
-      this._brands = result
-          .map<Brand>((e) => new Brand(e['name'], e['attachment']['url']))
-          .toList();
+      this._brands = result.map<Brand>((e) => Brand.fromJson(e)).toList();
 
       this._brandsLoading = false;
       this.notifyListeners();
@@ -185,6 +314,7 @@ class StateModel extends Model {
     } else {
       this._order = Order(client: OrderClient.empty, products: []);
     }
+
     this._orderRestoring = false;
     notifyListeners();
   }
@@ -195,8 +325,12 @@ class StateModel extends Model {
   Future<void> persistOrder() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final orderString = jsonEncode(this._order.toJson());
-    return prefs.setString('_order', orderString);
+    final orderString = jsonEncode(this._order.toJson(false));
+    return prefs.setString('_order', orderString).then((ok) {
+      if (!ok) {
+        throw new Exception("Failed to save on Shared Prefrences");
+      }
+    });
   }
 
   ///
@@ -206,7 +340,8 @@ class StateModel extends Model {
     this._orderUploading = true;
     this.notifyListeners();
 
-    final base64 = base64Encode(utf8.encode(jsonEncode(this._order.toJson())));
+    final base64 =
+    base64Encode(utf8.encode(jsonEncode(this._order.toJson(true))));
 
     return Http.get("${DotEnv().env['postOrderUrl']}?o=$base64")
         .then((dynamic response) {
@@ -272,7 +407,7 @@ class StateModel extends Model {
   ///
   Future<void> setOrderProductQuantity(int productId, int quantity) async {
     final item =
-        this._order.products.firstWhere((e) => e.product.id == productId);
+    this._order.products.firstWhere((e) => e.product.id == productId);
     item?.quantity = quantity;
     await this.persistOrder();
     notifyListeners();
@@ -297,10 +432,36 @@ class StateModel extends Model {
     return this._order.client;
   }
 
-  Future<void> setOrderPromoCode(String promoCode) async {
-    this._order.promoCode = promoCode;
-    await this.persistOrder();
-    notifyListeners();
+  ///
+  /// Set order promo code after verify it's activation
+  ///
+  Future<bool> setPromoCode(String promoCode) async {
+    final String url =
+    DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
+    return Http.get(url).then((response) async {
+      if (response == null) {
+        this._order.promoCode = null;
+        notifyListeners();
+        return false;
+      }
+      final code = OrderPromoCode.fromJson(response as Map<String, dynamic>);
+      _order.promoCode = code;
+      _order.promoCode.valid = true;
+
+      await this.persistOrder();
+      notifyListeners();
+      return true;
+    });
+  }
+
+  ///
+  /// Get order promo code
+  ///
+  OrderPromoCode get orderPromoCode {
+    if (this._order == null || this._order.promoCode == null) {
+      throw new Exception("OrderDoesnotRestored");
+    }
+    return this._order.promoCode;
   }
 
   Future<void> clearOrder() async {
@@ -309,6 +470,22 @@ class StateModel extends Model {
     this._order = null;
 
     this.restoreStoredOrder();
+  }
+
+  ///
+  /// setOrderClientProvince
+  ///
+  Future<void> setOrderClientProvince(int provinceId) {
+    if (this._order == null || this._order.client == null) {
+      throw new Exception("OrderDoesnotRestored");
+    }
+
+    final province =
+    this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+
+    this._order.client.province = province;
+    notifyListeners();
+    return this.persistOrder();
   }
 
   ///
@@ -328,22 +505,5 @@ class StateModel extends Model {
         .toList()
         .reduce((value, e) => value + e)
         .toString();
-  }
-
-  ///
-  /// Verify promo code activation
-  ///
-  Future<Map<String, dynamic>> verifyPromoCodeActivation(
-      String promoCode) async {
-    final String url =
-        DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
-    return Http.get(url).then(
-      (response) {
-        if (response != null) {
-          return response as Map<String, dynamic>;
-        }
-        return null;
-      },
-    );
   }
 }

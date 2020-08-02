@@ -1,4 +1,5 @@
 import 'package:drugStore/components/product_list_item.dart';
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/product.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +18,13 @@ class _SearchPageState extends State<SearchPage> {
   SearchStatus _searchStatus = SearchStatus.Clean;
   List<Product> _result;
 
-  Widget _buildResultsList() {
+  Widget _buildResultsList(BuildContext context) {
+    final translator = AppTranslations.of(context);
+
     switch (_searchStatus) {
       case SearchStatus.Clean:
         Center(
-          child: Text("Search"),
+          child: Text(translator.text("search")),
         );
         break;
       case SearchStatus.Searching:
@@ -30,7 +33,7 @@ class _SearchPageState extends State<SearchPage> {
         );
       case SearchStatus.NoResult:
         return Center(
-          child: Text("No products matched the search key"),
+          child: Text(translator.text("search_empty_result")),
         );
       case SearchStatus.Result:
         final int columnCount = 2;
@@ -70,7 +73,7 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
       body: Center(
-        child: _buildResultsList(),
+        child: _buildResultsList(context),
       ),
     );
   }
@@ -90,7 +93,8 @@ class _SearchPageState extends State<SearchPage> {
     if (value != null && value.isNotEmpty) {
       products = products
           .where((element) =>
-              element.name.toLowerCase().contains(value.toLowerCase()))
+      element.enName.toLowerCase().contains(value.toLowerCase()) ||
+          element.arName.toLowerCase().contains(value.toLowerCase()))
           .toList();
     }
 

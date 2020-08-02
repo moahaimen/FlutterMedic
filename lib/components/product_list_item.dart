@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
 import 'package:flutter/material.dart';
@@ -34,19 +35,19 @@ class ProductListItemState extends State<ProductListItem> {
               Expanded(
                 child: this.product.image != null
                     ? Image.network(
-                        this.product.image.url,
-                        alignment: Alignment.center,
-                        fit: BoxFit.fill,
-                        width: 200,
-                      )
+                  this.product.image.url,
+                  alignment: Alignment.center,
+                  fit: BoxFit.fill,
+                  width: 200,
+                )
                     : Center(
-                        child: Text(
-                          "No Attachments",
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                      ),
+                  child: Text(
+                    AppTranslations.of(context).text("attachments_empty"),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
               ),
-              Text(this.product.title),
+              Text(this.product.getTitle(context)),
               Text(
                 "${this.product.price.toString()} \$",
                 style: Theme.of(context)

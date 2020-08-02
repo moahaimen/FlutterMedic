@@ -1,4 +1,6 @@
+import 'package:drugStore/pages/contact_us_page.dart';
 import 'package:drugStore/pages/search_page.dart';
+import 'package:drugStore/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/home_page.dart';
@@ -13,6 +15,8 @@ class Router {
 
   static const String index = '/';
   static const String home = '/home/';
+  static const String settings = '/settings/';
+  static const String contactUs = '/contact-us/';
 
   static const String login = '/auth/login/';
   static const String register = '/auth/register/';
@@ -36,6 +40,10 @@ class Router {
       productDetails: (BuildContext ctx) =>
           _routePageBuilder(ctx, productDetails, ProductDetailsPage()),
 //      cart: (BuildContext ctx) => _routePageBuilder(ctx, cart, CartPage()),
+      settings: (BuildContext ctx) =>
+          _routePageBuilder(ctx, settings, SettingsPage()),
+      contactUs: (BuildContext ctx) =>
+          _routePageBuilder(ctx, settings, ContactUsPage()),
     };
   }
 

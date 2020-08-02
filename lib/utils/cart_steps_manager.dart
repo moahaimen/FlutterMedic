@@ -1,5 +1,5 @@
 import 'package:drugStore/components/cart_client_information.dart';
-import 'package:drugStore/components/cart_promo_code.dart';
+import 'package:drugStore/components/cart_products_list.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,15 @@ class CartProductsStep extends CartStep {
   @override
   bool finished(StateModel state) {
     final order = state.order;
-    return order != null && order.products != null && order.products.length > 0;
+    final products = step.content as CartProductsList;
+
+    print("Empty ${products.promoCode.empty}");
+    print("Valid ${products.promoCode.valid}");
+
+    return order != null &&
+        order.products != null &&
+        order.products.length > 0 &&
+        (products.promoCode.empty || products.promoCode.valid);
   }
 
   @override
@@ -60,6 +68,12 @@ class CartClientStep extends CartStep {
     return order != null &&
         order.products != null &&
         order.products.length > 0 &&
+        (order.promoCode == null ||
+            (order.promoCode.code != null &&
+                order.promoCode.code.length == 8 &&
+                order.promoCode.valid)) &&
+        client.form != null &&
+        client.form.currentState != null &&
         client.form.currentState.validate();
   }
 
@@ -68,34 +82,9 @@ class CartClientStep extends CartStep {
     final client = this.step.content as CartClientInformation;
     client.form.currentState.save();
 
-    final clientData = OrderClient.fromJson(client.data);
+    final clientData = OrderClient.fromJson(client.data, state);
     state.setOrderClient(clientData);
     print('client: ${state.order.client.name}');
-  }
-}
-
-class CartPromoCodeStep extends CartStep {
-  CartPromoCodeStep({@required Step step}) : super(CartStepId.PromoCode, step);
-
-  @override
-  bool finished(StateModel state) {
-    final order = state.order;
-    final widget = this.step.content as CartPromoCode;
-    return order != null &&
-        order.products != null &&
-        order.products.length > 0 &&
-        order.client != null &&
-        (widget.data['code'] == null ||
-            (widget.data['code'].length == 8 && widget.active));
-  }
-
-  @override
-  void save(StateModel state) {
-    final promoCode = this.step.content as CartPromoCode;
-
-//    promoCode.form.currentState.save();
-    state.setOrderPromoCode(promoCode.data['code']);
-    print('Promocode: ${state.order.promoCode}');
   }
 }
 

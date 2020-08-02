@@ -1,15 +1,20 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order_product.dart';
+import 'package:drugStore/ui/order_total_widget.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'cart_products_list_item.dart';
+import 'cart_promo_code.dart';
 
 class CartProductsList extends StatelessWidget {
   final StateModel state;
-  final GlobalKey<FormState> formState = GlobalKey<FormState>();
+  final CartPromoCode promoCode;
 
-  CartProductsList({@required this.state});
+  CartProductsList({@required this.state})
+      : promoCode =
+  new CartPromoCode(state: state);
 
   Widget _buildCartEmpty(BuildContext context, ThemeData theme) {
     return Card(
@@ -25,7 +30,7 @@ class CartProductsList extends StatelessWidget {
                 color: theme.primaryColorDark,
               ),
               Text(
-                'Empty',
+                AppTranslations.of(context).text('cart_empty'),
                 style: theme.accentTextTheme.bodyText1,
               ),
             ],
@@ -35,32 +40,11 @@ class CartProductsList extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderTotalWidget(ThemeData theme) {
+  Widget _buildOrderTotalWidget() {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget child, StateModel model) {
         final order = model.order;
-        return Card(
-          color: Colors.white70,
-          child: Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12.5),
-              child: Column(
-                children: [
-                  Text(
-                    'Total',
-                    style:
-                    theme.textTheme.bodyText2.copyWith(color: Colors.red),
-                  ),
-                  Text(
-                    '${order.total} \$',
-                    style: theme.accentTextTheme.headline6,
-                  )
-                ],
-              ),
-            ),
-          ),
-        );
+        return OrderTotalWidget(order: order);
       },
     );
   }
@@ -77,11 +61,16 @@ class CartProductsList extends StatelessWidget {
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       separatorBuilder: (BuildContext context, int index) => Divider(),
-      itemBuilder: (BuildContext context, int index) =>
-      index == products.length
-          ? _buildOrderTotalWidget(theme)
-          : CartProductsListItem(index: index, item: products[index]),
-      itemCount: products.length + 1,
+      itemCount: products.length + 2,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == products.length + 1) {
+          return _buildOrderTotalWidget();
+        } else if (index == products.length) {
+          return promoCode;
+        } else {
+          return CartProductsListItem(index: index, item: products[index]);
+        }
+      },
     );
   }
 

@@ -1,28 +1,29 @@
+import 'package:drugStore/models/province.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
 class OrderClient {
   static OrderClient get empty {
-    return OrderClient(
-        name: null, email: null, phone: null, province: null, address: null);
+    return OrderClient(name: null, phone: null, province: null, address: null);
   }
 
-  static OrderClient fromJson(Map<String, dynamic> data) {
+  static OrderClient fromJson(Map<String, dynamic> data, StateModel state) {
     return new OrderClient(
         name: data['name'],
-        email: data['email'],
         phone: data['phone'],
-        province: data['province'],
+        province: state.provinces.firstWhere((e) => e.id == data['province']),
         address: data['address'],
         notes: data['note'],
         userId: data['user_id']);
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson(bool isPost) {
     final Map<String, dynamic> data = {
       'name': this.name,
-      'email': this.email,
       'phone': this.phone,
-      'province': this.province,
+      'province': this.province == null || this.province.id == null
+          ? null
+          : isPost ? this.province.enName : this.province.id,
       'address': this.address,
       'note': this.notes,
       'userId': this.userId,
@@ -32,16 +33,14 @@ class OrderClient {
   }
 
   String name;
-  String email;
   String phone;
-  String province;
+  Province province;
   String address;
   String notes;
   String userId;
 
   OrderClient({
     @required this.name,
-    @required this.email,
     @required this.phone,
     @required this.province,
     @required this.address,

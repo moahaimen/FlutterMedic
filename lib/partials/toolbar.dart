@@ -1,4 +1,6 @@
 import 'package:badges/badges.dart';
+import 'package:drugStore/constants/colors.dart';
+import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/pages/home_page.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +28,19 @@ class Toolbar {
             : _titles.containsKey(title) ? _titles[title] : title);
 
     return AppBar(
-      title: content,
+      // title: content,
+      title: Text(
+        Strings.applicationTitle,
+        style: Theme
+            .of(context)
+            .textTheme
+            .headline3
+            .copyWith(color: AppColors.molarRed1Color),
+      ),
+      centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.search),
+          icon: Icon(Icons.search, size: 30),
           onPressed: () => Navigator.of(context).pushNamed(Router.search),
         ),
         ScopedModelDescendant<StateModel>(
@@ -39,14 +50,14 @@ class Toolbar {
                 shape: BadgeShape.circle,
                 borderRadius: 5,
                 child: IconButton(
-                  icon: Icon(Icons.shopping_cart),
+                  icon: Icon(Icons.shopping_cart, size: 30),
                   onPressed: () =>
                       Navigator.of(context)
                           .pushReplacementNamed(
                           Router.home, arguments: PageId.Cart),
                 ),
-                badgeContent: Text(
-                    model.orderRestoring ? '0' : model.orderItemsCount),
+                badgeContent:
+                Text(model.orderRestoring ? '0' : model.orderItemsCount),
                 badgeColor: Colors.transparent,
               ),
         ),

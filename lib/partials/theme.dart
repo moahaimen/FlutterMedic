@@ -1,13 +1,14 @@
+import 'package:drugStore/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class ThemeBuilder {
   static ThemeData getTheme() {
-    const Color primaryColor = Color(0xffffffff);
-    const Color primaryColorDark = Color(0xff414141);
-    const Color accentColor = Colors.lightGreen;
+    const Color primaryColor = AppColors.primaryColor;
+    const Color primaryColorDark = AppColors.primaryColorDark;
+    const Color accentColor = AppColors.accentColor;
 
-    const Color secondaryColor = Color(0xfff9f9f9);
-    const Color primaryTextColor = Color(0xff414141);
+    const Color secondaryColor = AppColors.secondaryColor;
+    const Color primaryTextColor = AppColors.primaryTextColor;
 
     return ThemeData(
       primaryColor: primaryColor,
@@ -28,6 +29,12 @@ class ThemeBuilder {
       buttonColor: accentColor,
       buttonTheme: ButtonThemeData(
         buttonColor: accentColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+          side: BorderSide(color: accentColor),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        disabledColor: primaryColor.withAlpha(100),
       ),
       textTheme: TextTheme(
         headline1: TextStyle(
@@ -74,6 +81,7 @@ class ThemeBuilder {
         button: TextStyle(
           color: primaryColor,
         ),
+
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: primaryColor,

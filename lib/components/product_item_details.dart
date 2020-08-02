@@ -1,9 +1,12 @@
 import 'package:badges/badges.dart';
+import 'package:drugStore/constants/strings.dart';
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:share/share.dart';
 
 import '../models/product.dart';
 
@@ -24,6 +27,8 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final translator = AppTranslations.of(context);
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: <Widget>[
@@ -36,7 +41,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
             // Function callback for stretch
             return;
           },
-          expandedHeight: 380.0,
+          expandedHeight: 360.0,
           flexibleSpace: FlexibleSpaceBar(
             stretchModes: <StretchMode>[
               StretchMode.zoomBackground,
@@ -46,6 +51,14 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
             background: _buildAttachmentsList(),
           ),
           actions: [
+            IconButton(
+              padding: EdgeInsets.all(5),
+              icon: Icon(
+                Icons.share,
+                size: 30,
+              ),
+              onPressed: () => _shareProduct(translator),
+            ),
             ScopedModelDescendant<StateModel>(
               builder: (BuildContext context, Widget child, StateModel model) =>
                   Badge(
@@ -57,7 +70,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                         color: Theme
                             .of(context)
                             .accentColor,
-                        icon: Icon(Icons.shopping_cart),
+                        icon: Icon(Icons.shopping_cart, size: 30),
                         onPressed: () =>
                             Navigator.of(context).pushNamed(Router.cart)),
                     badgeContent: Text(
@@ -70,11 +83,16 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         ),
         SliverList(
           delegate: SliverChildListDelegate([
-            _buildSliverListItem('name', this.product.name),
-            _buildSliverListItem('description', this.product.description),
-            _buildSliverListItem('brand', this.product.brand.name),
-            _buildSliverListItem('category', this.product.category.name),
-            _buildSliverListItem('price', this.product.price.toString()),
+            _buildSliverListItem(
+                translator.text('product_name'), product.getName(context)),
+            _buildSliverListItem(translator.text('product_description'),
+                product.getDescription(context)),
+            _buildSliverListItem(translator.text('product_brand'),
+                product.brand.getName(context)),
+            _buildSliverListItem(translator.text('product_category'),
+                product.category.getName(context)),
+            _buildSliverListItem(
+                translator.text('product_price'), product.price.toString()),
             _buildAddToCartButton(),
           ]),
         ),
@@ -83,21 +101,6 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
   }
 
   Widget _buildAddToCartButton() {
-//    return Container(
-//      margin: EdgeInsets.zero,
-//      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
-//      color: Colors.white,
-//      child: ListTile(
-//        title: RaisedButton.icon(
-//          onPressed: () => AskAddToCartModal.show(context, this.product),
-//          icon: Icon(Icons.add_shopping_cart),
-//          label: Text("Add to cart"),
-//          color: Theme.of(context).accentColor,
-//          padding: EdgeInsets.symmetric(vertical: 12.0),
-//        ),
-//      ),
-//    );
-
     return Container(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
@@ -111,53 +114,20 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
   }
 
   Widget _buildAttachmentsList() {
-    final children = [
-      Container(
-        width: MediaQuery.of(context).size.width,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Details of ${this.product.name}".toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .headline1
-                      .copyWith(color: Colors.black)),
-              Text(
-                'Swipe to the left or the right',
-                textAlign: TextAlign.center,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline4
-                    .copyWith(color: Colors.black),
-              ),
-            ],
-          ),
-        ),
-        color: Colors.white,
-      ),
-    ];
-
-    children.addAll(this
-        .product
-        .attachments
-        .map((e) => Container(
-      color: Colors.white,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      child: Image.network(e.url, fit: BoxFit.cover),
-    ))
-        .toList());
-
-    return ListView(
+    return ListView.builder(
       scrollDirection: Axis.horizontal,
       physics: PageScrollPhysics(),
-      children: children,
+      itemCount: this.product.attachments.length,
+      itemBuilder: (BuildContext context, int index) =>
+          Container(
+            color: Colors.white,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            child: Image.network(this.product.attachments[index].url,
+                fit: BoxFit.contain),
+          ),
     );
   }
 
@@ -173,14 +143,21 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
           color: Theme.of(context).primaryColorDark,
         ),
         title: Text(content),
-        subtitle: Text(
-          title,
-          style:
-          TextStyle(color: Theme
-              .of(context)
-              .accentColor, fontSize: 15.0),
-        ),
+        subtitle: Text(title,
+            style: TextStyle(
+                color: Theme
+                    .of(context)
+                    .accentColor, fontSize: 15.0)),
       ),
     );
+  }
+
+  void _shareProduct(AppTranslations translator) {
+    final RenderBox box = context.findRenderObject();
+    Share.share(
+        "${translator.text('share_product_message')} ${product.getName(
+            context)} ${Strings.downloadUrl}",
+        subject: Strings.applicationTitle,
+        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 }

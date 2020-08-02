@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
@@ -39,14 +40,16 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
 
   @override
   Widget build(BuildContext context) {
+    final translator = AppTranslations.of(context);
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "You asked to add product ${this._orderProduct.product
-                .name} into your cart!",
+            "${translator.text('ask_add_to_cart_message')} ${this._orderProduct
+                .product.enName}",
             style: TextStyle(
                 color: Theme
                     .of(context)
@@ -55,7 +58,7 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
                 fontWeight: FontWeight.w600),
           ),
           Text(
-            "Please set number of peices you want, then press OK.",
+            translator.text('set_num_of_pieces'),
             style: TextStyle(
                 color: Theme
                     .of(context)
@@ -67,7 +70,9 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
             width: 200.0,
             child: Chip(
               labelPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
-              label: Text("${this._orderProduct.product.price} \$/Piece"),
+              label: Text(
+                  "${this._orderProduct.product.price} ${translator.text(
+                      'bucks_per_peice')}"),
             ),
           ),
           Container(
@@ -83,7 +88,7 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
             child: OutlineButton.icon(
               onPressed: this._orderProduct.quantity > 0 ? this._ok : null,
               icon: Icon(Icons.add_shopping_cart),
-              label: Text("Add to Cart"),
+              label: Text(translator.text('add_to_cart')),
             ),
           ),
         ],
@@ -95,15 +100,13 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
     await ScopedModel.of<StateModel>(context)
         .addProductToOrder(this._orderProduct);
     Toast.show(
-      'Item added suucessfully',
+      AppTranslations.of(context).text('cart_item_add_done_message'),
       context,
     );
     Navigator.of(context).pop();
   }
 
   void _setProductQuantity(int quantity) {
-    setState(() {
-      this._orderProduct.quantity = quantity;
-    });
+    setState(() => this._orderProduct.quantity = quantity);
   }
 }

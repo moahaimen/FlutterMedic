@@ -1,5 +1,6 @@
 import 'package:drugStore/components/cart.dart';
 import 'package:drugStore/components/home_page_content.dart';
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/partials/toolbar.dart';
 import 'package:drugStore/utils/push_notifications_manager.dart';
 import 'package:flutter/material.dart';
@@ -16,16 +17,18 @@ class _Page {
 
   _Page(this.id);
 
-  String get title {
+  String getTitle(BuildContext context) {
+    final tt = AppTranslations.of(context);
+
     switch (this.id) {
       case PageId.Home:
-        return 'Home';
+        return tt.text('home');
       case PageId.Brands:
-        return 'Brands';
+        return tt.text('brands');
       case PageId.Categories:
-        return 'Categories';
+        return tt.text('categories');
       case PageId.Cart:
-        return 'Cart';
+        return tt.text('cart');
     }
     return '';
   }
@@ -59,7 +62,8 @@ class HomePageState extends State<HomePage> {
       child: Scaffold(
         key: _scaffold,
         drawer: DrawerBuilder.build(context, Router.home),
-        appBar: Toolbar.get(title: this._page.title, context: context),
+        appBar:
+        Toolbar.get(title: this._page.getTitle(context), context: context),
         body: Container(
           child: PageView(
             controller: _pageController,
@@ -80,23 +84,25 @@ class HomePageState extends State<HomePage> {
   }
 
   BottomNavigationBar _buildBottomNavigationBar() {
+    final tt = AppTranslations.of(context);
+
     return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance),
-          title: Text("Brands"),
+          title: Text(tt.text("brands")),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          title: Text("Home"),
+          title: Text(tt.text("home")),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.widgets),
-          title: Text("Categories"),
+          title: Text(tt.text("categories")),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
-          title: Text("Cart"),
+          title: Text(tt.text("cart")),
         ),
       ],
       currentIndex: _page.id.index,

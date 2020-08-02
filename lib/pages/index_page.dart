@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/application.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -47,11 +48,9 @@ class IndexPageState extends State<IndexPage> {
         !_model.brandsLoading &&
         !_model.productsLoading &&
         !_model.orderRestoring) {
-      this.goto(Router.home);
+      application.setLocale(_model.settings['locale']);
+      Navigator.pushReplacementNamed(context, Router.home,
+          arguments: PageId.Home);
     }
-  }
-
-  void goto(String url) {
-    Navigator.pushReplacementNamed(context, url, arguments: PageId.Home);
   }
 }

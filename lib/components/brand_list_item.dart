@@ -23,7 +23,7 @@ class BrandListItem extends StatelessWidget {
                   width: 125,
                 ),
               ),
-              Text(this.brand.title),
+              Text(this.brand.getTitle(context)),
             ],
           ),
         ),

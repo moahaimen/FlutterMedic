@@ -1,98 +1,94 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 
-enum CartPromoCodeStatus {
-  Clean,
-  Verefying,
-  Active,
-  InActive,
-}
+enum CartPromoCodeStatus { Clean, Verefying, Active, InActive }
 
 class CartPromoCode extends StatefulWidget {
   final StateModel state;
-  final GlobalKey<FormState> form;
 
-  CartPromoCode({@required this.state, @required this.form});
+  CartPromoCode({@required this.state});
 
   @override
-  State<StatefulWidget> createState() {
-    return _CartPromoCodeState(state: this.state, form: this.form);
+  State<StatefulWidget> createState() => _CartPromoCodeState();
+
+  bool get valid {
+    final Order order = this.state.order;
+
+    return _CartPromoCodeState.currentStatus == CartPromoCodeStatus.Active &&
+        order != null &&
+        order.promoCode != null &&
+        order.promoCode.code != null &&
+        order.promoCode.code.length == 8 &&
+        order.promoCode.valid;
   }
 
-  Map<String, dynamic> get data => _CartPromoCodeState.data;
-
-  bool get active =>
-      _CartPromoCodeState.currentStatus == CartPromoCodeStatus.Active;
+  bool get empty {
+    return (this.state.order.promoCode == null ||
+        this.state.order.promoCode.code.isEmpty) &&
+        _CartPromoCodeState.controller.text.isEmpty;
+  }
 }
 
 class _CartPromoCodeState extends State<CartPromoCode> {
-  static CartPromoCodeStatus currentStatus = CartPromoCodeStatus.Clean;
-
-  static Widget buildOrderTotal(Order order, dynamic promoCode,
-      ThemeData theme) {
-    return Card(
-      color: Colors.white70,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12.5),
-          child: Column(
-            children: [
-              Text(
-                'Total with Promo Code',
-                style: theme.textTheme.bodyText2.copyWith(color: Colors.red),
-              ),
-              Row(
-                children: [
-                  Text(
-                    '${order.total.toString()} \$',
-                    style: theme.accentTextTheme.bodyText1.copyWith(
-                        fontStyle: FontStyle.italic,
-                        decoration: TextDecoration.lineThrough),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    '${order.totalWithCode(promoCode)} \$',
-                    style: theme.accentTextTheme.headline6,
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+  static String getPromoCodeOrDefault(StateModel state) {
+    if (state != null && state.order != null && state.order.promoCode != null) {
+      return state.order.promoCode.code;
+    }
+    return "";
   }
 
-  final StateModel state;
-  final GlobalKey<FormState> form;
-  static Map<String, dynamic> data = Map();
-  final TextEditingController _controller = TextEditingController();
+  static CartPromoCodeStatus currentStatus = CartPromoCodeStatus.Clean;
 
-  _CartPromoCodeState({@required this.state, @required this.form});
+  static TextEditingController controller = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    currentStatus = CartPromoCodeStatus.Clean;
+    controller.text = getPromoCodeOrDefault(widget.state);
+  }
 
   Widget _buildPromoCodeField(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      cursorColor: Theme
-          .of(context)
-          .accentColor,
-      autofocus: true,
-      autovalidate: true,
-      decoration: InputDecoration(
-          labelText: "Promo Code",
-          suffixIcon: getFieldPrefix(),
-          enabled: currentStatus != CartPromoCodeStatus.Verefying,
-          labelStyle: TextStyle(color: Theme
-              .of(context)
-              .accentColor)),
-      validator: _checkPromoCodeValidation,
-      onSaved: (String value) => data['code'] = value,
-      onEditingComplete: _checkPromoCodeActivation,
+    final ThemeData theme = Theme.of(context);
+    final AppTranslations translator = AppTranslations.of(context);
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(translator.text('promo_code')),
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.black12,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(15)),
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+            child: TextField(
+              textDirection: TextDirection.ltr,
+              controller: controller,
+              decoration: InputDecoration(
+                  hintText: translator.text('promo_code'),
+                  suffixIcon: getFieldPrefix(),
+                  enabled: currentStatus != CartPromoCodeStatus.Verefying,
+                  border: InputBorder.none,
+                  labelStyle: TextStyle(color: theme.accentColor)),
+              cursorColor: theme.accentColor,
+              textAlign: TextAlign.center,
+              textAlignVertical: TextAlignVertical.center,
+              textInputAction: TextInputAction.done,
+              onChanged: (String value) {
+                if (value.length == 8) {
+                  _checkPromoCodeActivation();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -111,43 +107,25 @@ class _CartPromoCodeState extends State<CartPromoCode> {
       case CartPromoCodeStatus.Active:
         return Icon(Icons.check_circle, color: Colors.lightGreen);
       case CartPromoCodeStatus.InActive:
-        return Icon(Icons.close, color: Colors.red);
+        return Icon(Icons.error_outline, color: Colors.redAccent);
       case CartPromoCodeStatus.Clean:
         return null;
     }
     return null;
   }
 
-  String _checkPromoCodeValidation(String value) {
-    if (value.isEmpty) {
-      return null;
-    }
-    if (value.length != 8) {
-      return "Promo Code length must be 8 characters length";
-    }
-    if (!RegExp(r'^[A-Za-z0-9]+$').hasMatch(value)) {
-      return "Invalid inactiveqy field text pattern";
-    }
-
-    return null;
-  }
-
   void _checkPromoCodeActivation() {
+    final translator = AppTranslations.of(context);
+
     setState(() => currentStatus = CartPromoCodeStatus.Verefying);
-    this.state.verifyPromoCodeActivation(_controller.value.text).then((active) {
-      print(active);
-      if (active == null) {
+    widget.state.setPromoCode(controller.value.text).then((active) {
+      if (active == null || !active) {
         setState(() => currentStatus = CartPromoCodeStatus.InActive);
-        Toast.show(
-            'Promo Code ${_controller.value.text} is not active', context);
-        return;
+        Toast.show(translator.text('promo_code_in_active'), context);
+      } else {
+        setState(() => currentStatus = CartPromoCodeStatus.Active);
+        Toast.show(translator.text('promo_code_active'), context);
       }
-      data['id'] = active['id'];
-      data['type'] = active['type'];
-      data['discount'] = active['discount'];
-      data['code'] = active['code'];
-      this.state.setOrderPromoCode(data['code']);
-      setState(() => currentStatus = CartPromoCodeStatus.Active);
     });
   }
 
@@ -160,28 +138,14 @@ class _CartPromoCodeState extends State<CartPromoCode> {
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .95;
     final double paddingWidth = deviceWidth - targetWidth;
 
-    final children = <Widget>[];
-
-    children.add(_buildPromoCodeField(context));
-    print(currentStatus);
-    if (currentStatus == CartPromoCodeStatus.Active) {
-      children.add(SizedBox(
-        height: 10,
-      ));
-      children.add(buildOrderTotal(this.state.order, data, Theme.of(context)));
-    }
-
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white54,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(50)),
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: paddingWidth, vertical: 15),
-        child: Form(
-          key: form,
-          child: Column(
-            children: children,
-          ),
-        ),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: paddingWidth),
+      child: _buildPromoCodeField(context),
     );
   }
 }

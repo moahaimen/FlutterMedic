@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -9,7 +10,8 @@ import 'category_list_item.dart';
 class CategoriesListView extends StatelessWidget {
   final int _columnCount = 3;
 
-  Widget _buildCategoriesList(bool loading, List<Category> categories) {
+  Widget _buildCategoriesList(BuildContext context, bool loading,
+      List<Category> categories) {
     if (loading) {
       return Center(
         child: CircularProgressIndicator(),
@@ -18,7 +20,7 @@ class CategoriesListView extends StatelessWidget {
 
     if (categories == null || categories.length == 0) {
       return Center(
-        child: Text("Categories List is Empty"),
+        child: Text(AppTranslations.of(context).text("categories_list_empty")),
       );
     }
 
@@ -27,7 +29,7 @@ class CategoriesListView extends StatelessWidget {
         crossAxisCount: _columnCount,
         children: List.generate(
           categories.length,
-          (int index) {
+              (int index) {
             return AnimationConfiguration.staggeredGrid(
               position: index,
               duration: const Duration(milliseconds: 375),
@@ -59,8 +61,8 @@ class CategoriesListView extends StatelessWidget {
           onRefresh: () {
             return model.fetchCategories();
           },
-          child:
-              _buildCategoriesList(model.categoriesLoading, model.categories),
+          child: _buildCategoriesList(
+              context, model.categoriesLoading, model.categories),
         );
       },
     );

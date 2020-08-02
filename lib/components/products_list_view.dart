@@ -1,3 +1,4 @@
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/brand.dart';
 import 'package:drugStore/models/category.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ class ProductsListView extends StatelessWidget {
 
   ProductsListView({@required this.filter, @required this.physics});
 
-  Widget _buildProductsList(bool loading, List<Product> products,
+  Widget _buildProductsList(BuildContext context, bool loading,
+      List<Product> products,
       {Brand brand, Category category, String name}) {
     if (loading) {
       return Center(
@@ -27,32 +29,34 @@ class ProductsListView extends StatelessWidget {
 
     if (products == null || products.length == 0) {
       return Center(
-        child: Text("Products List is Empty"),
+        child: Text(AppTranslations.of(context).text("products_list_empty")),
       );
     }
 
-    if (brand != null && brand.name != null) {
+    if (brand != null) {
       products = products
-          .where((element) => element.brand.name == brand.name)
+          .where((element) => element.brand.enName == brand.enName)
           .toList();
     }
 
-    if (category != null && category.name != null) {
+    if (category != null) {
       products = products
-          .where((element) => element.category.name == category.name)
+          .where((element) => element.category.enName == category.enName)
           .toList();
     }
 
     if (name != null && name.isNotEmpty) {
-      products =
-          products.where((element) => element.name.contains(name)).toList();
+      products = products
+          .where((element) =>
+      element.enName.contains(name) || element.arName.contains(name))
+          .toList();
     }
 
     // Recheck  after filtering
     if (products.length == 0) {
       return Container(
         child: Center(
-          child: Text("Products List is Empty"),
+          child: Text(AppTranslations.of(context).text("products_list_empty")),
         ),
       );
     }
@@ -63,11 +67,11 @@ class ProductsListView extends StatelessWidget {
         child: GridView.count(
           shrinkWrap: true,
           physics: physics,
-          childAspectRatio: 2 / 3,
+          childAspectRatio: 3 / 4,
           crossAxisCount: _columnCount,
           children: List.generate(
             products.length,
-            (int index) {
+                (int index) {
               return AnimationConfiguration.staggeredGrid(
                 position: index,
                 duration: const Duration(milliseconds: 375),
@@ -91,6 +95,7 @@ class ProductsListView extends StatelessWidget {
       builder: (BuildContext context, Widget widget, StateModel model) {
         if (this.filter.containsKey('home') && this.filter['home'] == true) {
           return _buildProductsList(
+            context,
             model.productsLoading,
             model.products,
             brand: this.filter['brand'],
@@ -103,6 +108,7 @@ class ProductsListView extends StatelessWidget {
             return model.fetchProducts();
           },
           child: _buildProductsList(
+            context,
             model.productsLoading,
             model.products,
             brand: this.filter['brand'],
