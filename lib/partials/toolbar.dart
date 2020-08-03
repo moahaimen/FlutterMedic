@@ -10,15 +10,15 @@ import 'package:toast/toast.dart';
 import 'router.dart';
 
 class Toolbar {
-  static final Map<String, String> _titles = {
-    '/': 'Index',
-    '/home/': 'Home',
-    '/auth/login/': 'Login',
-    '/auth/register/': 'Register',
-    '/products/': 'Products',
-    '/products/:id/details/': 'Product Details',
-    '/cart/': 'Cart',
-  };
+  // static final Map<String, String> _titles = {
+  //   '/': 'Index',
+  //   '/home/': 'Home',
+  //   '/auth/login/': 'Login',
+  //   '/auth/register/': 'Register',
+  //   '/products/': 'Products',
+  //   '/products/:id/details/': 'Product Details',
+  //   '/cart/': 'Cart',
+  // };
 
   static AppBar get(
       {String title, Widget child, @required BuildContext context}) {

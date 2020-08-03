@@ -6,14 +6,15 @@ import '../models/brand.dart';
 
 class BrandListHomeItem extends StatelessWidget {
   final Brand brand;
+  final double width;
 
-  BrandListHomeItem({@required this.brand});
+  BrandListHomeItem({@required this.brand, @required this.width});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 150,
-      width: 132,
+      width: this.width,
       padding: EdgeInsets.symmetric(horizontal: 2, vertical: 5),
       child: GestureDetector(
         child: Card(

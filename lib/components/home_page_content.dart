@@ -1,9 +1,9 @@
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:drugStore/components/brand_list_home_item.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/pages/home_page.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/ui/main_products_carousel.dart';
+import 'package:drugStore/ui/brands_list_for_home.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -14,8 +14,6 @@ import 'categorized_products_list_view.dart';
 import 'category_list_item.dart';
 
 class HomePageContent extends StatelessWidget {
-  HomePageContent();
-
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
@@ -44,9 +42,7 @@ class HomePageContent extends StatelessWidget {
             .toList(),
         dotSize: 5.0,
         dotSpacing: 15.0,
-        dotColor: Theme
-            .of(context)
-            .accentColor,
+        dotColor: Theme.of(context).accentColor,
         indicatorBgPadding: 7.5,
         dotBgColor: Colors.transparent,
         borderRadius: true,
@@ -75,15 +71,12 @@ class HomePageContent extends StatelessWidget {
       height: 200.0,
       padding: EdgeInsets.symmetric(vertical: 10),
       color: Colors.white,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children:
-        brands.map<Widget>((e) => BrandListHomeItem(brand: e)).toList(),
-      ),
+      child: BrandsListForHome(brands: brands),
     );
   }
 
-  Widget _buildCategoriesWidget(BuildContext context, List<Category> categories) {
+  Widget _buildCategoriesWidget(
+      BuildContext context, List<Category> categories) {
     return Container(
       color: Colors.white,
       height: 150.0,

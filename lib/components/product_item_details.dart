@@ -125,6 +125,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
 
   Widget _buildAttachmentsList(ThemeData theme) {
     return Container(
+      padding: EdgeInsets.only(bottom: 12.0),
       child: Carousel(
         images: this
             .product
