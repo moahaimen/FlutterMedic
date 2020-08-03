@@ -27,16 +27,16 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Card(
+        borderOnForeground: true,
         child: CachedNetworkImage(
           imageUrl: item.product.image.url,
           errorWidget: (context, url, error) => Icon(Icons.error),
-          width: 50.0,
-          height: 50.0,
-          fit: BoxFit.fill,
+          width: 75.0,
+          height: 75.0,
+          fit: BoxFit.cover,
         ),
       ),
-      title: Flex(
-        direction: Axis.horizontal,
+      title: Row(
         children: [
           Expanded(
             child: Text(
@@ -45,16 +45,15 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
             ),
           ),
           ScopedModelDescendant<StateModel>(
-            builder: (BuildContext context, Widget child, StateModel model) =>
-                IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () => model.removeProductFromOrder(item.product.id),
-            ),
-          ),
+              builder: (BuildContext context, Widget child, StateModel model) =>
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () =>
+                        model.removeProductFromOrder(item.product.id),
+                  )),
         ],
       ),
-      subtitle: Flex(
-        direction: Axis.horizontal,
+      subtitle: Row(
         children: [
           Container(
             width: 100.0,

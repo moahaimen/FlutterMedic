@@ -1,3 +1,4 @@
+import 'package:drugStore/constants/colors.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -30,8 +31,7 @@ class _CartState extends State<Cart> {
   StepState _getProductsStepState(StateModel state) {
     if (currentStep == 0) {
       return StepState.editing;
-    } else if (state.order.products.length > 0 &&
-        state.order.promoCode != null) {
+    } else if (state.order.products.length > 0) {
       return StepState.complete;
     } else {
       return StepState.indexed;
@@ -77,9 +77,9 @@ class _CartState extends State<Cart> {
 
     manager = new CartStepsManager(steps: steps);
 
-    return SingleChildScrollView(
-      child: Container(
-        color: Colors.white,
+    return Container(
+      color: Colors.white,
+      child: SingleChildScrollView(
         child: Stepper(
           currentStep: currentStep,
           type: StepperType.vertical,
@@ -169,24 +169,22 @@ class _CartState extends State<Cart> {
           ScopedModelDescendant<StateModel>(
             builder: (BuildContext context, Widget child, StateModel state) =>
                 RaisedButton(
-                  child: Text(state.orderUploading
-                      ? translator.text('order_uploading')
-                      : currentStep < manager.steps.length - 1
+              child: Text(state.orderUploading
+                  ? translator.text('order_uploading')
+                  : currentStep < manager.steps.length - 1
                       ? translator.text('order_continue')
                       : translator.text('order_submit')),
-                  onPressed: state.orderUploading ? null : onStepContinue,
-                  textColor: Colors.white,
-                  disabledColor: Colors.lightGreen.withOpacity(0.6),
-                ),
+              onPressed: state.orderUploading ? null : onStepContinue,
+              textColor: Colors.white,
+              disabledColor: AppColors.accentColor.withOpacity(0.6),
+            ),
           ),
           SizedBox(
             width: 5,
           ),
           OutlineButton(
             child: Text(translator.text('order_cancel')),
-            textColor: Theme
-                .of(context)
-                .primaryColorDark,
+            textColor: Theme.of(context).primaryColorDark,
             onPressed: onStepCancel,
           ),
         ],

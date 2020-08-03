@@ -432,10 +432,61 @@ class StateModel extends Model {
     notifyListeners();
   }
 
-  Future<void> setOrderClient(OrderClient client) async {
+  ///
+  /// setOrderClient
+  ///
+  Future<void> setOrderClientFromInstance(OrderClient client) async {
     this._order.client = client;
     await this.persistOrder();
     notifyListeners();
+  }
+
+  ///
+  /// setOrderClient
+  ///
+  Future<void> setOrderClientDetails(
+      {String name,
+      String phone,
+      int provinceId,
+      String address,
+      String notes,
+      String userId,
+      bool notify = true}) async {
+    if (this._order == null || this._order.client == null) {
+      throw new Exception("OrderDoesnotRestored");
+    }
+
+    if (name != null) {
+      this._order.client.name = name;
+    }
+
+    if (phone != null) {
+      this._order.client.phone = phone;
+    }
+
+    if (provinceId != null) {
+      print(provinceId);
+      final province =
+          this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+      this._order.client.province = province;
+    }
+
+    if (address != null) {
+      this._order.client.address = address;
+    }
+
+    if (notes != null) {
+      this._order.client.notes = notes;
+    }
+
+    if (userId != null) {
+      this._order.client.userId = userId;
+    }
+
+    await this.persistOrder();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   OrderClient get client {
@@ -483,22 +534,6 @@ class StateModel extends Model {
     this._order = null;
 
     this.restoreStoredOrder();
-  }
-
-  ///
-  /// setOrderClientProvince
-  ///
-  Future<void> setOrderClientProvince(int provinceId) {
-    if (this._order == null || this._order.client == null) {
-      throw new Exception("OrderDoesnotRestored");
-    }
-
-    final province =
-        this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
-
-    this._order.client.province = province;
-    notifyListeners();
-    return this.persistOrder();
   }
 
   ///

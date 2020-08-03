@@ -34,20 +34,13 @@ class ProductListItemState extends State<ProductListItem> {
           child: Column(
             children: [
               Expanded(
-                child: this.product.image != null
-                    ? CachedNetworkImage(
-                        imageUrl: this.product.image.url,
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        alignment: Alignment.center,
-                        fit: BoxFit.fill,
-                        width: 200,
-                      )
-                    : Center(
-                        child: Text(
-                          AppTranslations.of(context).text("attachments_empty"),
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                      ),
+                child: CachedNetworkImage(
+                  imageUrl: this.product?.image?.url,
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  alignment: Alignment.center,
+                  fit: BoxFit.fill,
+                  width: 200,
+                ),
               ),
               Text(this.product.getTitle(context)),
               Text(
@@ -57,9 +50,7 @@ class ProductListItemState extends State<ProductListItem> {
                     .bodyText2
                     .copyWith(color: Colors.red),
               ),
-              AddToCartButton(
-                id: this.product.id,
-              ),
+              AddToCartButton(id: this.product.id),
             ],
           ),
         ),

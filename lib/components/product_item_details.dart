@@ -58,7 +58,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
             ScopedModelDescendant<StateModel>(
               builder: (BuildContext context, Widget child, StateModel model) =>
                   Badge(
-                badgeColor: Colors.lightGreen,
+                badgeColor: theme.accentColor,
                 position: BadgePosition(bottom: 5, left: 5),
                 shape: BadgeShape.circle,
                 borderRadius: 5,
@@ -115,6 +115,10 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                 onPressed: () => _shareProduct(translator),
                 color: Colors.red,
                 textColor: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.red),
+                ),
               ),
             ),
           ],

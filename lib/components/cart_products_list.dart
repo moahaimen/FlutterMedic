@@ -13,8 +13,7 @@ class CartProductsList extends StatelessWidget {
   final CartPromoCode promoCode;
 
   CartProductsList({@required this.state})
-      : promoCode =
-  new CartPromoCode(state: state);
+      : promoCode = new CartPromoCode(state: state);
 
   Widget _buildCartEmpty(BuildContext context, ThemeData theme) {
     return Card(
@@ -31,7 +30,8 @@ class CartProductsList extends StatelessWidget {
               ),
               Text(
                 AppTranslations.of(context).text('cart_empty'),
-                style: theme.accentTextTheme.bodyText1,
+                style: theme.accentTextTheme.bodyText1
+                    .copyWith(color: theme.primaryColorDark),
               ),
             ],
           ),
@@ -44,13 +44,16 @@ class CartProductsList extends StatelessWidget {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget child, StateModel model) {
         final order = model.order;
-        return OrderTotalWidget(order: order);
+        return OrderTotalWidget(
+          order: order,
+          withPromo: true,
+        );
       },
     );
   }
 
-  Widget _buildCartProductsList(BuildContext context,
-      List<OrderProduct> products) {
+  Widget _buildCartProductsList(
+      BuildContext context, List<OrderProduct> products) {
     final ThemeData theme = Theme.of(context);
 
     if (products == null || products.length == 0) {

@@ -83,7 +83,7 @@ class CartClientStep extends CartStep {
     client.form.currentState.save();
 
     final clientData = OrderClient.fromJson(client.data, state);
-    state.setOrderClient(clientData);
+    state.setOrderClientFromInstance(clientData);
     print('client: ${state.order.client.name}');
   }
 }
