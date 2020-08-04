@@ -50,7 +50,7 @@ class IndexPageState extends State<IndexPage> {
         !_model.orderRestoring) {
       application.setLocale(_model.settings['locale']);
       Navigator.pushReplacementNamed(context, Router.home,
-          arguments: PageId.Home);
+          arguments: PageId.Brands);
     }
   }
 }

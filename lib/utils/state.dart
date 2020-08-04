@@ -483,6 +483,7 @@ class StateModel extends Model {
       this._order.client.userId = userId;
     }
 
+    print(this._order.client.toJson(false));
     await this.persistOrder();
     if (notify) {
       notifyListeners();

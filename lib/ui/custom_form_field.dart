@@ -54,7 +54,7 @@ class CustomFormField extends StatelessWidget {
               autovalidate: true,
               validator: validator,
               onSaved: onSave,
-              onChanged: onChanged,
+              onChanged: onSave,
             ),
           ),
         ],

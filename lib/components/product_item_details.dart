@@ -170,10 +170,11 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
     );
   }
 
-  void _shareProduct(AppTranslations translator) {
+  void _shareProduct(AppTranslations translator) async {
+    final downloadUrl = await Strings.downloadUrl;
     final RenderBox box = context.findRenderObject();
     Share.share(
-        "${translator.text('share_product_message')} ${product.getName(context)} ${Strings.downloadUrl}",
+        "${translator.text('share_product_message')} ${product.getName(context)} $downloadUrl",
         subject: Strings.applicationTitle,
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }

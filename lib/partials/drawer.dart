@@ -60,12 +60,14 @@ class DrawerBuilder {
     );
   }
 
-  static Widget _buildDrawerListItem(BuildContext ctx,
-      IconData icon,
-      String title,
-      String route,
-      dynamic args,
-      ThemeData theme,) {
+  static Widget _buildDrawerListItem(
+    BuildContext ctx,
+    IconData icon,
+    String title,
+    String route,
+    dynamic args,
+    ThemeData theme,
+  ) {
     return ListTile(
       leading: Icon(
         icon,
@@ -80,8 +82,8 @@ class DrawerBuilder {
     );
   }
 
-  static List<Widget> _buildListOfRoutes(BuildContext ctx, ThemeData theme,
-      AppTranslations translator) {
+  static List<Widget> _buildListOfRoutes(
+      BuildContext ctx, ThemeData theme, AppTranslations translator) {
     // Header
     final Widget header = Container(
       height: 120,
@@ -103,10 +105,10 @@ class DrawerBuilder {
     final Widget share = ListTile(
       leading: Icon(Icons.share, color: theme.primaryColorDark),
       title: Text(translator.text("share")),
-      onTap: () {
+      onTap: () async {
+        final downloadUrl = await Strings.downloadUrl;
         final RenderBox box = ctx.findRenderObject();
-        Share.share(
-            "${translator.text('share_app_message')} ${Strings.downloadUrl}",
+        Share.share("${translator.text('share_app_message')} $downloadUrl",
             subject: Strings.applicationTitle,
             sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
       },
@@ -115,8 +117,7 @@ class DrawerBuilder {
     final List<Widget> routes = [];
     routes.add(header);
     routes.addAll(_routes
-        .map((e) =>
-        _buildDrawerListItem(ctx, e.iconData,
+        .map((e) => _buildDrawerListItem(ctx, e.iconData,
             translator.text(e.title), e.name, e.arguments, theme))
         .toList());
     routes.add(share);

@@ -14,7 +14,7 @@ class OrderClient {
         province: state.provinces
             .firstWhere((e) => e.id == data['province'], orElse: () => null),
         address: data['address'],
-        notes: data['note'],
+        notes: data['notes'],
         userId: data['user_id']);
   }
 
@@ -26,7 +26,7 @@ class OrderClient {
           ? null
           : isPost ? this.province.enName : this.province.id,
       'address': this.address,
-      'note': this.notes,
+      'notes': this.notes,
       'userId': this.userId,
     };
 
