@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
-import '../components/order_item_quantity.dart';
+import '../components/cart/ui/order_item_quantity.dart';
 import '../models/order_product.dart';
 import '../models/product.dart';
 import '../utils/state.dart';
@@ -48,21 +48,16 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "${translator.text('ask_add_to_cart_message')} ${this._orderProduct
-                .product.enName}",
+            "${translator.text('ask_add_to_cart_message')} ${this._orderProduct.product.enName}",
             style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .primaryColorDark,
+                color: Theme.of(context).primaryColorDark,
                 fontSize: 20,
                 fontWeight: FontWeight.w600),
           ),
           Text(
             translator.text('set_num_of_pieces'),
             style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .primaryColorDark,
+                color: Theme.of(context).primaryColorDark,
                 fontSize: 16,
                 fontWeight: FontWeight.w300),
           ),
@@ -71,8 +66,7 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
             child: Chip(
               labelPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
               label: Text(
-                  "${this._orderProduct.product.price} ${translator.text(
-                      'bucks_per_peice')}"),
+                  "${this._orderProduct.product.price} ${translator.text('bucks_per_peice')}"),
             ),
           ),
           Container(

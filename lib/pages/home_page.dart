@@ -1,4 +1,4 @@
-import 'package:drugStore/components/cart.dart';
+import 'package:drugStore/components/cart/cart.dart';
 import 'package:drugStore/components/home_page_content.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/partials/toolbar.dart';
@@ -63,7 +63,7 @@ class HomePageState extends State<HomePage> {
         key: _scaffold,
         drawer: DrawerBuilder.build(context, Router.home),
         appBar:
-        Toolbar.get(title: this._page.getTitle(context), context: context),
+            Toolbar.get(title: this._page.getTitle(context), context: context),
         body: Container(
           child: PageView(
             controller: _pageController,

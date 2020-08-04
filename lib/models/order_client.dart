@@ -48,4 +48,11 @@ class OrderClient {
     this.notes,
     this.userId,
   });
+
+  bool get completed {
+    return this.name != null &&
+        this.address != null &&
+        this.province != null &&
+        this.phone != null;
+  }
 }

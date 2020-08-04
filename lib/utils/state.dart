@@ -427,7 +427,14 @@ class StateModel extends Model {
   }
 
   Future<void> removeProductFromOrder(int productId) async {
-    this._order.products.removeWhere((e) => e.product.id == productId);
+    this._order.products =
+        this._order.products.where((e) => e.product.id != productId).toList();
+    await this.persistOrder();
+    notifyListeners();
+  }
+
+  Future<void> removeIndexFromOrder(int index) async {
+    this._order.products.removeAt(index);
     await this.persistOrder();
     notifyListeners();
   }

@@ -9,11 +9,11 @@ class Order {
   static Order fromJson(Map<String, dynamic> data, StateModel model) {
     final productsJson = data['products'] as List<dynamic>;
     final products =
-    productsJson.map((e) => OrderProduct.fromJson(e, model)).toList();
+        productsJson.map((e) => OrderProduct.fromJson(e, model)).toList();
 
     final OrderClient client = OrderClient.fromJson(data['client'], model);
     final OrderPromoCode promoCode =
-    OrderPromoCode.fromJson(data['promo_code']);
+        OrderPromoCode.fromJson(data['promo_code']);
 
     return new Order(promoCode: promoCode, client: client, products: products);
   }
@@ -38,12 +38,11 @@ class Order {
     this.promoCode,
   });
 
-  int get total =>
-      products != null && products.length > 0
-          ? products
+  int get total => products != null && products.length > 0
+      ? products
           .map((e) => e.subTotal)
           .reduce((value, element) => value + element)
-          : 0;
+      : 0;
 
   int get totalWithCode {
     if (this.promoCode == null) {
@@ -65,14 +64,20 @@ class Order {
   }
 
   int get totalWithFees {
+    final fees = this.fees;
+    return this.promoCode == null
+        ? this.total + fees
+        : this.totalWithCode + fees;
+  }
+
+  int get fees {
     if (this.client == null) {
       throw new Exception("Client is null");
     }
 
     final province = this.client.province;
     final fees = province != null ? province.fees : 0;
-    return this.promoCode == null
-        ? this.total + fees
-        : this.totalWithCode + fees;
+
+    return fees;
   }
 }

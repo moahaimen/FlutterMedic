@@ -9,8 +9,10 @@ import 'order_item_quantity.dart';
 class CartProductsListItem extends StatefulWidget {
   final int index;
   final OrderProduct item;
+  final void Function(int id) onDelete;
 
-  CartProductsListItem({@required this.index, @required this.item});
+  CartProductsListItem(
+      {@required this.index, @required this.item, @required this.onDelete});
 
   @override
   State<CartProductsListItem> createState() =>
@@ -26,43 +28,40 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Card(
-        borderOnForeground: true,
-        child: CachedNetworkImage(
-          imageUrl: item.product.image.url,
-          errorWidget: (context, url, error) => Icon(Icons.error),
-          width: 75.0,
-          height: 75.0,
-          fit: BoxFit.cover,
-        ),
-      ),
+      // leading: Card(
+      //   borderOnForeground: true,
+      //   child: CachedNetworkImage(
+      //     imageUrl: item.product.image.url,
+      //     errorWidget: (context, url, error) => Icon(Icons.error),
+      //     width: 75.0,
+      //     height: 75.0,
+      //     fit: BoxFit.cover,
+      //   ),
+      // ),
       title: Row(
         children: [
           Expanded(
             child: Text(
-              item.product.getTitle(context),
-              style: Theme.of(context).textTheme.bodyText1,
+              item.product.getTitle(context, length: 25),
+              style: Theme.of(context).textTheme.headline5,
             ),
           ),
-          ScopedModelDescendant<StateModel>(
-              builder: (BuildContext context, Widget child, StateModel model) =>
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () =>
-                        model.removeProductFromOrder(item.product.id),
-                  )),
+          IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () => widget.onDelete(index),
+          ),
         ],
       ),
       subtitle: Row(
         children: [
-          Container(
-            width: 100.0,
+          Expanded(
             child: Text(
               "${item.subTotal} \$",
-              style: Theme.of(context).textTheme.bodyText2,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
-          Expanded(
+          Container(
+            width: 125.0,
             child: OrderItemQuantity(
               initQuantity: item.quantity,
               onQuantity: (int qty) => setState(() => _setQuantity(qty)),

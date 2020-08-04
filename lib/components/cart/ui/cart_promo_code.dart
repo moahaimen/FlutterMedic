@@ -2,20 +2,17 @@ import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
 enum CartPromoCodeStatus { Clean, Verefying, Active, InActive }
 
 class CartPromoCode extends StatefulWidget {
-  final StateModel state;
-
-  CartPromoCode({@required this.state});
-
   @override
   State<StatefulWidget> createState() => _CartPromoCodeState();
 
-  bool get valid {
-    final Order order = this.state.order;
+  bool isValid(StateModel state) {
+    final Order order = state.order;
 
     return _CartPromoCodeState.currentStatus == CartPromoCodeStatus.Active &&
         order != null &&
@@ -25,9 +22,9 @@ class CartPromoCode extends StatefulWidget {
         order.promoCode.valid;
   }
 
-  bool get empty {
-    return (this.state.order.promoCode == null ||
-        this.state.order.promoCode.code.isEmpty) &&
+  bool isEmpty(StateModel state) {
+    return (state.order.promoCode == null ||
+            state.order.promoCode.code.isEmpty) &&
         _CartPromoCodeState.controller.text.isEmpty;
   }
 }
@@ -48,12 +45,14 @@ class _CartPromoCodeState extends State<CartPromoCode> {
   void initState() {
     super.initState();
     currentStatus = CartPromoCodeStatus.Clean;
-    controller.text = getPromoCodeOrDefault(widget.state);
+    controller.text =
+        getPromoCodeOrDefault(ScopedModel.of<StateModel>(context));
   }
 
   Widget _buildPromoCodeField(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppTranslations translator = AppTranslations.of(context);
+    final StateModel state = ScopedModel.of<StateModel>(context);
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
@@ -82,7 +81,7 @@ class _CartPromoCodeState extends State<CartPromoCode> {
               textInputAction: TextInputAction.done,
               onChanged: (String value) {
                 if (value.length == 8) {
-                  _checkPromoCodeActivation();
+                  _checkPromoCodeActivation(state);
                 }
               },
             ),
@@ -114,11 +113,11 @@ class _CartPromoCodeState extends State<CartPromoCode> {
     return null;
   }
 
-  void _checkPromoCodeActivation() {
+  void _checkPromoCodeActivation(StateModel state) {
     final translator = AppTranslations.of(context);
 
     setState(() => currentStatus = CartPromoCodeStatus.Verefying);
-    widget.state.setPromoCode(controller.value.text).then((active) {
+    state.setPromoCode(controller.value.text).then((active) {
       if (active == null || !active) {
         setState(() => currentStatus = CartPromoCodeStatus.InActive);
         Toast.show(translator.text('promo_code_in_active'), context);
@@ -131,11 +130,8 @@ class _CartPromoCodeState extends State<CartPromoCode> {
 
   @override
   Widget build(BuildContext context) {
-    final double deviceWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .95;
+    final double deviceWidth = MediaQuery.of(context).size.width;
+    final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
     final double paddingWidth = deviceWidth - targetWidth;
 
     return Container(

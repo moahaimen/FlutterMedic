@@ -56,26 +56,20 @@ class Product {
       this.isMain);
 
   String getName(BuildContext context) {
-    return AppTranslations
-        .of(context)
-        .locale
-        .languageCode == "en"
+    return AppTranslations.of(context).locale.languageCode == "en"
         ? enName
         : arName;
   }
 
   String getDescription(BuildContext context) {
-    return AppTranslations
-        .of(context)
-        .locale
-        .languageCode == "en"
+    return AppTranslations.of(context).locale.languageCode == "en"
         ? enDescription
         : arDescription;
   }
 
-  String getTitle(BuildContext context) {
+  String getTitle(BuildContext context, {int length = 12}) {
     final name = getName(context);
-    return name.length >= 12 ? '${name.substring(0, 12)}...' : name;
+    return name.length >= length ? '${name.substring(0, length)}...' : name;
   }
 
   Attachment get image {

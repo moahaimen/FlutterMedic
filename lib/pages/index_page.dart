@@ -49,8 +49,11 @@ class IndexPageState extends State<IndexPage> {
         !_model.productsLoading &&
         !_model.orderRestoring) {
       application.setLocale(_model.settings['locale']);
-      Navigator.pushReplacementNamed(context, Router.home,
-          arguments: PageId.Brands);
+      Navigator.pushReplacementNamed(
+        context,
+        Router.home,
+        arguments: PageId.Home,
+      );
     }
   }
 }
