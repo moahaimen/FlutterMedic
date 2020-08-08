@@ -78,7 +78,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 onChanged: (value) =>
                     state.setOrderClientDetails(name: value, notify: false),
                 validator: (value) =>
-                    _validator(translator, value, null, 3, null),
+                    _validator(translator, value, null, 3, 50),
                 color: theme.accentColor),
             // Phone
             CustomFormField(
@@ -109,7 +109,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 onChanged: (value) =>
                     state.setOrderClientDetails(address: value, notify: false),
                 validator: (value) =>
-                    _validator(translator, value, null, 3, 64, required: true),
+                    _validator(translator, value, null, 3, 50, required: true),
                 color: theme.accentColor),
             CustomFormField(
                 title: translator.text('order_client_notes'),

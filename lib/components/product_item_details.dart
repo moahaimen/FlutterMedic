@@ -77,16 +77,25 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         ),
         SliverList(
           delegate: SliverChildListDelegate([
+            _buildSliverListItem(product.getName(context),
+                translator.text('product_name') ),
             _buildSliverListItem(
-                translator.text('product_name'), product.getName(context)),
-            _buildSliverListItem(translator.text('product_description'),
-                product.getDescription(context)),
-            _buildSliverListItem(translator.text('product_brand'),
-                product.brand.getName(context)),
-            _buildSliverListItem(translator.text('product_category'),
-                product.category.getName(context)),
+                product.getDescription(context),
+              translator.text('product_description'),
+            ),
             _buildSliverListItem(
-                translator.text('product_price'), product.price.toString()),
+                product.brand.getName(context),
+              translator.text('product_brand'),
+            ),
+            _buildSliverListItem(
+                product.category.getName(context),
+              translator.text('product_category'),
+
+            ),
+            _buildSliverListItem(
+                 product.price.toString(),
+              translator.text('product_price'),
+            ),
             _buildProductOptions(translator),
           ]),
         ),

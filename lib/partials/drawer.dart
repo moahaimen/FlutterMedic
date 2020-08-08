@@ -91,7 +91,7 @@ class DrawerBuilder {
         decoration: BoxDecoration(
           color: Colors.transparent,
           image: DecorationImage(
-            image: AssetImage('assets/images/molar-2.jpg'),
+            image: AssetImage('assets/images/molar-2.png'),
             fit: BoxFit.fill,
             matchTextDirection: true,
           ),

@@ -9,8 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class ContactUsPage extends StatelessWidget {
+class ContactUsPage extends StatefulWidget {
+  @override
+  _ContactUsPageState createState() => _ContactUsPageState();
+}
+
+class _ContactUsPageState extends State<ContactUsPage> {
+  Future<void> _launched;
+
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
@@ -54,8 +62,8 @@ class ContactUsPage extends StatelessWidget {
 
   Widget _buildPhoneWidget(BuildContext context, Map<String, dynamic> phone) {
     return Container(
-      height: 125,
-      width: 125,
+      height: 100,
+      width: 100,
       child: Card(
         child: GestureDetector(
           child: Column(
@@ -64,7 +72,7 @@ class ContactUsPage extends StatelessWidget {
             children: [
               Icon(
                 Icons.phone,
-                size: 50,
+                size: 40,
                 color: Colors.grey,
               ),
               Text(AppTranslations.of(context).locale.languageCode == "en"
@@ -73,7 +81,12 @@ class ContactUsPage extends StatelessWidget {
             ],
           ),
           onTap: () {
-            _copyToClipboard(context, phone['url']);
+            setState(() {
+              _launched = _makePhoneCall('tel:07721837469');
+            },
+            );
+            //            callPhone();
+            //            _copyToClipboard(context, phone['url']);
           },
         ),
       ),
@@ -83,8 +96,8 @@ class ContactUsPage extends StatelessWidget {
   Widget _buildFacebookWidget(
       BuildContext context, Map<String, dynamic> facebook) {
     return Container(
-      height: 125,
-      width: 125,
+      height: 100,
+      width: 100,
       child: Card(
         child: GestureDetector(
           child: Column(
@@ -93,8 +106,8 @@ class ContactUsPage extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/images/facebook.png',
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
               ),
               Text(AppTranslations.of(context).locale.languageCode == "en"
                   ? facebook['en_value']
@@ -102,7 +115,9 @@ class ContactUsPage extends StatelessWidget {
             ],
           ),
           onTap: () {
-            _copyToClipboard(context, facebook['url']);
+//            _copyToClipboard(context, facebook['url']);
+
+
           },
         ),
       ),
@@ -111,8 +126,8 @@ class ContactUsPage extends StatelessWidget {
 
   Widget _buildEmailWidget(BuildContext context, Map<String, dynamic> email) {
     return Container(
-      height: 125,
-      width: 125,
+      height: 100,
+      width: 100,
       child: Card(
         child: GestureDetector(
           child: Column(
@@ -121,7 +136,7 @@ class ContactUsPage extends StatelessWidget {
             children: [
               Icon(
                 Icons.alternate_email,
-                size: 50,
+                size: 40,
                 color: Colors.grey,
               ),
               Text(AppTranslations.of(context).locale.languageCode == "en"
@@ -165,5 +180,32 @@ class ContactUsPage extends StatelessWidget {
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text)).then(
         (value) => Toast.show("Copied to clipboard successfully", context));
+  }
+}
+
+Future<void> _makePhoneCall(String url) async {
+
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
+
+Future<void> callPhone() async {
+  // Android
+  var uri = '07721837469';
+
+  if (await canLaunch(uri)) {
+    await launch(uri);
+  } else {
+    // iOS
+
+    if (await canLaunch(uri)) {
+      await launch(uri);
+    } else {
+      throw 'Could not launch $uri';
+    }
   }
 }
