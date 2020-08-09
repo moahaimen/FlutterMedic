@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
 import 'package:flutter/material.dart';

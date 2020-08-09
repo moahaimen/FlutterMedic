@@ -1,7 +1,6 @@
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 
 enum CartStepId { Products, Client, PromoCode }
 

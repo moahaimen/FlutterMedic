@@ -6,7 +6,6 @@ import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/partials/toolbar.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,8 +16,6 @@ class ContactUsPage extends StatefulWidget {
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
-  Future<void> _launched;
-
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
@@ -39,23 +36,26 @@ class _ContactUsPageState extends State<ContactUsPage> {
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
       child: Column(
         children: [
-          Center(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildPhoneWidget(context, contactUs['connections']['phone']),
-                _buildFacebookWidget(
-                    context, contactUs['connections']['facebook']),
-                _buildEmailWidget(context, contactUs['connections']['email']),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-            child: _buildAboutWidget(context, contactUs['about']['about']),
-          ),
+          _buildConnectionsWidget(contactUs['connections']),
+          _buildAboutWidget(context, contactUs['about']['about']),
+          // _buildPoweredByWidget(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildConnectionsWidget(dynamic connections) {
+    return Container(
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildPhoneWidget(context, connections['phone']),
+            _buildFacebookWidget(context, connections['facebook']),
+            _buildEmailWidget(context, connections['email']),
+          ],
+        ),
       ),
     );
   }
@@ -80,14 +80,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   : phone['ar_value']),
             ],
           ),
-          onTap: () {
-            setState(() {
-              _launched = _makePhoneCall('tel:07721837469');
-            },
-            );
-            //            callPhone();
-            //            _copyToClipboard(context, phone['url']);
-          },
+          onTap: () => _launchPhone(phone['url']),
         ),
       ),
     );
@@ -114,11 +107,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   : facebook['ar_value']),
             ],
           ),
-          onTap: () {
-//            _copyToClipboard(context, facebook['url']);
-
-
-          },
+          onTap: () => _launchFacebook(facebook['url']),
         ),
       ),
     );
@@ -144,68 +133,80 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   : email['ar_value']),
             ],
           ),
-          onTap: () {
-            _copyToClipboard(context, email['url']);
-          },
+          onTap: () => _launchEmail(email['url']),
         ),
       ),
     );
   }
 
   Widget _buildAboutWidget(BuildContext context, Map<String, dynamic> about) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 22, vertical: 11),
-      child: Center(
-        child: Column(
-          children: [
-            Text(
-              Strings.applicationTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline3
-                  .copyWith(color: AppColors.accentColor),
+    final theme = Theme.of(context);
+    return Flexible(
+      fit: FlexFit.tight,
+      child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+          child: Center(
+            child: Column(
+              children: [
+                Text(
+                  Strings.applicationTitle,
+                  textAlign: TextAlign.justify,
+                  style: theme.textTheme.headline2.copyWith(
+                    color: AppColors.accentColor,
+                  ),
+                ),
+                Text(
+                  AppTranslations.of(context).locale.languageCode == "en"
+                      ? about['en_value']
+                      : about['ar_value'],
+                  textAlign: TextAlign.justify,
+                  style: theme.textTheme.bodyText1,
+                ),
+                _buildPoweredByWidget(),
+              ],
             ),
-            Text(
-              AppTranslations.of(context).locale.languageCode == "en"
-                  ? about['en_value']
-                  : about['ar_value'],
-              textAlign: TextAlign.center,
-            )
-          ],
+          ),
         ),
       ),
     );
   }
 
-  void _copyToClipboard(BuildContext context, String text) {
-    Clipboard.setData(ClipboardData(text: text)).then(
-        (value) => Toast.show("Copied to clipboard successfully", context));
+  Widget _buildPoweredByWidget() {
+    return Container(
+      padding: EdgeInsets.only(top: 12),
+      child: OutlineButton(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Powered by"),
+            Text("Tech Solutions",
+                style: Theme.of(context).textTheme.headline2),
+          ],
+        ),
+        onPressed: _launchPersonalMessenger,
+      ),
+    );
   }
-}
 
-Future<void> _makePhoneCall(String url) async {
+  void _launchPhone(String phone) => _launchUrl('tel:$phone');
 
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
+  void _launchFacebook(String url) => _launchUrl('http://fb.me/$url');
 
+  void _launchEmail(String url) => _launchUrl('mailto:$url');
 
-Future<void> callPhone() async {
-  // Android
-  var uri = '07721837469';
+  // Replace 'zappos' with your facebbok username
+  void _launchPersonalMessenger() => _launchUrl('http://m.me/zappos');
 
-  if (await canLaunch(uri)) {
-    await launch(uri);
-  } else {
-    // iOS
-
-    if (await canLaunch(uri)) {
-      await launch(uri);
-    } else {
-      throw 'Could not launch $uri';
+  Future<void> _launchUrl(String url) async {
+    if (url == null) {
+      throw new Exception("Url cannot be null");
     }
+    if (!await canLaunch(url)) {
+      Toast.show('Failed to open the application', context);
+    }
+    await launch(url);
   }
 }

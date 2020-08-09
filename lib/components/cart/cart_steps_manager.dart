@@ -96,19 +96,6 @@ class _CartStepsManagerState extends State<CartStepsManager> {
     );
   }
 
-  void _onStepTapped(int step, AppTranslations translator) {
-    if (step < 0 || step >= this.steps.length) {
-      Toast.show(translator.text('cart_step_unknown'), context);
-      return;
-    }
-
-    if (step > currentStep) {
-      Toast.show(translator.text('press_continue_button'), context);
-      return;
-    }
-    setState(() => currentStep = step);
-  }
-
   void _onStepContinue(StateModel state, AppTranslations translator) {
     final step = this.steps[currentStep];
     if (!step.finished(state)) {
