@@ -128,7 +128,9 @@ class PushNotificationsManager {
       print("Push Messaging token: $token");
     });
 
-    _firebaseMessaging.subscribeToTopic(topic);
+    _firebaseMessaging
+        .subscribeToTopic(topic)
+        .then((value) => print('Subscribe to topic completed'));
   }
 
   Widget _buildDialog(BuildContext context, MM.Notification notification) {

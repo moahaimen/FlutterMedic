@@ -40,9 +40,7 @@ class _MyAppState extends State<MyApp> {
     return ScopedModel<StateModel>(
       model: state,
       child: MaterialApp(
-
-
-        debugShowCheckedModeBanner: false,
+        // debugShowCheckedModeBanner: false,
         title: title,
         theme: ThemeBuilder.getTheme(),
         initialRoute: Router.index,

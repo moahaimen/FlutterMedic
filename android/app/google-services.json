@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1065309506795:android:89c91b9321d1835d2d02ae",
+        "mobilesdk_app_id": "1:1065309506795:android:54a9fd1b027456eb2d02ae",
         "android_client_info": {
           "package_name": "com.example.drugStore"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "1065309506795-rllk1qokmhhpitm95dj9qnta8e22qggd.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.drugStore",
-            "certificate_hash": "33cd4c1a9a20d9c2418ffb891de95ee8a9f1ef49"
-          }
-        },
         {
           "client_id": "1065309506795-nbj35oc85fmsnljig93p9n20qir76326.apps.googleusercontent.com",
           "client_type": 3
