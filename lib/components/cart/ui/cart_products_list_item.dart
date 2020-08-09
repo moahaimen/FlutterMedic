@@ -28,16 +28,16 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      // leading: Card(
-      //   borderOnForeground: true,
-      //   child: CachedNetworkImage(
-      //     imageUrl: item.product.image.url,
-      //     errorWidget: (context, url, error) => Icon(Icons.error),
-      //     width: 75.0,
-      //     height: 75.0,
-      //     fit: BoxFit.cover,
-      //   ),
-      // ),
+      leading: Card(
+        borderOnForeground: true,
+        child: CachedNetworkImage(
+          imageUrl: item.product.image.url,
+          errorWidget: (context, url, error) => Icon(Icons.error),
+          width: 75.0,
+          height: 75.0,
+          fit: BoxFit.cover,
+        ),
+      ),
       title: Row(
         children: [
           Expanded(
