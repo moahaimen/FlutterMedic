@@ -14,6 +14,8 @@ class ProductsListView extends StatelessWidget {
   final Map<String, dynamic> filter;
 
   final int _columnCount = 2;
+
+
   final ScrollPhysics physics;
 
   ProductsListView({@required this.filter, @required this.physics});

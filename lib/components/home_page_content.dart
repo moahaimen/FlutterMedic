@@ -36,7 +36,7 @@ class HomePageContent extends StatelessWidget {
     return Container(
       height: 150.0,
       child: Carousel(
-        images: ['assets/images/molar-2.jpg']
+        images: ['assets/images/molar-2.png']
             .toList()
             .map((p) => Image.asset(p, fit: BoxFit.fitWidth))
             .toList(),
