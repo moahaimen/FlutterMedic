@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1065309506795:android:89c91b9321d1835d2d02ae",
         "android_client_info": {
-          "package_name": "com.example.drugStore"
+          "package_name": "com.molardent.drugstor"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "1065309506795-rllk1qokmhhpitm95dj9qnta8e22qggd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.drugStore",
+            "package_name": "com.molardent.drugstor",
             "certificate_hash": "33cd4c1a9a20d9c2418ffb891de95ee8a9f1ef49"
           }
         },
@@ -43,7 +43,7 @@
               "client_id": "1065309506795-f43a5fsd6am5i00qgn149700bsgt9i57.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.drugStore"
+                "bundle_id": "com.molardent.drugstor"
               }
             }
           ]

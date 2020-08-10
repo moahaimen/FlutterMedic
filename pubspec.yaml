@@ -92,3 +92,10 @@ flutter:
           weight: 700
         - asset: assets/fonts/changa/changa-extra-bold.ttf
           weight: 800
+
+    - family: Cairo
+      fonts:
+      - asset: assets/fonts/Cairo-Regular.ttf
+      - asset: assets/fonts/Cairo-Bold.ttf
+        weight: 700
+#        - asset: assets/fonts/Changa-Medium.ttf

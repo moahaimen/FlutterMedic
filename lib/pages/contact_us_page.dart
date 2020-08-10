@@ -181,9 +181,19 @@ class _ContactUsPageState extends State<ContactUsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Powered by"),
-            Text("Tech Solutions",
-                style: Theme.of(context).textTheme.headline2),
+
+            Text(" لعمل متجر ومذاخر الكترونية",
+              style:  const TextStyle(
+                fontSize: 18,
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF130f40),)),
+            Text("ITM for Tech Solutions",
+                style:  const TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF130f40),)),
           ],
         ),
         onPressed: _launchPersonalMessenger,
@@ -198,7 +208,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
   void _launchEmail(String url) => _launchUrl('mailto:$url');
 
   // Replace 'zappos' with your facebbok username
-  void _launchPersonalMessenger() => _launchUrl('http://m.me/zappos');
+  void _launchPersonalMessenger() => _launchUrl('http://m.me/gathanfer.gathanfer.7');
 
   Future<void> _launchUrl(String url) async {
     if (url == null) {

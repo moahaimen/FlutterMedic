@@ -1,4 +1,4 @@
-package com.example.drugStore;
+package com.molardent.drugstor;
 
 
 import io.flutter.plugin.common.PluginRegistry;
