@@ -1,4 +1,6 @@
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
+import 'package:drugStore/localization/app_translation.dart';
+import 'package:flutter/material.dart';
 
 class Strings {
   static String applicationTitle = "Molar Dent";
@@ -14,5 +16,12 @@ class Strings {
       referrerDetailsString = 'Failed to get referrer details: $e';
     }
     return referrerDetailsString;
+  }
+
+  static String currency(BuildContext context) {
+    final translator = AppTranslations.of(context);
+    final currency = translator.text('currency');
+
+    return currency;
   }
 }

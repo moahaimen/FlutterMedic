@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/models/order_product.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
         children: [
           Expanded(
             child: Text(
-              "${item.subTotal} \$",
+              "${item.subTotal} ${Strings.currency(context)}",
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),

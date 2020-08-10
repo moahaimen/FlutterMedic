@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class ProductListItemState extends State<ProductListItem> {
               ),
               Text(this.product.getTitle(context)),
               Text(
-                "${this.product.price.toString()} \$",
+                "${this.product.price.toString()} ${Strings.currency(context)}",
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2

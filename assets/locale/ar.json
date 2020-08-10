@@ -26,7 +26,7 @@
   "search": "ابحث عن منتجات",
   "search_empty_result": "لا توجد منتجات تطابق مفتاح البحث",
   "share_app_message": "قم بتحميل MOLAR DENT مجانا الآن من خلال الرابط التالي ",
-  "bucks_per_piece": "دولار/قطعة",
+  "bucks_per_piece": "د.ع/قطعة",
   "set_num_of_pieces": "رجاء اختر عدد القطع المطلوب، ثم اضغط على زر \"موافق\"",
   "ask_add_to_cart_message": "هل ترغب حقا بإضافة المنتج ",
   "settings_general": "عام",
@@ -61,5 +61,6 @@
   "max_length": "الحد الأقصى المسموح ",
   "invalid_pattern": "أنت تستخدم أحرف غير مسموحة",
   "promo_code": "كود الحسم",
-  "promo_code_in_active": "كود الحسم خاطئ أو منتهي الصلاحية"
+  "promo_code_in_active": "كود الحسم خاطئ أو منتهي الصلاحية",
+  "currency": "د.ع"
 }
