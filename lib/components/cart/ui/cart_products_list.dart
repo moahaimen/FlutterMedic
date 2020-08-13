@@ -14,26 +14,22 @@ class CartProductsList extends StatelessWidget {
   CartProductsList() : promoCode = new CartPromoCode();
 
   Widget _getCartEmpty(BuildContext context, ThemeData theme) {
-    return Card(
-      color: Colors.white70,
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12.5),
-          child: Column(
-            children: [
-              Icon(
-                Icons.remove_shopping_cart,
-                size: 33.3,
-                color: theme.primaryColorDark,
-              ),
-              Text(
-                AppTranslations.of(context).text('cart_empty'),
-                style: theme.accentTextTheme.bodyText1
-                    .copyWith(color: theme.primaryColorDark),
-              ),
-            ],
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          Icon(
+            Icons.remove_shopping_cart,
+            size: 33.3,
+            color: theme.primaryColorDark,
           ),
-        ),
+          Text(
+            AppTranslations.of(context).text('cart_empty'),
+            style: theme.accentTextTheme.bodyText1
+                .copyWith(color: theme.primaryColorDark),
+          ),
+        ],
       ),
     );
   }
@@ -95,7 +91,7 @@ class CartProductsList extends StatelessWidget {
       builder: (context, child, model) => _getProductsList(
           context,
           model.order.products.where((e) => e.quantity > 0).toList(),
-          model.removeIndexFromOrder),
+          model.removeProductFromOrder),
     );
   }
 }

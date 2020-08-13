@@ -16,23 +16,17 @@ class CartProductsListItem extends StatefulWidget {
       {@required this.index, @required this.item, @required this.onDelete});
 
   @override
-  State<CartProductsListItem> createState() =>
-      _CartProductsListItemState(index: this.index, item: this.item);
+  State<CartProductsListItem> createState() => _CartProductsListItemState();
 }
 
 class _CartProductsListItemState extends State<CartProductsListItem> {
-  final int index;
-  final OrderProduct item;
-
-  _CartProductsListItemState({@required this.index, @required this.item});
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Card(
         borderOnForeground: true,
         child: CachedNetworkImage(
-          imageUrl: item.product.image.url,
+          imageUrl: widget.item.product.image.url,
           errorWidget: (context, url, error) => Icon(Icons.error),
           width: 75.0,
           height: 75.0,
@@ -43,13 +37,13 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
         children: [
           Expanded(
             child: Text(
-              item.product.getTitle(context, length: 25),
+              widget.item.product.getTitle(context, length: 25),
               style: Theme.of(context).textTheme.headline5,
             ),
           ),
           IconButton(
             icon: Icon(Icons.close),
-            onPressed: () => widget.onDelete(index),
+            onPressed: () => widget.onDelete(widget.item.product.id),
           ),
         ],
       ),
@@ -57,14 +51,14 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
         children: [
           Expanded(
             child: Text(
-              "${item.subTotal} ${Strings.currency(context)}",
+              "${widget.item.subTotal} ${Strings.currency(context)}",
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
           Container(
             width: 125.0,
             child: OrderItemQuantity(
-              initQuantity: item.quantity,
+              initQuantity: widget.item.quantity,
               onQuantity: (int qty) => setState(() => _setQuantity(qty)),
             ),
           ),
@@ -75,7 +69,7 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
 
   void _setQuantity(int quantity) {
     final model = ScopedModel.of<StateModel>(context);
-    this.item.quantity = quantity;
-    model.setOrderProductQuantity(this.item.product.id, this.item.quantity);
+    widget.item.quantity = quantity;
+    model.setOrderProductQuantity(widget.item.product.id, widget.item.quantity);
   }
 }
