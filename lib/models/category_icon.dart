@@ -1,8 +1,10 @@
 class CategoryIcon {
-  final int name;
+  final String url;
 
-  CategoryIcon(this.name);
+  CategoryIcon(this.url) {
+    print(url);
+  }
 
-  String get url =>
-      'https://molardentalmaterials.com/assets/img/icons/icon$name.png';
+  // String get url =>
+  //     'https://molardentalmaterials.com/assets/img/icons/icon$name.png';
 }
