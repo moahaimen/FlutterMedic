@@ -1,4 +1,5 @@
 import 'package:drugStore/constants/strings.dart';
+import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order.dart';
 import 'package:flutter/material.dart';
 
@@ -14,20 +15,25 @@ class OrderTotalUi extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currency = Strings.currency(context);
+    final translator = AppTranslations.of(context);
 
     return Container(
       color: Colors.white60,
       child:
           this.order.promoCode == null || this.promoCode == PromoCodeState.None
-              ? _getTotal(theme, currency)
-              : _getTotalWithPromoCode(theme, currency),
+              ? _getTotal(theme, translator, currency)
+              : _getTotalWithPromoCode(theme, translator, currency),
     );
   }
 
-  Widget _getTotal(ThemeData theme, String currency) {
+  Widget _getTotal(
+    ThemeData theme,
+    AppTranslations translator,
+    String currency,
+  ) {
     return Column(
       children: [
-        Text("Total",
+        Text(translator.text('total'),
             style: theme.accentTextTheme.bodyText2.copyWith(color: Colors.red)),
         Text("${order.total.toString()} $currency",
             style: theme.accentTextTheme.headline6
@@ -36,12 +42,16 @@ class OrderTotalUi extends StatelessWidget {
     );
   }
 
-  Widget _getTotalWithPromoCode(ThemeData theme, String currency) {
+  Widget _getTotalWithPromoCode(
+    ThemeData theme,
+    AppTranslations translator,
+    String currency,
+  ) {
     List<Widget> children = [];
 
     // Add text
     children.add(
-      Text("Total",
+      Text(translator.text('total'),
           style: theme.accentTextTheme.bodyText2
               .copyWith(color: theme.primaryColorDark)),
     );

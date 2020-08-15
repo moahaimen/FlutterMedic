@@ -13,7 +13,7 @@ class CategoryListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,8 +23,10 @@ class CategoryListItem extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: this.category.icon.url,
                 errorWidget: (context, url, error) => Icon(Icons.error),
-                width: 50,
-                height: 50,
+                alignment: Alignment.center,
+                // fit: BoxFit.contain,
+                width: 90,
+                height: 90,
               ),
             ),
             Text(
@@ -34,12 +36,8 @@ class CategoryListItem extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () => Navigator.of(context).pushNamed(
-        Router.products,
-        arguments: {
-          'category': this.category,
-        },
-      ),
+      onTap: () => Navigator.of(context)
+          .pushNamed(Router.products, arguments: {'category': this.category}),
     );
   }
 }

@@ -53,6 +53,7 @@
   "order_client_province": "Province",
   "total_with_fees": "Total With Fees",
   "fees": "Shipping Fees",
+  "total": "Total",
   "total_grand_total": "Grand Total",
   "required_field": "Required field",
   "province_must_be_valid": "Province must be from the list",

@@ -15,13 +15,12 @@ class ProductsListView extends StatelessWidget {
 
   final int _columnCount = 2;
 
-
   final ScrollPhysics physics;
 
   ProductsListView({@required this.filter, @required this.physics});
 
-  Widget _buildProductsList(BuildContext context, bool loading,
-      List<Product> products,
+  Widget _buildProductsList(
+      BuildContext context, bool loading, List<Product> products,
       {Brand brand, Category category, String name}) {
     if (loading) {
       return Center(
@@ -50,7 +49,7 @@ class ProductsListView extends StatelessWidget {
     if (name != null && name.isNotEmpty) {
       products = products
           .where((element) =>
-      element.enName.contains(name) || element.arName.contains(name))
+              element.enName.contains(name) || element.arName.contains(name))
           .toList();
     }
 
@@ -73,7 +72,7 @@ class ProductsListView extends StatelessWidget {
           crossAxisCount: _columnCount,
           children: List.generate(
             products.length,
-                (int index) {
+            (int index) {
               return AnimationConfiguration.staggeredGrid(
                 position: index,
                 duration: const Duration(milliseconds: 375),
