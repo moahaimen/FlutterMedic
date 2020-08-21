@@ -7,19 +7,23 @@ class OrderItemQuantity extends StatefulWidget {
   OrderItemQuantity({@required this.onQuantity, @required this.initQuantity});
 
   @override
-  State<OrderItemQuantity> createState() =>
-      OrderItemQuantityState(this.onQuantity);
+  State<OrderItemQuantity> createState() => OrderItemQuantityState();
 }
 
 class OrderItemQuantityState extends State<OrderItemQuantity> {
   int quantity = 1;
-  void Function(int quantity) onQuantity;
-
-  OrderItemQuantityState(this.onQuantity);
 
   @override
   void initState() {
     super.initState();
+    if (widget.initQuantity != null) {
+      this.quantity = widget.initQuantity;
+    }
+  }
+
+  @override
+  void didUpdateWidget(OrderItemQuantity oldWidget) {
+    super.didUpdateWidget(oldWidget);
     this.quantity = widget.initQuantity;
   }
 
@@ -28,9 +32,7 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
     return Row(
       children: [
         IconButton(
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
           icon: Icon(
             Icons.remove_circle,
           ),
@@ -45,9 +47,7 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
           ),
         ),
         IconButton(
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
           icon: Icon(
             Icons.add_circle,
           ),
@@ -59,19 +59,15 @@ class OrderItemQuantityState extends State<OrderItemQuantity> {
   }
 
   void _increasePiecesCount() {
-    setState(() {
-      this.quantity++;
-      this.onQuantity(this.quantity);
-    });
+    this.quantity++;
+    setState(() => widget.onQuantity(this.quantity));
   }
 
   void _decreasePiecesCount() {
     if (this.quantity == 1) {
       return;
     }
-    setState(() {
-      this.quantity--;
-      this.onQuantity(this.quantity);
-    });
+    this.quantity--;
+    setState(() => widget.onQuantity(this.quantity));
   }
 }
