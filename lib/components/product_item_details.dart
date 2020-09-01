@@ -77,25 +77,21 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
         ),
         SliverList(
           delegate: SliverChildListDelegate([
-            _buildSliverListItem(product.getName(context),
-                translator.text('product_name') ),
             _buildSliverListItem(
-                product.getDescription(context),
+                product.getName(context), translator.text('product_name')),
+            _buildSliverListItem(
+              product.getDescription(context),
               translator.text('product_description'),
             ),
             _buildSliverListItem(
-                product.brand.getName(context),
+              product.brand.getName(context),
               translator.text('product_brand'),
             ),
             _buildSliverListItem(
-                product.category.getName(context),
+              product.category.getName(context),
               translator.text('product_category'),
-
             ),
-            _buildSliverListItem(
-                 product.price.toString(),
-              translator.text('product_price'),
-            ),
+            _buildPriceSliverListItem(translator.text('product_price')),
             _buildProductOptions(translator),
           ]),
         ),
@@ -178,6 +174,55 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
       ),
     );
   }
+
+  Widget _buildPriceSliverListItem(String title) {
+    return Card(
+      shadowColor: Colors.white30,
+      margin: EdgeInsets.zero,
+      color: Colors.white,
+      child: ListTile(
+        leading: Icon(
+          Icons.clear_all,
+          size: 25.0,
+          color: Theme.of(context).primaryColorDark,
+        ),
+        title: buildProductPrice,
+        subtitle: Text(title,
+            style: TextStyle(
+                color: Theme.of(context).accentColor, fontSize: 15.0)),
+      ),
+    );
+  }
+
+  Widget get buildProductPrice => product.isDiscount
+      ? Center(
+          child: Row(
+            children: [
+              Text(
+                "${product.oldPrice.toString()} ${Strings.currency(context)}",
+                style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      // fontStyle: FontStyle.italic,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+              ),
+              SizedBox(width: 4),
+              Text(
+                "${product.price.toString()} ${Strings.currency(context)}",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        )
+      : Text(
+          "${product.price.toString()} ${Strings.currency(context)}",
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1
+              .copyWith(fontWeight: FontWeight.bold),
+        );
 
   void _shareProduct(AppTranslations translator) async {
     final downloadUrl = await Strings.downloadUrl;

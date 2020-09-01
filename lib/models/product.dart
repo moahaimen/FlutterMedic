@@ -23,6 +23,9 @@ class Product {
         data['en_description'] ?? '',
         data['ar_description'] ?? '',
         data['price']['value'] ?? '',
+        data['price']['is_discount']
+            ? data['price']['previous']['value']
+            : null,
         DateTime.parse(data['price']['updated_at']),
         attachments,
         brand,
@@ -36,6 +39,7 @@ class Product {
   final String enDescription;
   final String arDescription;
   final num price;
+  final num oldPrice;
   final DateTime dateOfPriceChange;
   final Brand brand;
   final Category category;
@@ -49,6 +53,7 @@ class Product {
       this.enDescription,
       this.arDescription,
       this.price,
+      this.oldPrice,
       this.dateOfPriceChange,
       this.attachments,
       this.brand,
@@ -77,5 +82,9 @@ class Product {
       return null;
     }
     return attachments.firstWhere((e) => e.type == AttachmentType.Image);
+  }
+
+  bool get isDiscount {
+    return this.oldPrice != null;
   }
 }

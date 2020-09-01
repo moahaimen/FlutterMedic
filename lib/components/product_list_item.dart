@@ -16,7 +16,7 @@ class ProductListItem extends StatefulWidget {
 
   @override
   State<ProductListItem> createState() =>
-      ProductListItemState(product: this.product);
+      ProductListItemState(product: product);
 }
 
 class ProductListItemState extends State<ProductListItem> {
@@ -27,7 +27,7 @@ class ProductListItemState extends State<ProductListItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      key: new ValueKey(this.product.id),
+      key: new ValueKey(product.id),
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Container(
@@ -35,22 +35,16 @@ class ProductListItemState extends State<ProductListItem> {
             children: [
               Expanded(
                 child: CachedNetworkImage(
-                  imageUrl: this.product?.image?.url,
+                  imageUrl: product?.image?.url,
                   errorWidget: (context, url, error) => Icon(Icons.error),
                   alignment: Alignment.center,
                   fit: BoxFit.fill,
                   width: 200,
                 ),
               ),
-              Text(this.product.getTitle(context)),
-              Text(
-                "${this.product.price.toString()} ${Strings.currency(context)}",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText2
-                    .copyWith(color: Colors.red),
-              ),
-              AddToCartButton(id: this.product.id),
+              Text(product.getTitle(context)),
+              buildProductPrice,
+              AddToCartButton(id: product.id),
             ],
           ),
         ),
@@ -61,12 +55,52 @@ class ProductListItemState extends State<ProductListItem> {
     );
   }
 
+  Widget get buildProductPrice => product.isDiscount
+      ? Center(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: Text(
+                  "${product.oldPrice.toString()} ${Strings.currency(context)}",
+                  maxLines: 1,
+                  textAlign: TextAlign.end,
+                  style: Theme.of(context).textTheme.bodyText2.copyWith(
+                        // fontStyle: FontStyle.italic,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                ),
+              ),
+              SizedBox(
+                width: 4,
+              ),
+              Expanded(
+                child: Text(
+                  "${product.price.toString()} ${Strings.currency(context)}",
+                  maxLines: 1,
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText2
+                      .copyWith(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+        )
+      : Text(
+          "${product.price.toString()} ${Strings.currency(context)}",
+          style:
+              Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.red),
+        );
+
   void _gotoProductDetails() {
-    ScopedModel.of<StateModel>(context).setSelectedProduct(this.product.id);
+    ScopedModel.of<StateModel>(context).setSelectedProduct(product.id);
     Navigator.of(context).pushNamed(Router.productDetails);
   }
 
   void _askAddToCart() {
-    AskAddToCartModal.show(context, this.product);
+    AskAddToCartModal.show(context, product);
   }
 }
