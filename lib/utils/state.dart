@@ -397,7 +397,7 @@ class StateModel extends Model {
     }
 
     final product = this._products.firstWhere((e) => e.id == productId);
-    if (product == null) {
+    if (product == null || !product.available) {
       return false;
     }
 

@@ -11,7 +11,7 @@
   "cart_item_remove_done_message": "تم إزالة العنصر من السلة بنجاح",
   "cart_item_added": "تمت الإضافة",
   "cart_item_add_done_message": "تم إضافة هذه العنصر إلى السلة بنجاح",
-  "cart_item_add_failed_message": "فشلت عملية الإضافة إلى السلة",
+  "cart_item_add_failed_message": "هذا المنتج غير متاح حالياً",
   "brands_list_empty": "لا توجد ماركات لعرضها",
   "categories_list_empty": "لا توجد فئات لعرضها",
   "products_list_empty": "لا توجد منتجات لعرضها",
@@ -63,5 +63,6 @@
   "invalid_pattern": "أنت تستخدم أحرف غير مسموحة",
   "promo_code": "كود الحسم",
   "promo_code_in_active": "كود الحسم خاطئ أو منتهي الصلاحية",
-  "currency": "د.ع"
+  "currency": "د.ع",
+  "not_available": "غير متوفر"
 }

@@ -11,7 +11,7 @@
   "cart_item_remove_done_message": "Cart item removed successfully",
   "cart_item_added": "Added",
   "cart_item_add_done_message": "Cart item added successfully",
-  "cart_item_add_failed_message": "Failed to add cart item",
+  "cart_item_add_failed_message": "Product is not available",
   "brands_list_empty": "Brands List is Empty",
   "categories_list_empty": "Categories List is Empty",
   "products_list_empty": "Products List is Empty",
@@ -63,5 +63,6 @@
   "invalid_pattern": "Invalid field text pattern",
   "promo_code": "Promo Code",
   "promo_code_in_active": "Promo code is valid and active",
-  "currency": "IQD"
+  "currency": "IQD",
+  "not_available": "Not available"
 }

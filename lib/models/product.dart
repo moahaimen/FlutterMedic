@@ -30,7 +30,8 @@ class Product {
         attachments,
         brand,
         category,
-        data['is_main']);
+        data['is_main'],
+        data['available']);
   }
 
   final int id;
@@ -45,6 +46,7 @@ class Product {
   final Category category;
   final List<Attachment> attachments;
   final bool isMain;
+  final bool available;
 
   Product(
       this.id,
@@ -58,7 +60,8 @@ class Product {
       this.attachments,
       this.brand,
       this.category,
-      this.isMain);
+      this.isMain,
+      this.available);
 
   String getName(BuildContext context) {
     return AppTranslations.of(context).locale.languageCode == "en"
