@@ -55,8 +55,8 @@ class _MyAppState extends State<MyApp> {
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: [
-          const Locale("ar", "ue"),
-          const Locale("en", "uk"),
+          const Locale("ar", ""),
+          const Locale("en", ""),
         ],
       ),
     );
