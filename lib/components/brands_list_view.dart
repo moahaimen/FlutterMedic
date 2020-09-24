@@ -56,7 +56,7 @@ class BrandsListView extends StatelessWidget {
       builder: (BuildContext context, Widget widget, StateModel model) {
         return RefreshIndicator(
           onRefresh: () {
-            return model.fetchBrands();
+            return model.fetchBrands(context);
           },
           child: _buildBrandsList(context, model.brandsLoading, model.brands),
         );

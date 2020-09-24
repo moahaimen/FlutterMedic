@@ -1,57 +1,48 @@
-import 'dart:convert' as json;
-
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 class Http {
-  static Future<dynamic> get(String url, {Map<String, String> headers}) async {
+  static Future<dynamic> get(BuildContext context, String path,
+      {Map<String, dynamic> headers}) async {
     if (headers == null) {
       headers = new Map();
     }
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
-    return http
-        .get(url, headers: headers)
-        .catchError(_onError)
-        .then((http.Response response) {
-      if (response == null) {
-        return null;
-      }
+    return Dio()
+        .get(path, options: Options(headers: headers))
+        .catchError((err) => _onError(context, err))
+        .then((Response response) {
       if (response.statusCode != 200) {
-        return null;
-      }
-
-      return json.jsonDecode(response.body);
-    });
-  }
-
-  static Future<dynamic> post(String url, dynamic data) async {
-    var requestData = json.jsonEncode(data);
-
-    print(requestData);
-
-    final Map<String, String> headers = {
-      'Host': '',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    return http
-        .post(url, body: requestData, headers: headers)
-        .catchError(_onError)
-        .then((http.Response response) {
-      if (response.statusCode != 200) {
-        print(response.statusCode);
-        print(json.jsonEncode(response.headers));
-        print(response.body);
         return response.headers['Message'];
       }
-
-      return json.jsonDecode(response.body);
+      return response.data;
     });
   }
 
-  static void _onError(dynamic err) {
+  static Future<dynamic> post(BuildContext context, String path, dynamic data,
+      {Map<String, dynamic> headers}) async {
+    if (headers == null) {
+      headers = new Map();
+    }
+    headers['content-Type'] = 'application/json';
+    headers['accept'] = 'application/json';
+
+    return Dio()
+        .post(path, data: data, options: Options(headers: headers))
+        .catchError((err) => _onError(context, err))
+        .then((Response response) {
+      if (response.statusCode != 200) {
+        return response.headers['Message'];
+      }
+      return response.data;
+    });
+  }
+
+  static void _onError(BuildContext context, dynamic err) {
     print(err);
+    Toast.show("Network Problem", context, duration: 2);
   }
 }

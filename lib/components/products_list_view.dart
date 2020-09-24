@@ -106,7 +106,7 @@ class ProductsListView extends StatelessWidget {
         }
         return RefreshIndicator(
           onRefresh: () {
-            return model.fetchProducts();
+            return model.fetchProducts(context);
           },
           child: _buildProductsList(
             context,

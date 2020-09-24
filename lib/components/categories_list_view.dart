@@ -59,7 +59,7 @@ class CategoriesListView extends StatelessWidget {
       builder: (BuildContext context, Widget widget, StateModel model) {
         return RefreshIndicator(
           onRefresh: () {
-            return model.fetchCategories();
+            return model.fetchCategories(context);
           },
           child: _buildCategoriesList(
               context, model.categoriesLoading, model.categories),

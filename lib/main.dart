@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final String title = Strings.applicationTitle;
-    final StateModel state = new StateModel();
+    final StateModel state = new StateModel(context);
 
     return ScopedModel<StateModel>(
       model: state,
@@ -55,8 +55,8 @@ class _MyAppState extends State<MyApp> {
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: [
-          const Locale("ar", ""),
-          const Locale("en", ""),
+          const Locale("ar", "ue"),
+          const Locale("en", "uk"),
         ],
       ),
     );

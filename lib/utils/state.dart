@@ -6,6 +6,7 @@ import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
 import 'package:drugStore/models/order_promo_code.dart';
 import 'package:drugStore/models/province.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,36 +110,36 @@ class StateModel extends Model {
 
   Order get order => this._order;
 
-  StateModel() {
-    _initializeModelData();
+  StateModel(BuildContext context) {
+    _initializeModelData(context);
   }
 
-  void _initializeModelData() {
+  void _initializeModelData(BuildContext context) {
     this._brands = [];
     this._categories = [];
     this._products = [];
     this._provinces = [];
 
-    this.fetchModelData();
+    this.fetchModelData(context);
   }
 
-  void fetchModelData() {
-    this.fetchBrands();
-    this.fetchCategories();
-    this.fetchProducts().then((value) => this.restoreStoredOrder());
+  void fetchModelData(BuildContext context) {
+    this.fetchBrands(context);
+    this.fetchCategories(context);
+    this.fetchProducts(context).then((value) => this.restoreStoredOrder());
     this.loadSettings();
-    this.fetchContactUs();
-    this.fetchProvinces();
+    this.fetchContactUs(context);
+    this.fetchProvinces(context);
   }
 
   ///
   /// Fetch contact us information
   ///
-  Future<void> fetchContactUs() {
+  Future<void> fetchContactUs(BuildContext context) {
     _contactUsLoading = true;
     notifyListeners();
 
-    return Http.get(DotEnv().env['fetchContactUsUrl'])
+    return Http.get(context, DotEnv().env['fetchContactUsUrl'])
         .then((dynamic contactUs) {
       if (contactUs == null) {
         _contactUsLoading = false;
@@ -167,11 +168,11 @@ class StateModel extends Model {
   ///
   /// Fetch provinces list
   ///
-  Future<void> fetchProvinces() {
+  Future<void> fetchProvinces(BuildContext context) {
     _provincesLoading = true;
     notifyListeners();
 
-    return Http.get(DotEnv().env['fetchProvincesUrl'])
+    return Http.get(context, DotEnv().env['fetchProvincesUrl'])
         .then((dynamic provinces) {
       if (provinces == null) {
         this._provincesLoading = false;
@@ -190,11 +191,11 @@ class StateModel extends Model {
   ///
   /// Fetch list of categories
   ///
-  Future<void> fetchCategories() {
+  Future<void> fetchCategories(BuildContext context) {
     this._categoriesLoading = true;
     this.notifyListeners();
 
-    return Http.get(DotEnv().env['fetchCategoriesUrl'])
+    return Http.get(context, DotEnv().env['fetchCategoriesUrl'])
         .then((dynamic categories) {
       if (categories == null) {
         this._categoriesLoading = false;
@@ -260,11 +261,12 @@ class StateModel extends Model {
   ///
   /// Fetch list of brands
   ///
-  Future<void> fetchBrands() {
+  Future<void> fetchBrands(BuildContext context) {
     this._brandsLoading = true;
     this.notifyListeners();
 
-    return Http.get(DotEnv().env['fetchBrandsUrl']).then((dynamic result) {
+    return Http.get(context, DotEnv().env['fetchBrandsUrl'])
+        .then((dynamic result) {
       if (result == null) {
         this._brandsLoading = false;
         this.notifyListeners();
@@ -280,11 +282,12 @@ class StateModel extends Model {
   ///
   /// Fetch list of products
   ///
-  Future<void> fetchProducts() {
+  Future<void> fetchProducts(BuildContext context) {
     this._productsLoading = true;
     this.notifyListeners();
 
-    return Http.get(DotEnv().env['fetchProductsUrl']).then((dynamic products) {
+    return Http.get(context, DotEnv().env['fetchProductsUrl'])
+        .then((dynamic products) {
       if (products == null) {
         this._productsLoading = false;
         this.notifyListeners();
@@ -349,14 +352,14 @@ class StateModel extends Model {
   ///
   /// Post order
   ///
-  Future<bool> postOrder() {
+  Future<bool> postOrder(BuildContext context) {
     this._orderUploading = true;
     this.notifyListeners();
 
     final base64 =
         base64Encode(utf8.encode(jsonEncode(this._order.toJson(true))));
 
-    return Http.get("${DotEnv().env['postOrderUrl']}?o=$base64")
+    return Http.get(context, "${DotEnv().env['postOrderUrl']}?o=$base64")
         .then((dynamic response) {
       print("post order => $response");
       this._orderUploading = false;
@@ -504,10 +507,10 @@ class StateModel extends Model {
   ///
   /// Set order promo code after verify it's activation
   ///
-  Future<bool> setPromoCode(String promoCode) async {
+  Future<bool> setPromoCode(BuildContext context, String promoCode) async {
     final String url =
         DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
-    return Http.get(url).then((response) async {
+    return Http.get(context, url).then((response) async {
       if (response == null) {
         this._order.promoCode = null;
         notifyListeners();

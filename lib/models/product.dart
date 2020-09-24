@@ -82,12 +82,15 @@ class Product {
 
   Attachment get image {
     if (this.attachments == null || this.attachments.length == 0) {
-      return null;
+      throw "Product's attachments null or empty";
     }
-    return attachments.firstWhere((e) => e.type == AttachmentType.Image);
+    final a = attachments.firstWhere((e) => e.type == AttachmentType.Image,
+        orElse: () => null);
+    if (a == null) {
+      throw "Product's attachments list doesn't have any IMAGEs";
+    }
+    return a;
   }
 
-  bool get isDiscount {
-    return this.oldPrice != null;
-  }
+  bool get isDiscount => this.oldPrice != null;
 }

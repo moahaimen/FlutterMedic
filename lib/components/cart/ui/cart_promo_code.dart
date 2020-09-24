@@ -117,7 +117,7 @@ class _CartPromoCodeState extends State<CartPromoCode> {
     final translator = AppTranslations.of(context);
 
     setState(() => currentStatus = CartPromoCodeStatus.Verefying);
-    state.setPromoCode(controller.value.text).then((active) {
+    state.setPromoCode(this.context, controller.value.text).then((active) {
       if (active == null || !active) {
         setState(() => currentStatus = CartPromoCodeStatus.InActive);
         Toast.show(translator.text('promo_code_in_active'), context);
