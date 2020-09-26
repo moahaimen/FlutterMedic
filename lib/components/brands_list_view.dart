@@ -1,4 +1,5 @@
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -58,7 +59,11 @@ class BrandsListView extends StatelessWidget {
           onRefresh: () {
             return model.fetchBrands(context);
           },
-          child: _buildBrandsList(context, model.brandsLoading, model.brands),
+          child: _buildBrandsList(
+            context,
+            model.brands.status == PaginationStatus.Loading,
+            model.brands.data,
+          ),
         );
       },
     );

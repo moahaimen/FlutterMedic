@@ -64,5 +64,7 @@
   "promo_code": "كود الحسم",
   "promo_code_in_active": "كود الحسم خاطئ أو منتهي الصلاحية",
   "currency": "د.ع",
-  "not_available": "غير متوفر"
+  "not_available": "غير متوفر",
+  "load_more": "مزيد",
+  "loading": "يتم التحميل..."
 }

@@ -1,6 +1,7 @@
 import 'package:drugStore/constants/colors.dart';
 import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/partials/drawer.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/partials/toolbar.dart';
@@ -13,6 +14,24 @@ import 'package:url_launcher/url_launcher.dart';
 class ContactUsPage extends StatefulWidget {
   @override
   _ContactUsPageState createState() => _ContactUsPageState();
+
+  static asMap(List<dynamic> source) {
+    final result = new Map<String, dynamic>();
+
+    source.forEach((e) {
+      if (!result.containsKey(e['section'])) {
+        result[e['section']] = new Map<String, dynamic>();
+      }
+
+      result[e['section']][e['key']] = {
+        'en_value': e['en_value'],
+        'ar_value': e['ar_value'],
+        'url': e['url'],
+      };
+    });
+
+    return result;
+  }
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
@@ -23,11 +42,27 @@ class _ContactUsPageState extends State<ContactUsPage> {
       return Scaffold(
         drawer: DrawerBuilder.build(context, Router.contactUs),
         appBar: Toolbar.get(title: Router.contactUs, context: context),
-        body: model.contactUsLoading
-            ? Center(child: CircularProgressIndicator())
-            : _buildContactUsWidget(context, model.contactUs),
+        body: _buildBodyWidget(model),
       );
     });
+  }
+
+  Widget _buildBodyWidget(StateModel model) {
+    assert(model != null);
+    assert(model.contactUs != null);
+
+    final obj = model.contactUs;
+
+    switch (obj.status) {
+      case PaginationStatus.Null:
+        obj.fetch(context);
+        return Center(child: CircularProgressIndicator());
+      case PaginationStatus.Loading:
+        return Center(child: CircularProgressIndicator());
+      case PaginationStatus.Ready:
+        return _buildContactUsWidget(context, ContactUsPage.asMap(obj.data));
+    }
+    return null;
   }
 
   Widget _buildContactUsWidget(
@@ -181,19 +216,20 @@ class _ContactUsPageState extends State<ContactUsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-
             Text(" لعمل متجر ومذاخر الكترونية",
-              style:  const TextStyle(
-                fontSize: 18,
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF130f40),)),
-            Text("ITM for Tech Solutions",
-                style:  const TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF130f40),)),
+                  color: Color(0xFF130f40),
+                )),
+            Text("ITM for Tech Solutions",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF130f40),
+                )),
           ],
         ),
         onPressed: _launchPersonalMessenger,
@@ -208,7 +244,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
   void _launchEmail(String url) => _launchUrl('mailto:$url');
 
   // Replace 'zappos' with your facebbok username
-  void _launchPersonalMessenger() => _launchUrl('http://m.me/gathanfer.gathanfer.7');
+  void _launchPersonalMessenger() =>
+      _launchUrl('http://m.me/gathanfer.gathanfer.7');
 
   Future<void> _launchUrl(String url) async {
     if (url == null) {

@@ -91,8 +91,7 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
   }
 
   void _ok() async {
-    await ScopedModel.of<StateModel>(context)
-        .addProductToOrder(this._orderProduct);
+    await ScopedModel.of<StateModel>(context).addOrderItem(this._orderProduct);
     Toast.show(
       AppTranslations.of(context).text('cart_item_add_done_message'),
       context,

@@ -12,7 +12,7 @@ class CartPromoCode extends StatefulWidget {
   State<StatefulWidget> createState() => _CartPromoCodeState();
 
   bool isValid(StateModel state) {
-    final Order order = state.order;
+    final Order order = state.order.order;
 
     return _CartPromoCodeState.currentStatus == CartPromoCodeStatus.Active &&
         order != null &&

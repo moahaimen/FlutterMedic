@@ -45,8 +45,10 @@ class Toolbar {
               IconButton(
             icon: Icon(Icons.language, size: 28),
             padding: EdgeInsets.symmetric(horizontal: 0),
-            onPressed: () => model.toggleLanguage().then((value) =>
-                Toast.show("Language changed successfully", context)),
+                onPressed: () async {
+                  await model.alternateLanguage();
+                  Toast.show("Language changed successfully", context);
+                },
           ),
         ),
         IconButton(
@@ -66,8 +68,9 @@ class Toolbar {
               onPressed: () => Navigator.of(context)
                   .pushReplacementNamed(Router.home, arguments: PageId.Cart),
             ),
-            badgeContent:
-                Text(model.orderRestoring ? '0' : model.orderItemsCount),
+                badgeContent: Text(
+                    model.order.status.index != 1 ? "0" : model.order
+                        .itemsCount),
             badgeColor: Colors.transparent,
           ),
         ),

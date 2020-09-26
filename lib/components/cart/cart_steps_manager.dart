@@ -1,4 +1,5 @@
 import 'package:drugStore/components/cart/ui/totals/order_grand_total.dart';
+import 'package:drugStore/models/order_management.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
@@ -36,21 +37,38 @@ class _CartStepsManagerState extends State<CartStepsManager> {
   @override
   Widget build(BuildContext context) {
     final translator = AppTranslations.of(context);
+    final model = ScopedModel.of<StateModel>(context);
 
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-              child: steps[currentStep],
-            ),
+    assert(model != null);
+    assert(model.order != null);
+
+    final obj = model.order;
+
+    switch (obj.status) {
+      case OrderStatus.Null:
+        obj.restore(model);
+        return Center(child: CircularProgressIndicator());
+      case OrderStatus.Restoring:
+        return Center(child: CircularProgressIndicator());
+      case OrderStatus.Ready:
+      case OrderStatus.Storing:
+      case OrderStatus.Submitting:
+        return Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: ClampingScrollPhysics(),
+                  child: steps[currentStep],
+                ),
+              ),
+              _getControlsWidget(translator),
+            ],
           ),
-          _getControlsWidget(translator),
-        ],
-      ),
-    );
+        );
+    }
+    return null;
   }
 
   Widget _getControlsWidget(AppTranslations translator) {
@@ -67,19 +85,38 @@ class _CartStepsManagerState extends State<CartStepsManager> {
       child: Row(
         children: [
           ScopedModelDescendant<StateModel>(
-            builder: (BuildContext context, Widget child, StateModel state) =>
-                RaisedButton(
-              child: Text(state.orderUploading
-                  ? translator.text('order_uploading')
-                  : currentStep < this.steps.length - 1
-                      ? translator.text('order_continue')
-                      : translator.text('order_submit')),
-              onPressed: state.orderUploading
-                  ? null
-                  : () => _onStepContinue(state, translator),
-              textColor: Colors.white,
-              disabledColor: AppColors.accentColor.withOpacity(0.6),
-            ),
+            builder: (BuildContext context, Widget child, StateModel state) {
+              switch (state.order.status) {
+                case OrderStatus.Null:
+                case OrderStatus.Restoring:
+                case OrderStatus.Storing:
+                  return RaisedButton(
+                    child: Text(currentStep < this.steps.length - 1
+                        ? translator.text('order_continue')
+                        : translator.text('order_submit')),
+                    onPressed: () => _onStepContinue(state, translator),
+                    textColor: Colors.white,
+                    disabledColor: AppColors.accentColor.withOpacity(0.6),
+                  );
+                case OrderStatus.Ready:
+                  return RaisedButton(
+                    child: Text(currentStep < this.steps.length - 1
+                        ? translator.text('order_continue')
+                        : translator.text('order_submit')),
+                    onPressed: () => _onStepContinue(state, translator),
+                    textColor: Colors.white,
+                    disabledColor: AppColors.accentColor.withOpacity(0.6),
+                  );
+                case OrderStatus.Submitting:
+                  return RaisedButton(
+                    child: Text(translator.text('order_uploading')),
+                    onPressed: null,
+                    textColor: Colors.white,
+                    disabledColor: AppColors.accentColor.withOpacity(0.6),
+                  );
+              }
+              return null;
+            },
           ),
           SizedBox(
             width: 5,
@@ -108,7 +145,7 @@ class _CartStepsManagerState extends State<CartStepsManager> {
       // step.icon = StepState.complete;
 
       if (currentStep == this.steps.length - 1) {
-        state.postOrder(context).then((ok) {
+        state.submitOrder(context).then((ok) {
           if (ok) {
             Toast.show(translator.text('order_submit_done'), context);
             currentStep = 0;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 
 class Http {
-  static Future<dynamic> get(BuildContext context, String path,
+  static Future<T> get<T>(BuildContext context, String path,
       {Map<String, dynamic> headers}) async {
     if (headers == null) {
       headers = new Map();
@@ -15,8 +15,10 @@ class Http {
         .get(path, options: Options(headers: headers))
         .catchError((err) => _onError(context, err))
         .then((Response response) {
+      print(path);
       if (response.statusCode != 200) {
-        return response.headers['Message'];
+        _onError(context, response.headers['Message']);
+        return null;
       }
       return response.data;
     });

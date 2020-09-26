@@ -39,9 +39,7 @@ class CartProductsList extends StatelessWidget {
       builder: (BuildContext context, Widget child, StateModel model) {
         final order = model.order;
         return OrderTotalUi(
-          order: order,
-          promoCode: PromoCodeState.ViewTotal,
-        );
+            order: order.order, promoCode: PromoCodeState.ViewTotal);
       },
     );
   }
@@ -90,8 +88,8 @@ class CartProductsList extends StatelessWidget {
     return ScopedModelDescendant<StateModel>(
       builder: (context, child, model) => _getProductsList(
           context,
-          model.order.products.where((e) => e.quantity > 0).toList(),
-          model.removeProductFromOrder),
+          model.order.order.products.where((e) => e.quantity > 0).toList(),
+          model.removeOrderItem),
     );
   }
 }

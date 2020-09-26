@@ -12,21 +12,21 @@ class IndexPage extends StatefulWidget {
 }
 
 class IndexPageState extends State<IndexPage> {
-  StateModel _model;
+  StateModel model;
 
   @override
   void initState() {
     super.initState();
 
-    _model = ScopedModel.of<StateModel>(context);
-    _model.addListener(_shouldWeGotoHome);
+    this.model = ScopedModel.of<StateModel>(context);
+    this.model.addListener(_shouldGoToHome);
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    _model.removeListener(_shouldWeGotoHome);
+    this.model.removeListener(_shouldGoToHome);
   }
 
   @override
@@ -34,26 +34,18 @@ class IndexPageState extends State<IndexPage> {
     return Scaffold(
       body: new Stack(
         fit: StackFit.expand,
-        children: <Widget>[
-          Center(
-            child: CircularProgressIndicator(),
-          )
-        ],
+        children: <Widget>[Center(child: CircularProgressIndicator())],
       ),
     );
   }
 
-  void _shouldWeGotoHome() {
-    if (!_model.categoriesLoading &&
-        !_model.brandsLoading &&
-        !_model.productsLoading &&
-        !_model.orderRestoring) {
-      application.setLocale(_model.settings['locale']);
-      Navigator.pushReplacementNamed(
-        context,
-        Router.home,
-        arguments: PageId.Home,
-      );
+  void _shouldGoToHome() {
+    if (this.model.fetching) {
+      return;
     }
+
+    application.setLocale(model.settings.data['locale']);
+    Navigator.pushReplacementNamed(context, Router.home,
+        arguments: PageId.Home);
   }
 }

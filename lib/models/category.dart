@@ -23,6 +23,13 @@ class Category {
   Category(this.enName, this.arName, this.enDescription, this.arDescription,
       this.icon);
 
+  Category.from(Category source)
+      : this.enName = source.enName,
+        this.arName = source.arName,
+        this.enDescription = source.enDescription,
+        this.arDescription = source.arDescription,
+        this.icon = source.icon;
+
   String getName(BuildContext context) {
     return AppTranslations
         .of(context)

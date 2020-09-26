@@ -15,6 +15,11 @@ class Brand {
 
   Brand(this.enName, this.arName, this.photoUrl);
 
+  Brand.from(Brand source)
+      : this.enName = source.enName,
+        this.arName = source.arName,
+        this.photoUrl = source.photoUrl;
+
   String getName(BuildContext context) {
     return AppTranslations
         .of(context)

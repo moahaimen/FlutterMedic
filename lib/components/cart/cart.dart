@@ -1,12 +1,10 @@
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 
-import '../../utils/state.dart';
 import 'cart_steps_manager.dart';
 
 class Cart extends StatelessWidget {
-  Widget _getCartWidget(BuildContext context, StateModel state) {
+  Widget _getCartWidget(BuildContext context) {
     final translator = AppTranslations.of(context);
 
     return new Directionality(
@@ -19,16 +17,6 @@ class Cart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<StateModel>(
-      builder: (BuildContext context, Widget child, StateModel model) {
-        if (model.orderRestoring || model.provincesLoading) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        return _getCartWidget(context, model);
-      },
-    );
+    return _getCartWidget(context);
   }
 }

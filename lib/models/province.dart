@@ -23,6 +23,12 @@ class Province {
 
   const Province(this.id, this.enName, this.arName, this.fees);
 
+  Province.from(Province source)
+      : this.id = source.id,
+        this.enName = source.enName,
+        this.arName = source.arName,
+        this.fees = source.fees;
+
   String getName(BuildContext context) {
     return AppTranslations.of(context).locale.languageCode == "en"
         ? enName

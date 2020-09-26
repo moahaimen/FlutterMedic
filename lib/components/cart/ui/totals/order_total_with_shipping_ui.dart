@@ -19,7 +19,7 @@ class OrderTotalWithShippingUi extends StatelessWidget {
             // Total
             Expanded(
               child: OrderTotalUi(
-                  order: model.order, promoCode: PromoCodeState.OnlyCalc),
+                  order: model.order.order, promoCode: PromoCodeState.OnlyCalc),
             ),
             // Total + Shipping fees
             Expanded(
@@ -31,7 +31,8 @@ class OrderTotalWithShippingUi extends StatelessWidget {
                         style: theme.accentTextTheme.bodyText2
                             .copyWith(color: theme.primaryColorDark)),
                     Text(
-                        "${model.order.fees.toString()} ${Strings.currency(context)}",
+                        "${model.order.order.fees.toString()} ${Strings
+                            .currency(context)}",
                         style: theme.accentTextTheme.headline6
                             .copyWith(color: theme.accentColor)),
                   ],

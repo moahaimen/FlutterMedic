@@ -11,7 +11,7 @@ class OrderClient {
     return new OrderClient(
         name: data['name'],
         phone: data['phone'],
-        province: state.provinces
+        province: state.provinces.data
             .firstWhere((e) => e.id == data['province'], orElse: () => null),
         address: data['address'],
         notes: data['notes'],

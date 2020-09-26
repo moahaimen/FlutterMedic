@@ -82,7 +82,7 @@ class _SearchPageState extends State<SearchPage> {
     setState(() => _searchStatus = SearchStatus.Searching);
 
     final model = ScopedModel.of<StateModel>(context);
-    var products = model.products;
+    var products = model.products.data;
 
     if (products == null || products.length == 0) {
       setState(() => _searchStatus = SearchStatus.NoResult);

@@ -6,12 +6,13 @@ import 'order_product.dart';
 import 'order_promo_code.dart';
 
 class Order {
-  static Order fromJson(Map<String, dynamic> data, StateModel model) {
-    final productsJson = data['products'] as List<dynamic>;
+  static Future<Order> fromJson(Map<String, dynamic> data, StateModel model,
+      BuildContext context) async {
     final products =
-        productsJson.map((e) => OrderProduct.fromJson(e, model)).toList();
+    await model.order.getProductsInfo(context, data['products']);
 
     final OrderClient client = OrderClient.fromJson(data['client'], model);
+
     final OrderPromoCode promoCode =
         OrderPromoCode.fromJson(data['promo_code']);
 

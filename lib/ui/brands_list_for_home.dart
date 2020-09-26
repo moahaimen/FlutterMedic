@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:drugStore/components/brand_list_home_item.dart';
 import 'package:drugStore/models/brand.dart';
+import 'package:drugStore/models/pagination.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class BrandsListForHome extends StatefulWidget {
-  final List<Brand> brands;
-
-  BrandsListForHome({@required this.brands});
-
   @override
   State<StatefulWidget> createState() => _BrandsListForHomeState();
 }
@@ -16,7 +15,9 @@ class BrandsListForHome extends StatefulWidget {
 class _BrandsListForHomeState extends State<BrandsListForHome> {
   static final double _width = 132.0;
   static final int _roundDuration = 2;
-  static final int _animteDuration = 777;
+  static final int _animateDuration = 777;
+
+  List<Brand> _brands;
 
   int _index;
   ScrollController _controller;
@@ -26,6 +27,7 @@ class _BrandsListForHomeState extends State<BrandsListForHome> {
   _BrandsListForHomeState() {
     _index = 0;
     _controller = new ScrollController();
+    _brands = [];
   }
 
   @override
@@ -42,13 +44,29 @@ class _BrandsListForHomeState extends State<BrandsListForHome> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      controller: _controller,
-      scrollDirection: Axis.horizontal,
-      children: widget.brands
-          .map<Widget>((e) => BrandListHomeItem(brand: e, width: _width))
-          .toList(),
-    );
+    final model = ScopedModel.of<StateModel>(context);
+
+    assert(model != null);
+    assert(model.brands != null);
+
+    final obj = model.brands;
+
+    switch (obj.status) {
+      case PaginationStatus.Null:
+        obj.fetch(context);
+        return Center(child: CircularProgressIndicator());
+      case PaginationStatus.Loading:
+        return Center(child: CircularProgressIndicator());
+      case PaginationStatus.Ready:
+        _brands = obj.data;
+        return ListView(
+            controller: _controller,
+            scrollDirection: Axis.horizontal,
+            children: obj.data
+                .map<Widget>((e) => BrandListHomeItem(brand: e, width: _width))
+                .toList());
+    }
+    return null;
   }
 
   void _start() {
@@ -61,15 +79,18 @@ class _BrandsListForHomeState extends State<BrandsListForHome> {
   void _cancel() => _timer.cancel();
 
   Future<void> _animateToNext() async {
-    final int count = widget.brands != null && widget.brands.length > 0
-        ? widget.brands.length
-        : 1;
-    final double offset = _width * (_index % count) + 15;
-    await _controller.animateTo(
-      offset,
-      duration: Duration(milliseconds: _animteDuration),
-      curve: Curves.easeInOut,
-    );
-    _index++;
+    try {
+      final int count =
+      _brands != null && _brands.length > 0 ? _brands.length : 1;
+      final double offset = _width * (_index % count) + 15;
+      await _controller.animateTo(
+        offset,
+        duration: Duration(milliseconds: _animateDuration),
+        curve: Curves.easeInOut,
+      );
+      _index++;
+    } catch (e) {
+      print(e);
+    }
   }
 }

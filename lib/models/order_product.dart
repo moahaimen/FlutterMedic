@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'product.dart';
 import '../utils/state.dart';
+import 'product.dart';
 
 class OrderProduct {
   static OrderProduct fromJson(Map<String, dynamic> data, StateModel model) {
     return new OrderProduct(
-      product: model.products.firstWhere((e) => e.id == data['product_id']),
+      product:
+      model.products.data.firstWhere((e) => e.id == data['product_id']),
       quantity: data['quantity'],
     );
   }

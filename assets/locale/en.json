@@ -64,5 +64,7 @@
   "promo_code": "Promo Code",
   "promo_code_in_active": "Promo code is valid and active",
   "currency": "IQD",
-  "not_available": "Not available"
+  "not_available": "Not available",
+  "load_more": "Load More",
+  "loading": "Loading..."
 }

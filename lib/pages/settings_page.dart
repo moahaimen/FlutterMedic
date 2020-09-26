@@ -1,5 +1,6 @@
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/localization/application.dart';
+import 'package:drugStore/models/settings.dart';
 import 'package:drugStore/partials/drawer.dart';
 import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/partials/toolbar.dart';
@@ -19,16 +20,26 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<StateModel>(
-        builder: (BuildContext context, Widget child, StateModel model) {
-      return Scaffold(
-        drawer: DrawerBuilder.build(context, Router.settings),
-        appBar: Toolbar.get(title: Router.settings, context: context),
-        body: model.settingsLoading
-            ? Center(child: CircularProgressIndicator())
-            : _buildSettingsList(model.settings, model.setSettings),
-      );
-    });
+    return Scaffold(
+      drawer: DrawerBuilder.build(context, Router.settings),
+      appBar: Toolbar.get(title: Router.settings, context: context),
+      body: ScopedModelDescendant<StateModel>(
+          builder: (BuildContext context, Widget child, StateModel model) =>
+              _buildSettingsBody(model)),
+    );
+  }
+
+  Widget _buildSettingsBody(StateModel model) {
+    switch (model.settings.status) {
+      case SettingsStatus.Null:
+        model.settings.load();
+        return Center(child: CircularProgressIndicator());
+      case SettingsStatus.Loading:
+        return Center(child: CircularProgressIndicator());
+      case SettingsStatus.Ready:
+        return _buildSettingsList(model.settings.data, model.storeSettings);
+    }
+    return null;
   }
 
   Widget _buildSettingsList(

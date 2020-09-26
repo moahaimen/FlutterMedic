@@ -41,8 +41,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
       return '';
     }
 
-    final province =
-        state.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+    final province = state.provinces.data
+        .firstWhere((e) => e.id == provinceId, orElse: null);
 
     if (province == null) {
       return '';
@@ -61,7 +61,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
     final translator = AppTranslations.of(context);
     final state = ScopedModel.of<StateModel>(context);
 
-    data = state.client.toJson(false);
+    data = state.order.client.toJson(false);
     print(data);
 
     return Padding(
@@ -76,7 +76,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 initialValue: data['name'],
                 onSave: (value) => data['name'] = value,
                 onChanged: (value) =>
-                    state.setOrderClientDetails(name: value, notify: false),
+                    state.setOrderClientDetails({'name': value}, notify: false),
                 validator: (value) =>
                     _validator(translator, value, null, 3, 50),
                 color: theme.accentColor),
@@ -86,7 +86,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
               initialValue: data['phone'],
               onSave: (value) => data['phone'] = value,
               onChanged: (value) =>
-                  state.setOrderClientDetails(phone: value, notify: false),
+                  state.setOrderClientDetails({'phone': value}, notify: false),
               validator: (value) => _validator(translator, value, null, 11, 14),
               color: theme.accentColor,
               keyboardType: TextInputType.number,
@@ -97,7 +97,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
               initialValue: _provinceNameOrDefault(state, data['province']),
               onSave: (int value) {
                 data['province'] = value;
-                state.setOrderClientDetails(provinceId: value);
+                state.setOrderClientDetails({'provinceId': value});
               },
               color: theme.accentColor,
             ),
@@ -107,7 +107,9 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 initialValue: data['address'],
                 onSave: (value) => data['address'] = value,
                 onChanged: (value) =>
-                    state.setOrderClientDetails(address: value, notify: false),
+                    state
+                        .setOrderClientDetails(
+                        {'address': value}, notify: false),
                 validator: (value) =>
                     _validator(translator, value, null, 3, 50, required: true),
                 color: theme.accentColor),
@@ -116,7 +118,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 initialValue: data['notes'],
                 onSave: (value) => data['notes'] = value,
                 onChanged: (value) =>
-                    state.setOrderClientDetails(notes: value, notify: false),
+                    state
+                        .setOrderClientDetails({'notes': value}, notify: false),
                 validator: (value) => _validator(
                     translator, value, null, 3, 300,
                     required: false),

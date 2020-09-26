@@ -1,4 +1,5 @@
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -62,7 +63,10 @@ class CategoriesListView extends StatelessWidget {
             return model.fetchCategories(context);
           },
           child: _buildCategoriesList(
-              context, model.categoriesLoading, model.categories),
+            context,
+            model.categories.status == PaginationStatus.Loading,
+            model.categories.data,
+          ),
         );
       },
     );

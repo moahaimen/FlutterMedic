@@ -68,7 +68,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                     onPressed: () =>
                         Navigator.of(context).pushNamed(Router.cart)),
                 badgeContent: Text(
-                  model.orderItemsCount,
+                  model.order.itemsCount,
                   style: TextStyle(fontSize: 8),
                 ),
               ),

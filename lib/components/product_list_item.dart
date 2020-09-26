@@ -114,7 +114,10 @@ class ProductListItemState extends State<ProductListItem> {
         );
 
   void _gotoProductDetails() {
-    ScopedModel.of<StateModel>(context).setSelectedProduct(product.id);
+    ScopedModel
+        .of<StateModel>(context)
+        .products
+        .select(product);
     Navigator.of(context).pushNamed(Router.productDetails);
   }
 

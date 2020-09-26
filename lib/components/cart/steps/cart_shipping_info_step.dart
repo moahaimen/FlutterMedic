@@ -14,7 +14,7 @@ class CartShippingInfoStep extends CartStep {
 
   @override
   bool finished(StateModel state) {
-    final order = state.order;
+    final order = state.order.order;
     final child = this.child as CartClientInformation;
 
     return order != null &&
@@ -36,7 +36,7 @@ class CartShippingInfoStep extends CartStep {
     child.form.currentState.save();
 
     final clientData = OrderClient.fromJson(child.data, state);
-    state.setOrderClientFromInstance(clientData);
+    state.setOrderClient(clientData);
     print('client: ${state.order.client.name}');
   }
 
