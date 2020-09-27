@@ -112,14 +112,15 @@ class OrderManagement {
     final response =
         await Http.get(context, "${DotEnv().env['postOrderUrl']}?o=$base64");
 
-    _status = OrderStatus.Ready;
-    notifier();
-
     if (response == null) {
+      _status = OrderStatus.Ready;
+      notifier();
       return false;
     }
-
     await this.clear();
+
+    _status = OrderStatus.Ready;
+    notifier();
     return true;
   }
 

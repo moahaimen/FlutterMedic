@@ -186,8 +186,8 @@ class StateModel extends Model {
   ///
   /// Post order
   ///
-  Future<bool> submitOrder(BuildContext context) {
-    return this.order.submit(context);
+  Future<bool> submitOrder(BuildContext context) async {
+    return await this.order.submit(context);
   }
 
   ///

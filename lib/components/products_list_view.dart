@@ -75,29 +75,27 @@ class ProductsListView extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 5),
       child: Column(
         children: [
-          Expanded(
-            child: AnimationLimiter(
-              child: GridView.count(
-                controller: _controller,
-                shrinkWrap: true,
-                physics: physics,
-                childAspectRatio: 3 / 4,
-                crossAxisCount: _columnCount,
-                children: List.generate(
-                  products.length,
-                      (int index) {
-                    return AnimationConfiguration.staggeredGrid(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      columnCount: _columnCount,
-                      child: ScaleAnimation(
-                        child: FadeInAnimation(
-                          child: ProductListItem(product: products[index]),
-                        ),
+          AnimationLimiter(
+            child: GridView.count(
+              controller: _controller,
+              shrinkWrap: true,
+              physics: physics,
+              childAspectRatio: 3 / 4,
+              crossAxisCount: _columnCount,
+              children: List.generate(
+                products.length,
+                    (int index) {
+                  return AnimationConfiguration.staggeredGrid(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    columnCount: _columnCount,
+                    child: ScaleAnimation(
+                      child: FadeInAnimation(
+                        child: ProductListItem(product: products[index]),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -105,7 +103,9 @@ class ProductsListView extends StatelessWidget {
             child: ScopedModelDescendant(
               builder: (BuildContext c, Widget child, StateModel model) =>
                   FlatButton(
-                    onPressed: model.products.status == PaginationStatus.Loading
+                    onPressed: model.products.status ==
+                        PaginationStatus.Loading &&
+                        model.products.nextPageUrl != null
                         ? null
                         : () => obj.fetch(context, path: obj.nextPageUrl),
                     child: Text(
@@ -113,9 +113,11 @@ class ProductsListView extends StatelessWidget {
                           ? AppTranslations.of(context).text("loading")
                           : AppTranslations.of(context).text("load_more"),
                       style: TextStyle(
-                          inherit: true, color: Theme
-                          .of(context)
-                          .accentColor),
+                        inherit: true,
+                        color: Theme
+                            .of(context)
+                            .accentColor,
+                      ),
                     ),
                   ),
             ),

@@ -141,21 +141,20 @@ class _CartStepsManagerState extends State<CartStepsManager> {
     }
     step.save(state);
 
-    setState(() {
+    setState(() async {
       // step.icon = StepState.complete;
 
       if (currentStep == this.steps.length - 1) {
-        state.submitOrder(context).then((ok) {
-          if (ok) {
-            Toast.show(translator.text('order_submit_done'), context);
-            currentStep = 0;
-            Navigator.of(context)
-                .pushReplacementNamed(Router.home, arguments: PageId.Home);
-            return;
-          } else {
-            Toast.show(translator.text('order_submit_failed'), context);
-          }
-        });
+        final ok = await state.submitOrder(context);
+        if (ok) {
+          Toast.show(translator.text('order_submit_done'), context);
+          currentStep = 0;
+          Navigator.of(context)
+              .pushReplacementNamed(Router.home, arguments: PageId.Home);
+          return;
+        } else {
+          Toast.show(translator.text('order_submit_failed'), context);
+        }
       } else {
         currentStep++;
       }
