@@ -1,31 +1,32 @@
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:drugStore/components/categorized_products/categorized_products_component.dart';
-import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/pagination.dart';
-import 'package:drugStore/pages/home_page.dart';
-import 'package:drugStore/partials/router.dart';
-import 'package:drugStore/ui/brands_list_for_home.dart';
-import 'package:drugStore/ui/main_products_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../localization/app_translation.dart';
+import '../pages/home_page.dart';
+import '../partials/router.dart';
+import '../ui/brands_list_for_home.dart';
+import '../ui/main_products_carousel.dart';
 import '../utils/state.dart';
 import 'category_list_item.dart';
+import 'categorized_products/categorized_products_component.dart';
 
 class HomePageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget widget, StateModel model) {
-        return ListView(
-          children: [
-            _buildLogoWidget(context),
-            _buildBrandsWidget(context),
-            _buildMainProductsWidget(),
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildLogoWidget(context),
+              _buildBrandsWidget(context),
+              _buildMainProductsWidget(),
 //            _buildMainProductsWidget(model.mainProducts),
-            _buildCategoriesWidget(context, model),
-            _buildCategorizedProductsListView(),
-          ],
+              _buildCategoriesWidget(context, model),
+              _buildCategorizedProductsListView(),
+            ],
+          ),
         );
       },
     );
@@ -75,38 +76,23 @@ class HomePageContent extends StatelessWidget {
   }
 
   Widget _buildCategoriesWidget(BuildContext context, StateModel model) {
-    assert(model != null);
-    assert(model.categories != null);
-
-    final obj = model.categories;
-
-    switch (obj.status) {
-      case PaginationStatus.Null:
-        obj.fetch(context);
-        return Center(child: CircularProgressIndicator());
-      case PaginationStatus.Loading:
-        return Center(child: CircularProgressIndicator());
-      case PaginationStatus.Ready:
-        return Container(
-          color: Colors.white,
-          height: 150.0,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: obj.data.length + 1,
-            itemBuilder: (BuildContext context, int index) =>
-                Container(
-                    width: 100,
-                    height: 100,
-                    child: index == 0
-                        ? _buildWatchAllCategoriesWidget(context)
-                        : CategoryListItem(category: obj.data[index - 1])),
-          ),
-        );
-    }
-    return null;
+    return Container(
+      color: Colors.white,
+      height: 150.0,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: model.categories.data.length + 1,
+        itemBuilder: (BuildContext context, int index) => Container(
+            width: 100,
+            height: 100,
+            child: index == 0
+                ? _buildCategoryAllWidget(context)
+                : CategoryListItem(category: model.categories.data[index - 1])),
+      ),
+    );
   }
 
-  Widget _buildWatchAllCategoriesWidget(BuildContext context) {
+  Widget _buildCategoryAllWidget(BuildContext context) {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),

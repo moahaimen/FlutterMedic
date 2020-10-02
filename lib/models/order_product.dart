@@ -1,13 +1,13 @@
+import 'package:drugStore/models/order_management.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/state.dart';
 import 'product.dart';
 
 class OrderProduct {
-  static OrderProduct fromJson(Map<String, dynamic> data, StateModel model) {
+  static Future<OrderProduct> fromJson(
+      Map<String, dynamic> data, OrderManagement manager) async {
     return new OrderProduct(
-      product:
-      model.products.data.firstWhere((e) => e.id == data['product_id']),
+      product: manager.getProductById(data['product_id']),
       quantity: data['quantity'],
     );
   }

@@ -7,27 +7,30 @@ import 'package:scoped_model/scoped_model.dart';
 class OrderGrandTotalUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = ScopedModel.of<StateModel>(context);
+    return ScopedModelDescendant<StateModel>(
+      builder: (context, child, model) {
+        final translator = AppTranslations.of(context);
+        final theme = Theme.of(context);
 
-    final translator = AppTranslations.of(context);
-    final theme = Theme.of(context);
+        final order = model.order.order;
 
-    return Container(
-      color: Colors.white60,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(translator.text("total_grand_total"),
-              style: theme.accentTextTheme.bodyText2
-                  .copyWith(color: theme.accentColor.withOpacity(.65))),
-          Text(
-              "${state.order.order.totalWithFees.toString()} ${Strings.currency(
-                  context)}",
-              style: theme.accentTextTheme.headline6
-                  .copyWith(color: theme.accentColor)),
-        ],
-      ),
+        return Container(
+          color: Colors.white60,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(translator.text("total_grand_total"),
+                  style: theme.accentTextTheme.bodyText2
+                      .copyWith(color: theme.accentColor.withOpacity(.65))),
+              Text(
+                  "${order.totalWithFees.toString()} ${Strings.currency(context)}",
+                  style: theme.accentTextTheme.headline6
+                      .copyWith(color: theme.accentColor)),
+            ],
+          ),
+        );
+      },
     );
   }
 }

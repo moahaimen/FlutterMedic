@@ -6,38 +6,34 @@ import 'package:scoped_model/scoped_model.dart';
 class CategoriesHorizontalList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final model = ScopedModel.of<StateModel>(context);
-    final theme = Theme.of(context);
+    return ScopedModelDescendant<StateModel>(
+      builder: (context, child, model) {
+        final theme = Theme.of(context);
 
-    assert(model != null);
-    assert(model.categories != null);
-
-    final obj = model.categories;
-
-    switch (obj.status) {
-      case PaginationStatus.Null:
-        obj.fetch(context);
-        return Center(child: CircularProgressIndicator());
-      case PaginationStatus.Loading:
-        return Center(child: CircularProgressIndicator());
-      case PaginationStatus.Ready:
-        return ListView.separated(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemCount: obj.data.length + 1,
-          separatorBuilder: (BuildContext context, int index) =>
-              SizedBox(width: 6),
-          itemBuilder: (BuildContext context, int index) => index == 0
-              ? FlatButton(
-                  textColor: theme.accentColor,
-                  child: Text('All'),
-                  onPressed: () => obj.noSelect())
-              : FlatButton(
-                  textColor: theme.accentColor,
-                  child: Text(obj.data[index].getName(context)),
-                  onPressed: () => obj.select(obj.data[index])),
-        );
-    }
-    return null;
+        switch (model.categories.status) {
+          case PaginationStatus.Ready:
+            return ListView.separated(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: model.categories.data.length + 1,
+              separatorBuilder: (BuildContext context, int index) =>
+                  SizedBox(width: 6),
+              itemBuilder: (BuildContext context, int index) => index == 0
+                  ? FlatButton(
+                      textColor: theme.accentColor,
+                      child: Text('All'),
+                      onPressed: () => model.categories.noSelect())
+                  : FlatButton(
+                      textColor: theme.accentColor,
+                      child:
+                          Text(model.categories.data[index].getName(context)),
+                      onPressed: () => model.categories
+                          .select(model.categories.data[index])),
+            );
+          default:
+            throw new Exception('Categories model is null at the moment');
+        }
+      },
+    );
   }
 }

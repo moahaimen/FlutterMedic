@@ -36,29 +36,31 @@ class ContactUsPage extends StatefulWidget {
 
 class _ContactUsPageState extends State<ContactUsPage> {
   @override
+  void initState() {
+    super.initState();
+
+    if (!ScopedModel.of<StateModel>(context).ready) {
+      Navigator.of(context).pushReplacementNamed(Router.index);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
         builder: (BuildContext context, Widget child, StateModel model) {
       return Scaffold(
         drawer: DrawerBuilder.build(context, Router.contactUs),
         appBar: Toolbar.get(title: Router.contactUs, context: context),
-        body: _buildBodyWidget(model),
+        body: _buildBodyWidget(model.contactUs),
       );
     });
   }
 
-  Widget _buildBodyWidget(StateModel model) {
-    assert(model != null);
-    assert(model.contactUs != null);
-
-    final obj = model.contactUs;
-
+  Widget _buildBodyWidget(Pagination<dynamic> obj) {
     switch (obj.status) {
       case PaginationStatus.Null:
-        obj.fetch(context);
-        return Center(child: CircularProgressIndicator());
       case PaginationStatus.Loading:
-        return Center(child: CircularProgressIndicator());
+        throw new Exception('ContactUs model is not ready');
       case PaginationStatus.Ready:
         return _buildContactUsWidget(context, ContactUsPage.asMap(obj.data));
     }
@@ -132,11 +134,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/facebook.png',
-                width: 40,
-                height: 40,
-              ),
+              Image.asset('assets/images/facebook.png', width: 40, height: 40),
               Text(AppTranslations.of(context).locale.languageCode == "en"
                   ? facebook['en_value']
                   : facebook['ar_value']),
@@ -158,11 +156,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                Icons.alternate_email,
-                size: 40,
-                color: Colors.grey,
-              ),
+              Icon(Icons.alternate_email, size: 40, color: Colors.grey),
               Text(AppTranslations.of(context).locale.languageCode == "en"
                   ? email['en_value']
                   : email['ar_value']),
@@ -184,13 +178,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
           child: Center(
             child: Column(
               children: [
-                Text(
-                  Strings.applicationTitle,
-                  textAlign: TextAlign.justify,
-                  style: theme.textTheme.headline2.copyWith(
-                    color: AppColors.accentColor,
-                  ),
-                ),
+                Text(Strings.applicationTitle,
+                    textAlign: TextAlign.justify,
+                    style: theme.textTheme.headline2
+                        .copyWith(color: AppColors.accentColor)),
                 Text(
                   AppTranslations.of(context).locale.languageCode == "en"
                       ? about['en_value']

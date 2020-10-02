@@ -67,10 +67,6 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                     icon: Icon(Icons.shopping_cart, size: 30),
                     onPressed: () =>
                         Navigator.of(context).pushNamed(Router.cart)),
-                badgeContent: Text(
-                  model.order.itemsCount,
-                  style: TextStyle(fontSize: 8),
-                ),
               ),
             )
           ],

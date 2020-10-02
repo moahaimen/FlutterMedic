@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/utils/http.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +20,9 @@ class OrderManagement {
   OrderStatus _status;
 
   final void Function() notifier;
+  final StateModel state;
 
-  OrderManagement(this.notifier) : this._status = OrderStatus.Null;
+  OrderManagement(this.state, this.notifier) : this._status = OrderStatus.Null;
 
   Order get order => this._order;
 
@@ -53,13 +53,9 @@ class OrderManagement {
     return items;
   }
 
-  Future<void> restore(StateModel instance) async {
+  Future<void> restore(BuildContext context) async {
     _status = OrderStatus.Restoring;
     notifier();
-
-    if (instance.provinces.status != PaginationStatus.Ready) {
-      await instance.provinces.fetch(null);
-    }
 
     final prefs = await SharedPreferences.getInstance();
 
@@ -68,16 +64,15 @@ class OrderManagement {
         final String orderString = prefs.getString('_order');
         final Map<String, dynamic> orderData = jsonDecode(orderString);
 
-        print(orderData);
-        final Order order = await Order.fromJson(orderData, instance, null);
-        this._order = order;
+        this._order = await Order.fromJson(null, orderData, this);
+        print('done $_order');
       } catch (e) {
         this._order = Order(client: OrderClient.empty, products: []);
         print(e);
       }
     } else {
+      print('asd');
       this._order = Order(client: OrderClient.empty, products: []);
-      print('ooooooka');
     }
 
     _status = OrderStatus.Ready;
@@ -146,15 +141,12 @@ class OrderManagement {
     return true;
   }
 
-  Future<bool> addOrderItemById(
-      int productId, int quantity, List<Product> products) async {
-    if (_order == null ||
-        productId == null ||
-        quantity == null ||
-        quantity <= 0) {
-      print('Your request to addOrderItemById declined');
-      return false;
-    }
+  Future<bool> addOrderItemById(int productId, int quantity) async {
+    assert(_order != null);
+    assert(productId != null && productId > 0);
+    assert(quantity != null && quantity > 0);
+
+    final products = this.state.products.data;
 
     final product = products.firstWhere((e) => e.id == productId);
     if (product == null || !product.available) {
@@ -333,5 +325,29 @@ class OrderManagement {
         .toList()
         .reduce((value, e) => value + e)
         .toString();
+  }
+
+  Future<OrderManagement> getOrRestore(BuildContext context) async {
+    if (this._order == null) {
+      print('dddd');
+      await this.restore(context);
+    }
+    return this;
+  }
+
+  Province getClientProvince(int provinceId) {
+    return this
+        .state
+        .provinces
+        .data
+        .firstWhere((e) => e.id == provinceId, orElse: () => null);
+  }
+
+  Product getProductById(int productId) {
+    return this
+        .state
+        .products
+        .data
+        .firstWhere((e) => e.id == productId, orElse: () => null);
   }
 }

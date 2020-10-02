@@ -69,7 +69,8 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
 
   void _setQuantity(int quantity) {
     final model = ScopedModel.of<StateModel>(context);
+
     widget.item.quantity = quantity;
-    model.updateOrderItem(widget.item.product.id, widget.item.quantity);
+    model.order.updateOrderItem(widget.item.product.id, widget.item.quantity);
   }
 }

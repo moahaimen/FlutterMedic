@@ -11,8 +11,8 @@ import 'category_list_item.dart';
 class CategoriesListView extends StatelessWidget {
   final int _columnCount = 3;
 
-  Widget _buildCategoriesList(BuildContext context, bool loading,
-      List<Category> categories) {
+  Widget _buildCategoriesList(
+      BuildContext context, bool loading, List<Category> categories) {
     if (loading) {
       return Center(
         child: CircularProgressIndicator(),
@@ -30,7 +30,7 @@ class CategoriesListView extends StatelessWidget {
         crossAxisCount: _columnCount,
         children: List.generate(
           categories.length,
-              (int index) {
+          (int index) {
             return AnimationConfiguration.staggeredGrid(
               position: index,
               duration: const Duration(milliseconds: 375),
@@ -57,18 +57,17 @@ class CategoriesListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
-      builder: (BuildContext context, Widget widget, StateModel model) {
-        return RefreshIndicator(
-          onRefresh: () {
-            return model.fetchCategories(context);
-          },
-          child: _buildCategoriesList(
-            context,
-            model.categories.status == PaginationStatus.Loading,
-            model.categories.data,
-          ),
-        );
-      },
+      builder: (BuildContext context, Widget widget, StateModel model) =>
+          RefreshIndicator(
+        onRefresh: () {
+          return model.fetchCategories(context);
+        },
+        child: _buildCategoriesList(
+          context,
+          model.categories.status == PaginationStatus.Loading,
+          model.categories.data,
+        ),
+      ),
     );
   }
 }

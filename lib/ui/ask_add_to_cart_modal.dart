@@ -28,10 +28,10 @@ class AskAddToCartModal extends StatefulWidget {
 }
 
 class _AskAddToCartModalState extends State<AskAddToCartModal> {
-  final OrderProduct _orderProduct;
+  final OrderProduct item;
 
   _AskAddToCartModalState(Product product)
-      : this._orderProduct = OrderProduct(product: product, quantity: 1);
+      : this.item = OrderProduct(product: product, quantity: 1);
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "${translator.text('ask_add_to_cart_message')} ${this._orderProduct.product.enName}",
+            "${translator.text('ask_add_to_cart_message')} ${this.item.product.enName}",
             style: TextStyle(
                 color: Theme.of(context).primaryColorDark,
                 fontSize: 20,
@@ -66,21 +66,21 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
             child: Chip(
               labelPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 4),
               label: Text(
-                  "${this._orderProduct.product.price} ${translator.text('bucks_per_peice')}"),
+                  "${this.item.product.price} ${translator.text('bucks_per_peice')}"),
             ),
           ),
           Container(
             width: 200.0,
             child: OrderItemQuantity(
-              initQuantity: _orderProduct.quantity,
-              onQuantity: (int qty) =>
-                  setState(() => this._setProductQuantity(qty)),
+              initQuantity: item.quantity,
+              onQuantity: (int quantity) =>
+                  setState(() => this.item.quantity = quantity),
             ),
           ),
           Container(
             width: 200.0,
             child: OutlineButton.icon(
-              onPressed: this._orderProduct.quantity > 0 ? this._ok : null,
+              onPressed: this.item.quantity > 0 ? this._ok : null,
               icon: Icon(Icons.add_shopping_cart),
               label: Text(translator.text('add_to_cart')),
             ),
@@ -91,15 +91,15 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
   }
 
   void _ok() async {
-    await ScopedModel.of<StateModel>(context).addOrderItem(this._orderProduct);
-    Toast.show(
-      AppTranslations.of(context).text('cart_item_add_done_message'),
-      context,
-    );
-    Navigator.of(context).pop();
-  }
+    final order = ScopedModel.of<StateModel>(context).order;
+    final ok = await order.addOrderItem(this.item);
 
-  void _setProductQuantity(int quantity) {
-    setState(() => this._orderProduct.quantity = quantity);
+    if (ok) {
+      Toast.show(
+        AppTranslations.of(context).text('cart_item_add_done_message'),
+        context,
+      );
+      Navigator.of(context).pop();
+    }
   }
 }

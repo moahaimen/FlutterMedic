@@ -19,25 +19,35 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   @override
+  void initState() {
+    super.initState();
+
+    if (!ScopedModel.of<StateModel>(context).ready) {
+      Navigator.of(context).pushReplacementNamed(Router.index);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerBuilder.build(context, Router.settings),
       appBar: Toolbar.get(title: Router.settings, context: context),
       body: ScopedModelDescendant<StateModel>(
-          builder: (BuildContext context, Widget child, StateModel model) =>
-              _buildSettingsBody(model)),
+        builder: (BuildContext context, Widget child, StateModel model) =>
+            _buildSettingsBody(model.settings),
+      ),
     );
   }
 
-  Widget _buildSettingsBody(StateModel model) {
-    switch (model.settings.status) {
+  Widget _buildSettingsBody(Settings settings) {
+    switch (settings.status) {
       case SettingsStatus.Null:
-        model.settings.load();
+        settings.load();
         return Center(child: CircularProgressIndicator());
       case SettingsStatus.Loading:
         return Center(child: CircularProgressIndicator());
       case SettingsStatus.Ready:
-        return _buildSettingsList(model.settings.data, model.storeSettings);
+        return _buildSettingsList(settings.data, settings.store);
     }
     return null;
   }

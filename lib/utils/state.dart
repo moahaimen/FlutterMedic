@@ -1,6 +1,4 @@
-import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_management.dart';
-import 'package:drugStore/models/order_product.dart';
 import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/models/province.dart';
 import 'package:drugStore/models/settings.dart';
@@ -53,63 +51,83 @@ class StateModel extends Model {
   //
   OrderManagement order;
 
-  bool _fetching;
-
-  bool get fetching => _fetching;
+  //
+  // Check whether the stateModel is ready to use any of its properties
+  //
+  bool get ready =>
+      settings != null &&
+      settings.status == SettingsStatus.Ready &&
+      provinces != null &&
+      provinces.status == PaginationStatus.Ready &&
+      contactUs != null &&
+      contactUs.status == PaginationStatus.Ready &&
+      brands != null &&
+      brands.status == PaginationStatus.Ready &&
+      categories != null &&
+      categories.status == PaginationStatus.Ready &&
+      products != null &&
+      products.status == PaginationStatus.Ready &&
+      order != null &&
+      order.status == OrderStatus.Ready;
 
   StateModel(BuildContext context) {
     this.products = new SelectablePagination<Product>(
-            () => this.notifyListeners(),
+        () => this.notifyListeners(),
         path: DotEnv().env['fetchProductsUrl'],
         cb: (e) => Product.fromJson(e));
 
-    this.settings = new Settings(() => this.notifyListeners());
+    this.settings = new Settings(notifier: () => this.notifyListeners());
 
-    this.contactUs = new Pagination<dynamic>(() => this.notifyListeners(),
+    this.contactUs = new Pagination<dynamic>(
+        notifier: () => this.notifyListeners(),
         path: DotEnv().env['fetchContactUsUrl'],
-        callback: (e) =>
-        {
-          'key': e['key'],
-          'section': e['section'],
-          'en_value': e['en_value'],
-          'ar_value': e['ar_value'],
-          'url': e['url']
-        });
+        callback: (e) => {
+              'key': e['key'],
+              'section': e['section'],
+              'en_value': e['en_value'],
+              'ar_value': e['ar_value'],
+              'url': e['url']
+            });
 
-    this.provinces = new Pagination<Province>(() => this.notifyListeners(),
+    this.provinces = new Pagination<Province>(
+        notifier: () => this.notifyListeners(),
         path: DotEnv().env['fetchProvincesUrl'],
         callback: (e) => Province.fromJson(e));
 
-    this.order = new OrderManagement(() => this.notifyListeners());
+    this.order = new OrderManagement(this, () => this.notifyListeners());
 
     this.categories = new SelectablePagination<Category>(
-            () => this.notifyListeners(),
+        () => this.notifyListeners(),
         path: DotEnv().env['fetchCategoriesUrl'],
         cb: (e) => Category.fromJson(e));
 
-    this.brands = new Pagination<Brand>(() => this.notifyListeners(),
+    this.brands = new Pagination<Brand>(
+        notifier: () => this.notifyListeners(),
         path: DotEnv().env['fetchBrandsUrl'],
         callback: (e) => Brand.fromJson(e));
-
-    fetchModelData(context);
   }
 
   Future<void> fetchModelData(BuildContext context) async {
-    _fetching = true;
     notifyListeners();
 
     await this.fetchProvinces(context);
+    print('provinces');
     await this.fetchContactUs(context);
+    print('contactUs');
 
     await this.fetchBrands(context);
+    print('brands');
     await this.fetchCategories(context);
+    print('categories');
 
     await this.fetchProducts(context);
-    await this.restoreOrder();
+    print('products');
+    await this.restoreOrder(context);
+    print('order ${order.order}');
 
     await this.loadSettings();
+    print('settings');
 
-    _fetching = false;
     notifyListeners();
   }
 
@@ -117,21 +135,21 @@ class StateModel extends Model {
   /// Fetch contact us information
   ///
   Future<void> fetchContactUs(BuildContext context) async {
-    await this.contactUs.fetch(context);
+    await this.contactUs.fetch(context, true, true);
   }
 
   ///
   /// Fetch provinces list
   ///
   Future<void> fetchProvinces(BuildContext context) async {
-    await this.provinces.fetch(context);
+    await this.provinces.fetch(context, true, true);
   }
 
   ///
   /// Fetch list of categories
   ///
   Future<void> fetchCategories(BuildContext context) async {
-    await this.categories.fetch(context);
+    await this.categories.fetch(context, true, true);
   }
 
   ///
@@ -145,100 +163,34 @@ class StateModel extends Model {
   /// Upload settings from preferences
   ///
   Future<void> storeSettings(Map<String, dynamic> data) {
-    return this.settings.store(data, () => this.notifyListeners());
+    return this.settings.store(data);
   }
 
   ///
   /// Toggle the current language and store the result in Preferences
   ///
   Future<void> alternateLanguage() {
-    return this.settings.alternateLanguage(() => this.notifyListeners());
+    return this.settings.alternateLanguage();
   }
 
   ///
   /// Fetch list of brands
   ///
   Future<void> fetchBrands(BuildContext context) async {
-    await this.brands.fetch(context);
+    await this.brands.fetch(context, true, true);
   }
 
   ///
   /// Fetch list of products
   ///
   Future<void> fetchProducts(BuildContext context) async {
-    await this.products.fetch(context);
+    await this.products.fetch(context, true, true);
   }
 
   ///
-  /// Restore the stored version of order
+  /// Restore the stored version of _order
   ///
-  Future<void> restoreOrder() async {
-    return await this.order.restore(this);
-  }
-
-  ///
-  /// Persist the active version of order
-  ///
-  Future<void> storeOrder() async {
-    return await this.order.store();
-  }
-
-  ///
-  /// Post order
-  ///
-  Future<bool> submitOrder(BuildContext context) async {
-    return await this.order.submit(context);
-  }
-
-  ///
-  /// Insert the item into list of order's products
-  ///
-  Future<bool> addOrderItem(OrderProduct item) async {
-    return this.order.addOrderItem(item);
-  }
-
-  Future<bool> addOrderItemById(int productId, int quantity) async {
-    return this.order.addOrderItemById(productId, quantity, this.products.data);
-  }
-
-  bool hasOrderItem(int productId) {
-    return this.order.hasItem(productId);
-  }
-
-  ///
-  /// Update quantity of a specific orders' product
-  ///
-  Future<void> updateOrderItem(int productId, int quantity) async {
-    return this.order.updateOrderItem(productId, quantity);
-  }
-
-  ///
-  /// Remove order item
-  ///
-  Future<void> removeOrderItem(int productId) async {
-    return this.order.removeOrderItem(productId);
-  }
-
-  ///
-  /// set order client
-  ///
-  Future<void> setOrderClient(OrderClient client) async {
-    return this.order.setOrderClient(client);
-  }
-
-  ///
-  /// set order client
-  ///
-  Future<void> setOrderClientDetails(Map<String, dynamic> fields,
-      {bool notify = true}) async {
-    return this.order.setOrderClientFields(fields,
-        notify: notify, provinces: this.provinces.data);
-  }
-
-  ///
-  /// Set order promo code after verify it's activation
-  ///
-  Future<bool> setPromoCode(BuildContext context, String promoCode) async {
-    return this.order.setPromoCode(context, promoCode);
+  Future<void> restoreOrder(BuildContext context) async {
+    return await this.order.restore(context);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/models/province.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,8 +26,6 @@ class CustomProvinceFormField extends StatelessWidget {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget child, StateModel model) {
         final translator = AppTranslations.of(context);
-
-        final provinces = model.provinces;
 
         return Container(
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 2),
@@ -60,9 +57,9 @@ class CustomProvinceFormField extends StatelessWidget {
                     if (v == null || v.isEmpty) {
                       return translator.text('required_field');
                     } else {
-                      final index = provinces.data
+                      final index = model.provinces.data
                           .indexWhere((e) => e.enName == v || e.arName == v);
-                      if (index < 0 || index >= provinces.data.length) {
+                      if (index < 0 || index >= model.provinces.data.length) {
                         return translator.text('province_must_be_valid');
                       } else {
                         return null;
@@ -71,7 +68,9 @@ class CustomProvinceFormField extends StatelessWidget {
                   },
                   onTap: () async {
                     final province = await _openProvincesModal(
-                        context, translator.text('select_province'));
+                        context,
+                        translator.text('select_province'),
+                        model.provinces.data);
                     onSave(province.id);
                     controller.text = province.getName(context);
                   },
@@ -84,37 +83,25 @@ class CustomProvinceFormField extends StatelessWidget {
     );
   }
 
-  Future<Province> _openProvincesModal(BuildContext context,
-      String title) async {
+  Future<Province> _openProvincesModal(
+      BuildContext context, String title, List<Province> provinces) async {
     return showDialog<Province>(
       context: context,
-      builder: (BuildContext context) =>
-          ScopedModelDescendant(
-            builder: (BuildContext context, Widget child, StateModel model) =>
-                SimpleDialog(
-                    title: Text(title),
-                    children: _getSimpleDialogChildren(
-                        context, model.provinces)),
-          ),
+      builder: (BuildContext context) => SimpleDialog(
+          title: Text(title),
+          children: _getSimpleDialogChildren(context, provinces)),
     );
   }
 
-  List<Widget> _getSimpleDialogChildren(BuildContext context,
-      Pagination<Province> provinces) {
-    switch (provinces.status) {
-      case PaginationStatus.Null:
-        provinces.fetch(context);
-        return [Center(child: CircularProgressIndicator())];
-      case PaginationStatus.Loading:
-        return [Center(child: CircularProgressIndicator())];
-      case PaginationStatus.Ready:
-        return provinces.data
-            .map((e) => SimpleDialogOption(
-          onPressed: () => Navigator.pop(context, e),
-                  child: Text(e.getName(context)),
-                ))
-            .toList();
-    }
-    return null;
+  List<Widget> _getSimpleDialogChildren(
+      BuildContext context, List<Province> provinces) {
+    assert(provinces != null);
+
+    return provinces
+        .map((e) => SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, e),
+              child: Text(e.getName(context)),
+            ))
+        .toList();
   }
 }

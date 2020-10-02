@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drugStore/localization/application.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum SettingsStatus { Null, Loading, Ready }
@@ -11,7 +12,7 @@ class Settings {
 
   final void Function() notifier;
 
-  Settings(this.notifier)
+  Settings({@required this.notifier})
       : this._status = SettingsStatus.Null,
         this._data = {'locale': 'ar', 'notifications': true};
 
@@ -36,10 +37,7 @@ class Settings {
     notifier();
   }
 
-  Future<void> store(
-      Map<String, dynamic> data, void Function() notifier) async {
-    assert(notifier != null);
-
+  Future<void> store(Map<String, dynamic> data) async {
     _status = SettingsStatus.Loading;
     notifier();
 
@@ -51,13 +49,18 @@ class Settings {
     });
   }
 
-  Future<void> alternateLanguage(void Function() notifier) async {
+  Future<void> alternateLanguage() async {
     final String current = this.data['locale'];
     final String alternate = current == 'en' ? 'ar' : 'en';
 
     this.data['locale'] = alternate;
-    this
-        .store(data, notifier)
-        .then((value) => application.setLocale(alternate));
+    this.store(data).then((value) => application.setLocale(alternate));
+  }
+
+  Future<Settings> getOrLoad() async {
+    if (this._data == null || this._data.isEmpty) {
+      await this.load();
+    }
+    return this;
   }
 }

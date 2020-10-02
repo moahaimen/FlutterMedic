@@ -49,30 +49,30 @@ class Router {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-    // Home
+      // Home
       case home:
         return MaterialPageRoute(
-          builder: (BuildContext context) =>
-              HomePage(
-                id: settings.arguments ?? PageId.Home,
-              ),
-        );
-    // Cart
+            builder: (BuildContext context) => _routePageBuilder(
+                  context,
+                  home,
+                  HomePage(id: settings.arguments ?? PageId.Home),
+                ));
+      // Cart
       case cart:
         return MaterialPageRoute(
-          builder: (BuildContext context) =>
-              HomePage(
-                id: PageId.Cart,
-              ),
-        );
-    // Products
+            builder: (BuildContext context) => _routePageBuilder(
+                  context,
+                  cart,
+                  HomePage(id: PageId.Cart),
+                ));
+      // Products
       case products:
         return MaterialPageRoute(
-          builder: (BuildContext context) =>
-              ProductsPage(
-                filter: settings.arguments ?? new Map<String, dynamic>(),
-              ),
-        );
+            builder: (BuildContext context) => _routePageBuilder(
+                  context,
+                  products,
+                  ProductsPage(),
+                ));
     }
     return null;
   }
@@ -82,12 +82,11 @@ class Router {
   ///
   static Route<dynamic> onUnknownRoute(RouteSettings settings) {
     return MaterialPageRoute(
-      builder: (BuildContext context) => HomePage(id: PageId.Home),
-    );
+        builder: (BuildContext context) => HomePage(id: PageId.Home));
   }
 
-  static Widget _routePageBuilder(BuildContext context, String route,
-      Widget widget) {
+  static Widget _routePageBuilder(
+      BuildContext context, String route, Widget widget) {
     current = route;
     return widget;
   }

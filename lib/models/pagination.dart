@@ -22,27 +22,17 @@ class Pagination<TModel> {
 
   PaginationStatus status;
   TModel Function(dynamic e) callback;
+
   final void Function() notifier;
 
-  Pagination(this.notifier, {@required this.path, @required this.callback})
+  Pagination(
+      {@required this.notifier, @required this.path, @required this.callback})
       : this.status = PaginationStatus.Null;
 
-  Future<void> fetch(BuildContext context,
-      {String path,
-      TModel Function(dynamic e) cb,
-      bool notify = true,
-      bool status = true}) async {
-//    assert(context != null);
-    assert(this.path != null || path != null);
-    assert(this.callback != null || cb != null);
-
-    if (cb != null) {
-      this.callback = cb;
-    }
-
-    if (path != null) {
-      this.path = path;
-    }
+  Future<void> fetch(BuildContext context, bool notify, bool status) async {
+    assert(context != null);
+    assert(this.path != null);
+    assert(this.callback != null);
 
     if (status) this.status = PaginationStatus.Loading;
     if (notify) this.notifier();
@@ -73,6 +63,18 @@ class Pagination<TModel> {
     if (status) this.status = PaginationStatus.Ready;
     this.notifier();
   }
+
+  Future<void> fetchNextPage(BuildContext context) async {
+    this.path = this.nextPageUrl;
+    await this.fetch(context, true, true);
+  }
+
+  Future<Pagination<TModel>> getOrFetch(BuildContext context) async {
+    if (this.data == null || this.data.length == 0) {
+      await this.fetch(context, true, true);
+    }
+    return this;
+  }
 }
 
 class SelectablePagination<TModel> extends Pagination<TModel> {
@@ -80,7 +82,7 @@ class SelectablePagination<TModel> extends Pagination<TModel> {
 
   SelectablePagination(void Function() notifier,
       {@required String path, @required TModel Function(dynamic e) cb})
-      : super(notifier, path: path, callback: cb);
+      : super(notifier: notifier, path: path, callback: cb);
 
   TModel get selected => this.data != null &&
           this.index != null &&
@@ -103,5 +105,13 @@ class SelectablePagination<TModel> extends Pagination<TModel> {
   void noSelect() {
     this.index = null;
     notifier();
+  }
+
+  @override
+  Future<SelectablePagination<TModel>> getOrFetch(BuildContext context) async {
+    if (this.data == null || this.data.length == 0) {
+      await this.fetch(context, true, true);
+    }
+    return this;
   }
 }

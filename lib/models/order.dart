@@ -1,17 +1,16 @@
+import 'package:drugStore/models/order_management.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/state.dart';
 import 'order_client.dart';
 import 'order_product.dart';
 import 'order_promo_code.dart';
 
 class Order {
-  static Future<Order> fromJson(Map<String, dynamic> data, StateModel model,
-      BuildContext context) async {
-    final products =
-    await model.order.getProductsInfo(context, data['products']);
-
-    final OrderClient client = OrderClient.fromJson(data['client'], model);
+  static Future<Order> fromJson(BuildContext context, Map<String, dynamic> data,
+      OrderManagement manager) async {
+    final products = await manager.getProductsInfo(context, data['products']);
+    final OrderClient client =
+        await OrderClient.fromJson(data['client'], manager);
 
     final OrderPromoCode promoCode =
         OrderPromoCode.fromJson(data['promo_code']);

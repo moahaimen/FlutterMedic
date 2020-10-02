@@ -11,17 +11,21 @@ import 'brand_list_item.dart';
 class BrandsListView extends StatelessWidget {
   final int _columnCount = 3;
 
-  Widget _buildBrandsList(BuildContext context, bool loading,
-      List<Brand> brands) {
+  Widget _buildBrandsList(
+      BuildContext context, bool loading, List<Brand> brands) {
     if (loading) {
-      return Center(
-        child: CircularProgressIndicator(),
+      return Container(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
 
     if (brands == null || brands.length == 0) {
-      return Center(
-        child: Text(AppTranslations.of(context).text("brands_list_empty")),
+      return Container(
+        child: Center(
+          child: Text(AppTranslations.of(context).text("brands_list_empty")),
+        ),
       );
     }
 
@@ -33,19 +37,21 @@ class BrandsListView extends StatelessWidget {
           childAspectRatio: 5 / 6,
           children: List.generate(
             brands.length,
-                (int index) {
-              return AnimationConfiguration.staggeredGrid(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                columnCount: _columnCount,
-                child: ScaleAnimation(
-                  child: FadeInAnimation(
-                    child: BrandListItem(brand: brands[index]),
-                  ),
-                ),
-              );
-            },
+            (int index) => _generateBrandItem(index, brands[index]),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _generateBrandItem(int index, Brand brand) {
+    return AnimationConfiguration.staggeredGrid(
+      position: index,
+      duration: const Duration(milliseconds: 375),
+      columnCount: _columnCount,
+      child: ScaleAnimation(
+        child: FadeInAnimation(
+          child: BrandListItem(brand: brand),
         ),
       ),
     );
@@ -54,18 +60,17 @@ class BrandsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
-      builder: (BuildContext context, Widget widget, StateModel model) {
-        return RefreshIndicator(
-          onRefresh: () {
-            return model.fetchBrands(context);
-          },
-          child: _buildBrandsList(
-            context,
-            model.brands.status == PaginationStatus.Loading,
-            model.brands.data,
-          ),
-        );
-      },
+      builder: (BuildContext context, Widget widget, StateModel model) =>
+          RefreshIndicator(
+        onRefresh: () {
+          return model.fetchBrands(context);
+        },
+        child: _buildBrandsList(
+          context,
+          model.brands.status == PaginationStatus.Loading,
+          model.brands.data,
+        ),
+      ),
     );
   }
 }

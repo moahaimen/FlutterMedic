@@ -5,26 +5,25 @@ import '../localization/app_translation.dart';
 class Brand {
   static Brand fromJson(Map<String, dynamic> data) {
     final String photoUrl =
-    data['attachment'] != null ? data['attachment']['url'] ?? '' : '';
-    return new Brand(data['en_name'], data['ar_name'], photoUrl);
+        data['attachment'] != null ? data['attachment']['url'] ?? '' : '';
+    return new Brand(data['id'], data['en_name'], data['ar_name'], photoUrl);
   }
 
+  final int id;
   final String enName;
   final String arName;
   final String photoUrl;
 
-  Brand(this.enName, this.arName, this.photoUrl);
+  Brand(this.id, this.enName, this.arName, this.photoUrl);
 
   Brand.from(Brand source)
-      : this.enName = source.enName,
+      : this.id = source.id,
+        this.enName = source.enName,
         this.arName = source.arName,
         this.photoUrl = source.photoUrl;
 
   String getName(BuildContext context) {
-    return AppTranslations
-        .of(context)
-        .locale
-        .languageCode == "en"
+    return AppTranslations.of(context).locale.languageCode == "en"
         ? enName
         : arName;
   }

@@ -1,5 +1,5 @@
+import 'package:drugStore/models/order_management.dart';
 import 'package:drugStore/models/province.dart';
-import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
 class OrderClient {
@@ -7,12 +7,12 @@ class OrderClient {
     return OrderClient(name: null, phone: null, province: null, address: null);
   }
 
-  static OrderClient fromJson(Map<String, dynamic> data, StateModel state) {
+  static Future<OrderClient> fromJson(
+      Map<String, dynamic> data, OrderManagement manager) async {
     return new OrderClient(
         name: data['name'],
         phone: data['phone'],
-        province: state.provinces.data
-            .firstWhere((e) => e.id == data['province'], orElse: () => null),
+        province: manager.getClientProvince(data['province']),
         address: data['address'],
         notes: data['notes'],
         userId: data['user_id']);

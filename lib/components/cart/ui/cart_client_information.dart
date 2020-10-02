@@ -1,13 +1,15 @@
 import 'package:drugStore/components/cart/ui/totals/order_total_with_shipping_ui.dart';
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/order_management.dart';
 import 'package:drugStore/ui/custom_form_field.dart';
 import 'package:drugStore/ui/custom_province_form_field.dart';
-import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 
 class CartClientInformation extends StatefulWidget {
   final GlobalKey<FormState> form = new GlobalKey();
+  final OrderManagement manager;
+
+  CartClientInformation(this.manager);
 
   @override
   State<StatefulWidget> createState() => _CartClientInformationState();
@@ -36,21 +38,6 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
   static Map<String, dynamic> data;
 
-  String _provinceNameOrDefault(StateModel state, int provinceId) {
-    if (provinceId == null) {
-      return '';
-    }
-
-    final province = state.provinces.data
-        .firstWhere((e) => e.id == provinceId, orElse: null);
-
-    if (province == null) {
-      return '';
-    }
-
-    return province.getName(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
@@ -59,10 +46,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
     final theme = Theme.of(context);
     final translator = AppTranslations.of(context);
-    final state = ScopedModel.of<StateModel>(context);
 
-    data = state.order.client.toJson(false);
-    print(data);
+    data = widget.manager.order.client.toJson(false);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: paddingWidth),
@@ -75,8 +60,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 title: translator.text('order_client_name'),
                 initialValue: data['name'],
                 onSave: (value) => data['name'] = value,
-                onChanged: (value) =>
-                    state.setOrderClientDetails({'name': value}, notify: false),
+                onChanged: (value) => widget.manager
+                    .setOrderClientFields({'name': value}, notify: false),
                 validator: (value) =>
                     _validator(translator, value, null, 3, 50),
                 color: theme.accentColor),
@@ -85,8 +70,10 @@ class _CartClientInformationState extends State<CartClientInformation> {
               title: translator.text('order_client_phone'),
               initialValue: data['phone'],
               onSave: (value) => data['phone'] = value,
-              onChanged: (value) =>
-                  state.setOrderClientDetails({'phone': value}, notify: false),
+              onChanged: (value) => widget.manager.setOrderClientFields(
+                {'phone': value},
+                notify: false,
+              ),
               validator: (value) => _validator(translator, value, null, 11, 14),
               color: theme.accentColor,
               keyboardType: TextInputType.number,
@@ -94,10 +81,13 @@ class _CartClientInformationState extends State<CartClientInformation> {
             // Province
             CustomProvinceFormField(
               title: translator.text('order_client_province'),
-              initialValue: _provinceNameOrDefault(state, data['province']),
+              initialValue: widget.manager
+                      .getClientProvince(data['province'])
+                      ?.getName(context) ??
+                  '',
               onSave: (int value) {
                 data['province'] = value;
-                state.setOrderClientDetails({'provinceId': value});
+                widget.manager.setOrderClientFields({'provinceId': value});
               },
               color: theme.accentColor,
             ),
@@ -106,10 +96,10 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 title: translator.text('order_client_address'),
                 initialValue: data['address'],
                 onSave: (value) => data['address'] = value,
-                onChanged: (value) =>
-                    state
-                        .setOrderClientDetails(
-                        {'address': value}, notify: false),
+                onChanged: (value) => widget.manager.setOrderClientFields(
+                      {'address': value},
+                      notify: false,
+                    ),
                 validator: (value) =>
                     _validator(translator, value, null, 3, 50, required: true),
                 color: theme.accentColor),
@@ -117,15 +107,16 @@ class _CartClientInformationState extends State<CartClientInformation> {
                 title: translator.text('order_client_notes'),
                 initialValue: data['notes'],
                 onSave: (value) => data['notes'] = value,
-                onChanged: (value) =>
-                    state
-                        .setOrderClientDetails({'notes': value}, notify: false),
+                onChanged: (value) => widget.manager.setOrderClientFields(
+                      {'notes': value},
+                      notify: false,
+                    ),
                 validator: (value) => _validator(
                     translator, value, null, 3, 300,
                     required: false),
                 color: theme.accentColor),
             // Summary
-            OrderTotalWithShippingUi(),
+            OrderTotalWithShippingUi(widget.manager.order),
           ],
         ),
       ),

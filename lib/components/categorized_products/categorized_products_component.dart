@@ -28,10 +28,7 @@ class _CategorizedProductsComponentState
           SizedBox(height: 10),
           Container(
             color: Color(0xffefefef),
-            child: ProductsListView(
-              filter: {'categorized': true, 'home': true},
-              physics: NeverScrollableScrollPhysics(),
-            ),
+            child: ProductsListView(physics: NeverScrollableScrollPhysics()),
           ),
         ],
       ),
