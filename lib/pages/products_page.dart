@@ -11,9 +11,7 @@ import '../partials/router.dart';
 class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (!ScopedModel.of<StateModel>(context).ready) {
-      Navigator.of(context).pushReplacementNamed(Router.index);
-    }
+    if (!ScopedModel.of<StateModel>(context).ready) {}
 
     // Initializing PCM
     PushNotificationsManager.initialize(context);
@@ -21,7 +19,7 @@ class ProductsPage extends StatelessWidget {
     return Scaffold(
       drawer: DrawerBuilder.build(context, Router.products),
       appBar: Toolbar.get(title: Router.products, context: context),
-      body: Container(
+      body: SingleChildScrollView(
         child: ProductsListView(
           physics: AlwaysScrollableScrollPhysics(),
         ),

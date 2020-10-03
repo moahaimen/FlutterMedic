@@ -24,6 +24,11 @@ class _AddToCartButton extends State<AddToCartButton> {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget child, StateModel model) {
         final order = model.order;
+
+        if (order == null || order.status != OrderStatus.Ready) {
+          order.restore(context);
+        }
+
         final translator = AppTranslations.of(context);
 
         switch (order.status) {

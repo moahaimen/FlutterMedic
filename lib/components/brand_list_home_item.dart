@@ -47,7 +47,7 @@ class BrandListHomeItem extends StatelessWidget {
           ),
         ),
         onTap: () => Navigator.of(context).pushNamed(
-          Router.products,
+          Router.search,
           arguments: {
             'brand': this.brand,
           },

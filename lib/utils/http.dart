@@ -4,7 +4,7 @@ import 'package:toast/toast.dart';
 
 class Http {
   static Future<T> get<T>(BuildContext context, String path,
-      {Map<String, dynamic> headers}) async {
+      {Map<String, dynamic> headers, Map<String, dynamic> params}) async {
     if (headers == null) {
       headers = new Map();
     }
@@ -12,7 +12,7 @@ class Http {
     headers['accept'] = 'application/json';
 
     return Dio()
-        .get(path, options: Options(headers: headers))
+        .get(path, queryParameters: params, options: Options(headers: headers))
         .catchError((err) => _onError(context, err))
         .then((Response response) {
       if (response.statusCode != 200) {

@@ -155,8 +155,8 @@ class StateModel extends Model {
   ///
   /// Load settings from preferences
   ///
-  Future<void> loadSettings() {
-    return this.settings.load();
+  Future<void> loadSettings() async {
+    await this.settings.load();
   }
 
   ///

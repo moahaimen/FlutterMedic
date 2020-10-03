@@ -40,52 +40,55 @@ class ProductsListView extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5),
-      child: Column(
-        children: [
-          AnimationLimiter(
-            child: GridView.count(
-              controller: _controller,
-              shrinkWrap: true,
-              physics: physics,
-              childAspectRatio: 3 / 4,
-              crossAxisCount: _columnCount,
-              children: List.generate(
-                products.length,
-                (int index) {
-                  return AnimationConfiguration.staggeredGrid(
-                    position: index,
-                    duration: const Duration(milliseconds: 375),
-                    columnCount: _columnCount,
-                    child: ScaleAnimation(
-                      child: FadeInAnimation(
-                        child: ProductListItem(product: products[index]),
+      child: SingleChildScrollView(
+        physics: physics,
+        child: Column(
+          children: [
+            AnimationLimiter(
+              child: GridView.count(
+                controller: _controller,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                childAspectRatio: 3 / 4,
+                crossAxisCount: _columnCount,
+                children: List.generate(
+                  products.length,
+                  (int index) {
+                    return AnimationConfiguration.staggeredGrid(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      columnCount: _columnCount,
+                      child: ScaleAnimation(
+                        child: FadeInAnimation(
+                          child: ProductListItem(product: products[index]),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          Center(
-            child: obj.status == PaginationStatus.Loading
-                ? new Align(
-                    child: new Container(
-                      child: Center(
-                        child: new CircularProgressIndicator(),
+            Center(
+              child: obj.status == PaginationStatus.Loading
+                  ? new Align(
+                      child: new Container(
+                        child: Center(
+                          child: new CircularProgressIndicator(),
+                        ),
                       ),
-                    ),
-                    alignment: FractionalOffset.center)
-                : new Align(
-                    child: new Container(
-                      child: new OutlineButton(
-                        onPressed: () => obj.fetchNextPage(context),
-                        child:
-                            Text(AppTranslations.of(context).text('load_more')),
+                      alignment: FractionalOffset.center)
+                  : new Align(
+                      child: new Container(
+                        child: new OutlineButton(
+                          onPressed: () => obj.fetchNextPage(context),
+                          child: Text(
+                              AppTranslations.of(context).text('load_more')),
+                        ),
                       ),
-                    ),
-                    alignment: FractionalOffset.center),
-          ),
-        ],
+                      alignment: FractionalOffset.center),
+            ),
+          ],
+        ),
       ),
     );
   }

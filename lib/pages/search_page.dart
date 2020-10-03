@@ -3,15 +3,12 @@ import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/brand.dart';
 import 'package:drugStore/models/category.dart';
 import 'package:drugStore/models/product.dart';
-import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/utils/http.dart';
-import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:scoped_model/scoped_model.dart';
 
-enum SearchStatus { Clean, Searching, NoResult, Result }
+enum SearchStatus { Clean, Waiting, Searching, NoResult, Result }
 
 class SearchPage extends StatefulWidget {
   @override
@@ -22,40 +19,51 @@ class _SearchPageState extends State<SearchPage> {
   SearchStatus _status = SearchStatus.Clean;
   List<Product> _data;
 
-  Map<String, dynamic> filter;
-
+  String name;
   Category category;
   Brand brand;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (!ScopedModel.of<StateModel>(context).ready) {
-      Navigator.of(context).pushReplacementNamed(Router.index);
-    }
-
-    this.filter =
-        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
-    this.applySearch();
-  }
 
   Widget _buildSearchContent(BuildContext context) {
     final translator = AppTranslations.of(context);
 
+    final filter =
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic> ?? {};
+
+    if (filter.containsKey('name')) {
+      setState(() {
+        this.name = filter['name'];
+      });
+    }
+
+    if (filter.containsKey('category')) {
+      setState(() {
+        this.category = filter['category'] as Category;
+      });
+    }
+
+    if (filter.containsKey('brand')) {
+      setState(() {
+        this.brand = filter['brand'] as Brand;
+      });
+    }
+
     switch (_status) {
       case SearchStatus.Clean:
-        Center(child: Text(translator.text("search")));
-        break;
+        return Center(child: Text(translator.text("search")));
       case SearchStatus.Searching:
+        return Center(child: CircularProgressIndicator());
+      case SearchStatus.Waiting:
+        startSearch();
         return Center(child: CircularProgressIndicator());
       case SearchStatus.NoResult:
         return Center(child: Text(translator.text("search_empty_result")));
       case SearchStatus.Result:
         final int columnCount = 2;
-        final List<Widget> children = [
-          AnimationLimiter(
+        return SingleChildScrollView(
+          child: AnimationLimiter(
             child: GridView.count(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               childAspectRatio: 2 / 3,
               crossAxisCount: columnCount,
               children: List.generate(
@@ -73,20 +81,8 @@ class _SearchPageState extends State<SearchPage> {
                 },
               ),
             ),
-          )
-        ];
-
-        if (brand != null) {
-          children.insert(
-              0, Text('Products from brand ${brand.getName(context)}'));
-        }
-
-        if (category != null) {
-          children.insert(
-              0, Text('Products from category ${category.getName(context)}'));
-        }
-
-        return Column(children: children);
+          ),
+        );
     }
     return null;
   }
@@ -96,47 +92,85 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
-            autofocus: true,
-            textInputAction: TextInputAction.go,
-            onChanged: (String v) => this.filter['name'] = v,
-            onEditingComplete: applySearch),
+          autofocus: true,
+          textInputAction: TextInputAction.search,
+          onChanged: (String v) {
+            setState(() {
+              _status = SearchStatus.Clean;
+              name = v;
+            });
+          },
+          onEditingComplete: startSearch,
+        ),
+        actions: _getBarActions(),
       ),
-      body: Center(child: _buildSearchContent(context)),
+      body: Container(child: _buildSearchContent(context)),
     );
   }
 
-  void applySearch() async {
-    setState(() => _status = SearchStatus.Searching);
+  List<Widget> _getBarActions() {
+    final List<Widget> children = new List();
 
-    final url = DotEnv().env['fetchProductsUrl'];
-
-    final Map<String, dynamic> params = new Map();
-
-    if (this.filter.containsKey('name')) {
-      final name = this.filter['name'];
-
-      params['en_name'] = name;
-      params['ar_name'] = name;
+    if (category != null) {
+      children.add(
+        Chip(
+          label: Text(category.getName(context)),
+          backgroundColor: Colors.red,
+          labelPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+          labelStyle:
+              Theme.of(context).textTheme.caption.copyWith(color: Colors.white),
+        ),
+      );
     }
 
-    if (this.filter.containsKey('category')) {
-      final category = this.filter['category'] as Category;
-      final categoryId = category.id;
+    if (brand != null) {
+      children.add(
+        Chip(
+          label: Text(brand.getName(context)),
+          backgroundColor: Colors.orangeAccent,
+          labelPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+          labelStyle:
+              Theme.of(context).textTheme.caption.copyWith(color: Colors.white),
+        ),
+      );
+    }
 
+    return children;
+  }
+
+  void startSearch() async {
+    if (_status != SearchStatus.Clean) {
+      return;
+    }
+
+    setState(() => _status = SearchStatus.Searching);
+
+    final url = DotEnv().env['fetchProductsUrl'] + '?category_id=19';
+    final Map<String, dynamic> params = new Map();
+
+    if (name != null && name.length > 0) {
+      if (AppTranslations.of(context).locale.languageCode == "en") {
+        params['en_name'] = name;
+      } else {
+        params['ar_name'] = name;
+      }
+    }
+
+    if (category != null) {
+      final categoryId = category.id;
       params['category_id'] = categoryId;
     }
 
-    if (this.filter.containsKey('brand')) {
-      final brand = this.filter['brand'] as Brand;
+    if (brand != null) {
       final brandId = brand.id;
-
       params['brand_id'] = brandId;
     }
 
-    final response = await Http.get(context, url) as List<dynamic>;
-    final data = new List<Product>();
+    print(params);
 
-    response.forEach((e) => data.add(Product.fromJson(e)));
+    final response = await Http.get(context, url, params: params);
+    final data =
+        List.from(response['data']).map((e) => Product.fromJson(e)).toList();
 
     _data = data;
 
