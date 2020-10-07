@@ -93,7 +93,7 @@ class ProductListItemState extends State<ProductListItem> {
         );
 
   Widget get productImageContent => CachedNetworkImage(
-      imageUrl: product?.image?.url,
+      imageUrl: product?.image?.url ?? '',
       errorWidget: (context, url, error) => Icon(Icons.error),
       alignment: Alignment.center,
       fit: BoxFit.fill,

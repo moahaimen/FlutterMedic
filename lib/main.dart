@@ -1,6 +1,5 @@
 import 'package:drugStore/constants/strings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -11,7 +10,6 @@ import 'partials/theme.dart';
 import 'utils/state.dart';
 
 void main() async {
-  await DotEnv().load('assets/.env');
   runApp(MyApp());
 }
 

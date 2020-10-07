@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:drugStore/constants/envirnoment.dart';
 import 'package:drugStore/localization/application.dart';
 import 'package:drugStore/models/order.dart';
 import 'package:drugStore/models/order_client.dart';
 import 'package:drugStore/models/order_product.dart';
 import 'package:drugStore/models/order_promo_code.dart';
 import 'package:drugStore/models/province.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -76,6 +76,12 @@ class StateModel extends Model {
   bool _productsLoading = false;
   var _selectedProduct;
   List<Product> _products;
+  int take = 1;
+
+  void increaseTake() {
+    take++;
+    notifyListeners();
+  }
 
   bool get productsLoading => this._productsLoading;
 
@@ -138,14 +144,13 @@ class StateModel extends Model {
     _contactUsLoading = true;
     notifyListeners();
 
-    return Http.get(DotEnv().env['fetchContactUsUrl'])
-        .then((dynamic contactUs) {
+    return Http.get(Environment.fetchContactUsUrl).then((dynamic contactUs) {
       if (contactUs == null) {
         _contactUsLoading = false;
         notifyListeners();
         return;
       }
-      final List<dynamic> xx = contactUs as List<dynamic>;
+      final List<dynamic> xx = contactUs['data'] as List<dynamic>;
       _contactUs = new Map();
 
       xx.forEach((e) {
@@ -171,8 +176,7 @@ class StateModel extends Model {
     _provincesLoading = true;
     notifyListeners();
 
-    return Http.get(DotEnv().env['fetchProvincesUrl'])
-        .then((dynamic provinces) {
+    return Http.get(Environment.fetchProvincesUrl).then((dynamic provinces) {
       if (provinces == null) {
         this._provincesLoading = false;
         this.notifyListeners();
@@ -180,7 +184,7 @@ class StateModel extends Model {
       }
 
       this._provinces =
-          provinces.map<Province>((e) => Province.fromJson(e)).toList();
+          provinces['data'].map<Province>((e) => Province.fromJson(e)).toList();
 
       this._provincesLoading = false;
       this.notifyListeners();
@@ -194,16 +198,16 @@ class StateModel extends Model {
     this._categoriesLoading = true;
     this.notifyListeners();
 
-    return Http.get(DotEnv().env['fetchCategoriesUrl'])
-        .then((dynamic categories) {
+    return Http.get(Environment.fetchCategoriesUrl).then((dynamic categories) {
       if (categories == null) {
         this._categoriesLoading = false;
         this.notifyListeners();
         return;
       }
 
-      this._categories =
-          categories.map<Category>((e) => Category.fromJson(e)).toList();
+      this._categories = categories['data']
+          .map<Category>((e) => Category.fromJson(e))
+          .toList();
 
       this._categoriesLoading = false;
       this.notifyListeners();
@@ -264,13 +268,14 @@ class StateModel extends Model {
     this._brandsLoading = true;
     this.notifyListeners();
 
-    return Http.get(DotEnv().env['fetchBrandsUrl']).then((dynamic result) {
+    return Http.get(Environment.fetchBrandsUrl).then((dynamic result) {
       if (result == null) {
         this._brandsLoading = false;
         this.notifyListeners();
         return;
       }
-      this._brands = result.map<Brand>((e) => Brand.fromJson(e)).toList();
+      this._brands =
+          result['data'].map<Brand>((e) => Brand.fromJson(e)).toList();
 
       this._brandsLoading = false;
       this.notifyListeners();
@@ -284,7 +289,7 @@ class StateModel extends Model {
     this._productsLoading = true;
     this.notifyListeners();
 
-    return Http.get(DotEnv().env['fetchProductsUrl']).then((dynamic products) {
+    return Http.get(Environment.fetchProductsUrl).then((dynamic products) {
       if (products == null) {
         this._productsLoading = false;
         this.notifyListeners();
@@ -292,7 +297,7 @@ class StateModel extends Model {
       }
 
       this._products =
-          products.map<Product>((e) => Product.fromJson(e)).toList();
+          products['data'].map<Product>((e) => Product.fromJson(e)).toList();
 
       this._productsLoading = false;
       this.notifyListeners();
@@ -356,9 +361,8 @@ class StateModel extends Model {
     final base64 =
         base64Encode(utf8.encode(jsonEncode(this._order.toJson(true))));
 
-    return Http.get("${DotEnv().env['postOrderUrl']}?o=$base64")
+    return Http.get(Environment.postOrderUrl.replaceFirst(':o', base64))
         .then((dynamic response) {
-      print("post order => $response");
       this._orderUploading = false;
 
       if (response == null) {
@@ -506,7 +510,7 @@ class StateModel extends Model {
   ///
   Future<bool> setPromoCode(String promoCode) async {
     final String url =
-        DotEnv().env['checkPromoCodeUrl'].replaceAll(':code', promoCode);
+        Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
     return Http.get(url).then((response) async {
       if (response == null) {
         this._order.promoCode = null;
