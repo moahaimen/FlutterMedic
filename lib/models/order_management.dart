@@ -28,6 +28,14 @@ class OrderManagement {
 
   OrderStatus get status => this._status;
 
+  void checkStatus() {
+    if (this._order != null) {
+      this._status = OrderStatus.Ready;
+    } else {
+      this._status = OrderStatus.Null;
+    }
+  }
+
   Future<List<OrderProduct>> getProductsInfo(
       BuildContext context, List<dynamic> productsJson) async {
     final productsId = productsJson.map((e) => e['product_id']).toList();

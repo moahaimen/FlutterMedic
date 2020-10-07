@@ -46,7 +46,7 @@ class Toolbar {
             icon: Icon(Icons.language, size: 28),
             padding: EdgeInsets.symmetric(horizontal: 0),
             onPressed: () async {
-              await model.alternateLanguage();
+              await model.settings.alternateLanguage();
               Toast.show("Language changed successfully", context);
             },
           ),

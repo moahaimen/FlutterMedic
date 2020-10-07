@@ -3,9 +3,7 @@ import 'package:drugStore/components/home_page_content.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/partials/toolbar.dart';
 import 'package:drugStore/utils/push_notifications_manager.dart';
-import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 
 import '../components/brands_list_view.dart';
 import '../components/categories_list_view.dart';
@@ -53,15 +51,6 @@ class HomePageState extends State<HomePage> {
   HomePageState({PageId id})
       : _page = new _Page(id),
         _pageController = PageController(initialPage: id.index);
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (!ScopedModel.of<StateModel>(context).ready) {
-      Navigator.of(context).pushReplacementNamed(Router.index);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

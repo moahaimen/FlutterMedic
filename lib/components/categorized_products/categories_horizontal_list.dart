@@ -11,6 +11,9 @@ class CategoriesHorizontalList extends StatelessWidget {
         final theme = Theme.of(context);
 
         switch (model.categories.status) {
+          case PaginationStatus.Null:
+          // return Center(child: CircularProgressIndicator());
+          case PaginationStatus.Loading:
           case PaginationStatus.Ready:
             return ListView.separated(
               shrinkWrap: true,
@@ -22,17 +25,18 @@ class CategoriesHorizontalList extends StatelessWidget {
                   ? FlatButton(
                       textColor: theme.accentColor,
                       child: Text('All'),
-                      onPressed: () => model.categories.noSelect())
+                      onPressed: () => model.products.clearFilter())
                   : FlatButton(
                       textColor: theme.accentColor,
                       child:
                           Text(model.categories.data[index].getName(context)),
-                      onPressed: () => model.categories
-                          .select(model.categories.data[index])),
+                      onPressed: () => model.products.useFilter(
+                            'category',
+                            model.categories.data[index],
+                          )),
             );
-          default:
-            throw new Exception('Categories model is null at the moment');
         }
+        throw new Exception('Categories model is null at the moment');
       },
     );
   }

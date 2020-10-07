@@ -11,8 +11,8 @@ import 'brand_list_item.dart';
 class BrandsListView extends StatelessWidget {
   final int _columnCount = 3;
 
-  Widget _buildBrandsList(
-      BuildContext context, bool loading, List<Brand> brands) {
+  Widget _buildBrandsList(BuildContext context, bool loading,
+      List<Brand> brands, Function loadMore) {
     if (loading) {
       return Container(
         child: Center(
@@ -23,8 +23,14 @@ class BrandsListView extends StatelessWidget {
 
     if (brands == null || brands.length == 0) {
       return Container(
-        child: Center(
-          child: Text(AppTranslations.of(context).text("brands_list_empty")),
+        child: GestureDetector(
+          child: Center(
+              child:
+                  Text(AppTranslations.of(context).text("brands_list_empty"))),
+          onTap: () => loadMore(
+            context,
+            dialog: true,
+          ),
         ),
       );
     }
@@ -66,10 +72,10 @@ class BrandsListView extends StatelessWidget {
           return model.fetchBrands(context);
         },
         child: _buildBrandsList(
-          context,
-          model.brands.status == PaginationStatus.Loading,
-          model.brands.data,
-        ),
+            context,
+            model.brands.status == PaginationStatus.Loading,
+            model.brands.data,
+            model.brands.load),
       ),
     );
   }

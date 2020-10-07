@@ -1,3 +1,4 @@
+import 'package:drugStore/models/contact_us.dart';
 import 'package:drugStore/models/order_management.dart';
 import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/models/province.dart';
@@ -19,7 +20,7 @@ class StateModel extends Model {
   //
   // Contact Us
   //
-  Pagination<dynamic> contactUs;
+  Pagination<ContactUs> contactUs;
 
   //
   // Settings
@@ -34,7 +35,7 @@ class StateModel extends Model {
   //
   // Categories
   //
-  SelectablePagination<Category> categories;
+  Pagination<Category> categories;
 
   //
   // Products
@@ -70,45 +71,76 @@ class StateModel extends Model {
       order != null &&
       order.status == OrderStatus.Ready;
 
+  bool finished = false;
+
   StateModel(BuildContext context) {
-    this.products = new SelectablePagination<Product>(
-        () => this.notifyListeners(),
-        path: DotEnv().env['fetchProductsUrl'],
-        cb: (e) => Product.fromJson(e));
+    if (this.products == null) {
+      this.products = new SelectablePagination<Product>();
+      this.products.initialize(() {
+        this.notifyListeners();
+      }, Product.fromJson, DotEnv().env['fetchProductsUrl']);
+    } else {
+      this.products.checkStatus();
+    }
 
-    this.settings = new Settings(notifier: () => this.notifyListeners());
+    if (this.settings == null) {
+      this.settings = new Settings(notifier: () {
+        this.notifyListeners();
+      });
+    } else {
+      this.settings.checkStatus();
+    }
 
-    this.contactUs = new Pagination<dynamic>(
-        notifier: () => this.notifyListeners(),
-        path: DotEnv().env['fetchContactUsUrl'],
-        callback: (e) => {
-              'key': e['key'],
-              'section': e['section'],
-              'en_value': e['en_value'],
-              'ar_value': e['ar_value'],
-              'url': e['url']
-            });
+    if (this.contactUs == null) {
+      this.contactUs = new Pagination<ContactUs>();
+      this.contactUs.initialize(() {
+        this.notifyListeners();
+      }, ContactUs.fromJson, DotEnv().env['fetchContactUsUrl']);
+    } else {
+      this.contactUs.checkStatus();
+    }
 
-    this.provinces = new Pagination<Province>(
-        notifier: () => this.notifyListeners(),
-        path: DotEnv().env['fetchProvincesUrl'],
-        callback: (e) => Province.fromJson(e));
+    if (this.provinces == null) {
+      this.provinces = new Pagination<Province>();
+      this.provinces.initialize(() {
+        this.notifyListeners();
+      }, Province.fromJson, DotEnv().env['fetchProvincesUrl']);
+    } else {
+      this.provinces.checkStatus();
+    }
 
-    this.order = new OrderManagement(this, () => this.notifyListeners());
+    if (this.order == null) {
+      this.order = new OrderManagement(this, () {
+        this.notifyListeners();
+      });
+    } else {
+      this.order.checkStatus();
+    }
 
-    this.categories = new SelectablePagination<Category>(
-        () => this.notifyListeners(),
-        path: DotEnv().env['fetchCategoriesUrl'],
-        cb: (e) => Category.fromJson(e));
+    if (this.categories == null) {
+      this.categories = new Pagination<Category>();
+      this.categories.initialize(() {
+        this.notifyListeners();
+      }, Category.fromJson, DotEnv().env['fetchCategoriesUrl']);
+    } else {
+      this.categories.checkStatus();
+    }
 
-    this.brands = new Pagination<Brand>(
-        notifier: () => this.notifyListeners(),
-        path: DotEnv().env['fetchBrandsUrl'],
-        callback: (e) => Brand.fromJson(e));
+    if (this.brands == null) {
+      this.brands = new Pagination<Brand>();
+      this.brands.initialize(() {
+        this.notifyListeners();
+      }, Brand.fromJson, DotEnv().env['fetchBrandsUrl']);
+    } else {
+      this.brands.checkStatus();
+    }
   }
 
   Future<void> fetchModelData(BuildContext context) async {
     notifyListeners();
+
+    await this.loadSettings();
+    print('settings');
 
     await this.fetchProvinces(context);
     print('provinces');
@@ -125,9 +157,6 @@ class StateModel extends Model {
     await this.restoreOrder(context);
     print('order ${order.order}');
 
-    await this.loadSettings();
-    print('settings');
-
     notifyListeners();
   }
 
@@ -135,21 +164,21 @@ class StateModel extends Model {
   /// Fetch contact us information
   ///
   Future<void> fetchContactUs(BuildContext context) async {
-    await this.contactUs.fetch(context, true, true);
+    await this.contactUs.load(context);
   }
 
   ///
   /// Fetch provinces list
   ///
   Future<void> fetchProvinces(BuildContext context) async {
-    await this.provinces.fetch(context, true, true);
+    await this.provinces.load(context);
   }
 
   ///
   /// Fetch list of categories
   ///
   Future<void> fetchCategories(BuildContext context) async {
-    await this.categories.fetch(context, true, true);
+    await this.categories.load(context);
   }
 
   ///
@@ -160,31 +189,17 @@ class StateModel extends Model {
   }
 
   ///
-  /// Upload settings from preferences
-  ///
-  Future<void> storeSettings(Map<String, dynamic> data) {
-    return this.settings.store(data);
-  }
-
-  ///
-  /// Toggle the current language and store the result in Preferences
-  ///
-  Future<void> alternateLanguage() {
-    return this.settings.alternateLanguage();
-  }
-
-  ///
   /// Fetch list of brands
   ///
   Future<void> fetchBrands(BuildContext context) async {
-    await this.brands.fetch(context, true, true);
+    await this.brands.load(context);
   }
 
   ///
   /// Fetch list of products
   ///
   Future<void> fetchProducts(BuildContext context) async {
-    await this.products.fetch(context, true, true);
+    await this.products.load(context);
   }
 
   ///

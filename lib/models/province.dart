@@ -1,7 +1,8 @@
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/pagination.dart';
 import 'package:flutter/material.dart';
 
-class Province {
+class Province extends IModel {
   static Province fromJson(Map<String, dynamic> data) {
     return new Province(
         data['id'], data['en_name'], data['ar_name'], data['fees']);
@@ -21,7 +22,7 @@ class Province {
   final String arName;
   final int fees;
 
-  const Province(this.id, this.enName, this.arName, this.fees);
+  Province(this.id, this.enName, this.arName, this.fees);
 
   Province.from(Province source)
       : this.id = source.id,
@@ -33,5 +34,21 @@ class Province {
     return AppTranslations.of(context).locale.languageCode == "en"
         ? enName
         : arName;
+  }
+
+  @override
+  int get identifier => this.id;
+
+  @override
+  bool verify(Map<String, dynamic> filter) {
+    if (filter == null || filter.isEmpty) {
+      return true;
+    }
+
+    if (filter.containsKey('name')) {
+      final name = filter['name'];
+      return this.enName.contains(name) || this.arName.contains(name);
+    }
+    return false;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:drugStore/models/pagination.dart';
 import 'package:flutter/material.dart';
 
 import '../localization/app_translation.dart';
@@ -5,7 +6,7 @@ import 'attachment.dart';
 import 'brand.dart';
 import 'category.dart';
 
-class Product {
+class Product extends IModel {
   static Product fromJson(Map<String, dynamic> data) {
     final brand = Brand.fromJson(data['brand']);
     final category = Category.fromJson(data['category']);
@@ -93,4 +94,40 @@ class Product {
   }
 
   bool get isDiscount => this.oldPrice != null;
+
+  @override
+  int get identifier => this.id;
+
+  @override
+  bool verify(Map<String, dynamic> filter) {
+    if (filter == null || filter.isEmpty) {
+      return true;
+    }
+
+    if (filter.containsKey('name')) {
+      final name = filter['name'];
+      if (name == null || name == '') {
+        return true;
+      }
+      return this.enName.contains(name) || this.arName.contains(name);
+    }
+
+    if (filter.containsKey('category')) {
+      final category = filter['category'] as Category;
+      if (category == null) {
+        return true;
+      }
+      return this.category.id == category.id;
+    }
+
+    if (filter.containsKey('brand')) {
+      final brand = filter['brand'] as Brand;
+      if (brand == null) {
+        return true;
+      }
+      return this.brand.id == brand.id;
+    }
+
+    return false;
+  }
 }

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drugStore/partials/router.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../models/brand.dart';
 
@@ -29,10 +31,12 @@ class BrandListItem extends StatelessWidget {
             ],
           ),
         ),
-        onTap: () => Navigator.of(context).pushNamed(
-          Router.search,
-          arguments: {'brand': this.brand},
-        ),
+        onTap: () {
+          ScopedModel.of<StateModel>(context)
+              .products
+              .useFilter('brand', brand);
+          Navigator.of(context).pushNamed(Router.search);
+        },
       ),
     );
   }

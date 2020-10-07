@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 
 enum PaginationStatus { Null, Loading, Ready }
 
-class Pagination<TModel> {
-  List<TModel> data;
+abstract class IModel {
+  int get identifier;
+  bool verify(Map<String, dynamic> filter);
+}
+
+class Pagination<TModel extends IModel> {
+  List<TModel> _data;
 
   int total;
   int perPage;
@@ -21,26 +26,78 @@ class Pagination<TModel> {
   int lastPage;
 
   PaginationStatus status;
-  TModel Function(dynamic e) callback;
+  void Function() notifier;
+  TModel Function(Map<String, dynamic>) parse;
 
-  final void Function() notifier;
+  Map<String, dynamic> filter;
 
-  Pagination(
-      {@required this.notifier, @required this.path, @required this.callback})
-      : this.status = PaginationStatus.Null;
+  List<TModel> get data =>
+      _data == null ? [] : List.from(_data.where((e) => e.verify(filter)));
 
-  Future<void> fetch(BuildContext context, bool notify, bool status) async {
+  void initialize(
+    void Function() notifier,
+    TModel Function(Map<String, dynamic>) parse,
+    String path,
+  ) {
+    this._data = new List<TModel>();
+
+    this.notifier = notifier;
+    this.parse = parse;
+    this.path = path;
+
+    this.status = PaginationStatus.Null;
+  }
+
+  Future<void> load(BuildContext context,
+      {int page,
+      bool notify,
+      bool status,
+      bool dialog,
+      Map<String, dynamic> filter}) async {
     assert(context != null);
-    assert(this.path != null);
-    assert(this.callback != null);
 
-    if (status) this.status = PaginationStatus.Loading;
-    if (notify) this.notifier();
+    if (notify == null) {
+      notify = true;
+    }
+    if (status == null) {
+      status = true;
+    }
 
-    final response = await Http.get<dynamic>(context, this.path);
+    if (dialog == null) {
+      dialog = false;
+    }
+
+    if (page == null) {
+      if (page == this.currentPage) {
+        this._data.clear();
+      }
+      page = this.currentPage;
+    }
+    if (filter != null) {
+      this.filter = filter;
+    }
+    if (this.filter == null) {
+      this.filter = new Map();
+    }
+
+    // Start load the data
+    //
+    if (status) {
+      this.status = PaginationStatus.Loading;
+      if (dialog) {
+        this._showLoadingDialog(context);
+      }
+    }
+
+    if (notify) {
+      this.notifier();
+    }
+
+    final response = await Http.get<dynamic>(context, this.path,
+        params: {...this.filter, 'page': page});
 
     if (response == null) {
-      throw 'Response was null';
+      throw new Exception('the response is null or bad request');
     }
 
     this.total = response['total'];
@@ -55,63 +112,87 @@ class Pagination<TModel> {
     this.lastPageUrl = response['last_page_url'];
     this.lastPage = response['last_page'];
 
-    if (this.data == null) {
-      this.data = new List();
-    }
-    List.from(response['data']).forEach((e) => this.data.add(this.callback(e)));
+    List.from(response['data']).forEach((e) => this._data.add(this.parse(e)));
 
-    if (status) this.status = PaginationStatus.Ready;
+    if (status) {
+      if (dialog) {
+        Navigator.of(context).pop(context);
+      }
+      this.status = PaginationStatus.Ready;
+    }
     this.notifier();
   }
 
-  Future<void> fetchNextPage(BuildContext context) async {
-    this.path = this.nextPageUrl;
-    await this.fetch(context, true, true);
+  Future<void> loadNext(BuildContext context,
+      {Map<String, dynamic> filter,
+      bool notify,
+      bool status,
+      bool dialog}) async {
+    await this.load(context,
+        page: currentPage + 1,
+        filter: filter,
+        status: status,
+        notify: notify,
+        dialog: dialog);
   }
 
-  Future<Pagination<TModel>> getOrFetch(BuildContext context) async {
-    if (this.data == null || this.data.length == 0) {
-      await this.fetch(context, true, true);
+  bool get hasNext => this.currentPage < this.lastPage;
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  void useFilter(String key, dynamic value) {
+    if (this.filter == null) {
+      this.filter = new Map();
     }
-    return this;
+    this.filter[key] = value;
+    print(this.filter);
+    this.notifier();
+  }
+
+  void clearFilter() {
+    this.filter = null;
+    this.notifier();
+  }
+
+  void checkStatus() {
+    if (this._data != null) {
+      this.filter = null;
+      this.status = PaginationStatus.Ready;
+    } else {
+      this.status = PaginationStatus.Null;
+    }
   }
 }
 
-class SelectablePagination<TModel> extends Pagination<TModel> {
-  int index;
+class SelectablePagination<TModel extends IModel> extends Pagination<TModel> {
+  int _id;
 
-  SelectablePagination(void Function() notifier,
-      {@required String path, @required TModel Function(dynamic e) cb})
-      : super(notifier: notifier, path: path, callback: cb);
-
-  TModel get selected => this.data != null &&
-          this.index != null &&
-          this.data.length > this.index &&
-          this.index >= 0
-      ? this.data[index]
+  TModel get selected => this._data != null && this._id != null
+      ? this._data.firstWhere((p) => p.identifier == _id)
       : null;
 
   void select(TModel entity) {
     assert(entity != null);
     assert(this.status == PaginationStatus.Ready);
 
-    final int i = this.data.indexOf(entity);
-    assert(i >= 0 && i < this.data.length);
+    final int i = this._data.indexOf(entity);
+    assert(i >= 0 && i < this._data.length);
 
-    this.index = i;
+    this._id = entity.identifier;
     notifier();
   }
 
-  void noSelect() {
-    this.index = null;
+  void reset() {
+    this._id = null;
     notifier();
-  }
-
-  @override
-  Future<SelectablePagination<TModel>> getOrFetch(BuildContext context) async {
-    if (this.data == null || this.data.length == 0) {
-      await this.fetch(context, true, true);
-    }
-    return this;
   }
 }

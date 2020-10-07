@@ -10,6 +10,8 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:toast/toast.dart';
 
+typedef Future<void> SaveSettingsMethod(Map<String, dynamic> settings);
+
 class SettingsPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -18,15 +20,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  @override
-  void initState() {
-    super.initState();
-
-    if (!ScopedModel.of<StateModel>(context).ready) {
-      Navigator.of(context).pushReplacementNamed(Router.index);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +35,21 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildSettingsBody(Settings settings) {
     switch (settings.status) {
       case SettingsStatus.Null:
-        settings.load();
-        return Center(child: CircularProgressIndicator());
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: Text('settings',
+                  style: Theme.of(context).textTheme.headline4),
+            ),
+            RaisedButton(
+              child: Text('refresh'),
+              onPressed: settings.load,
+              textColor: Theme.of(context).primaryColor,
+            )
+          ],
+        );
       case SettingsStatus.Loading:
         return Center(child: CircularProgressIndicator());
       case SettingsStatus.Ready:
@@ -53,14 +59,12 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSettingsList(
-    Map<String, dynamic> settings,
-    Future<void> Function(Map<String, dynamic>) set,
-  ) {
+      Map<String, dynamic> data, SaveSettingsMethod saver) {
     final translator = AppTranslations.of(context);
 
     return Directionality(
       textDirection:
-          settings['locale'] == 'en' ? TextDirection.ltr : TextDirection.rtl,
+          data['locale'] == 'en' ? TextDirection.ltr : TextDirection.rtl,
       child: SettingsList(
         sections: [
           SettingsSection(
@@ -68,14 +72,16 @@ class _SettingsPageState extends State<SettingsPage> {
             tiles: [
               SettingsTile(
                 title: translator.text('settings_general_language'),
-                subtitle: settings['locale'] == 'en' ? 'English' : 'العربية',
+                subtitle: data['locale'] == 'en' ? 'English' : 'العربية',
                 leading: Icon(Icons.language),
                 onTap: () {
                   setState(() {
-                    settings['locale'] =
-                        settings['locale'] == 'en' ? 'ar' : 'en';
-                    saveSettings(set, settings, translator, context);
-                    application.setLocale(settings['locale']);
+                    data['locale'] = data['locale'] == 'en' ? 'ar' : 'en';
+                    saveSettings(saver, data, () {
+                      Toast.show(translator.text('settings_saved_successfully'),
+                          context);
+                    });
+                    application.setLocale(data['locale']);
                   });
                 },
               ),
@@ -84,11 +90,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: translator.text('settings_notifications'),
                   onToggle: (bool value) {
                     setState(() {
-                      settings['notifications'] = value;
-                      saveSettings(set, settings, translator, context);
+                      data['notifications'] = value;
+                      saveSettings(saver, data, () {
+                        Toast.show(
+                            translator.text('settings_saved_successfully'),
+                            context);
+                      });
                     });
                   },
-                  switchValue: settings['notifications']),
+                  switchValue: data['notifications']),
             ],
           ),
         ],
@@ -96,12 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void saveSettings(
-      Future<void> Function(Map<String, dynamic>) saver,
-      Map<String, dynamic> data,
-      AppTranslations translator,
-      BuildContext context) {
-    saver(data).then((value) =>
-        Toast.show(translator.text('settings_saved_successfully'), context));
-  }
+  void saveSettings(SaveSettingsMethod saver, Map<String, dynamic> data,
+          Function onSaved) =>
+      saver(data).then((v) => onSaved());
 }

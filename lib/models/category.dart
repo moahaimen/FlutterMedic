@@ -1,9 +1,10 @@
+import 'package:drugStore/models/pagination.dart';
 import 'package:flutter/material.dart';
 
 import '../localization/app_translation.dart';
 import 'category_icon.dart';
 
-class Category {
+class Category extends IModel {
   static Category fromJson(Map<String, dynamic> data) {
     return new Category(
       data['id'],
@@ -48,5 +49,21 @@ class Category {
   String getTitle(BuildContext context) {
     final name = getName(context);
     return name.length >= 12 ? '${name.substring(0, 12)}...' : name;
+  }
+
+  @override
+  int get identifier => this.id;
+
+  @override
+  bool verify(Map<String, dynamic> filter) {
+    if (filter == null || filter.isEmpty) {
+      return true;
+    }
+
+    if (filter.containsKey('name')) {
+      final name = filter['name'];
+      return this.enName.contains(name) || this.arName.contains(name);
+    }
+    return false;
   }
 }

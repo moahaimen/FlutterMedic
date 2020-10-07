@@ -24,11 +24,6 @@ class _AddToCartButton extends State<AddToCartButton> {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget child, StateModel model) {
         final order = model.order;
-
-        if (order == null || order.status != OrderStatus.Ready) {
-          order.restore(context);
-        }
-
         final translator = AppTranslations.of(context);
 
         switch (order.status) {
@@ -36,7 +31,20 @@ class _AddToCartButton extends State<AddToCartButton> {
           case OrderStatus.Restoring:
           case OrderStatus.Storing:
           case OrderStatus.Submitting:
-            throw new Exception('Order is not ready at the moment');
+            // throw new Exception('Order is not ready at the moment');
+            print('Order is not ready at the moment');
+            return OutlineButton(
+              onPressed: () async {
+                final ok = await order.addOrderItemById(this.id, 1);
+                Toast.show(
+                    translator.text(ok
+                        ? 'cart_item_add_done_message'
+                        : 'cart_item_add_failed_message'),
+                    context);
+              },
+              child: Text(translator.text("add_to_cart").toUpperCase()),
+              textColor: Theme.of(context).accentColor,
+            );
           case OrderStatus.Ready:
             return order.hasItem(this.id)
                 ? RaisedButton.icon(

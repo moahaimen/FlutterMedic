@@ -38,10 +38,6 @@ class _CartStepsManagerState extends State<CartStepsManager> {
   void initState() {
     super.initState();
 
-    if (!ScopedModel.of<StateModel>(context).ready) {
-      Navigator.of(context).pushReplacementNamed(Router.index);
-    }
-
     this.currentStep = 0;
   }
 

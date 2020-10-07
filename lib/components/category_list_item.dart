@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drugStore/partials/router.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../models/category.dart';
 
@@ -36,8 +38,12 @@ class CategoryListItem extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () => Navigator.of(context)
-          .pushNamed(Router.search, arguments: {'category': this.category}),
+      onTap: () {
+        ScopedModel.of<StateModel>(context)
+            .products
+            .useFilter('category', category);
+        Navigator.of(context).pushNamed(Router.search);
+      },
     );
   }
 }

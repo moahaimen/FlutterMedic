@@ -1,6 +1,7 @@
 import 'package:drugStore/constants/colors.dart';
 import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/contact_us.dart';
 import 'package:drugStore/models/pagination.dart';
 import 'package:drugStore/partials/drawer.dart';
 import 'package:drugStore/partials/router.dart';
@@ -12,38 +13,28 @@ import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsPage extends StatefulWidget {
-  @override
-  _ContactUsPageState createState() => _ContactUsPageState();
-
-  static asMap(List<dynamic> source) {
+  static asMap(List<ContactUs> source) {
     final result = new Map<String, dynamic>();
 
     source.forEach((e) {
-      if (!result.containsKey(e['section'])) {
-        result[e['section']] = new Map<String, dynamic>();
+      if (!result.containsKey(e.section)) {
+        result[e.section] = new Map<String, dynamic>();
       }
 
-      result[e['section']][e['key']] = {
-        'en_value': e['en_value'],
-        'ar_value': e['ar_value'],
-        'url': e['url'],
+      result[e.section][e.key] = {
+        'en_value': e.enValue,
+        'ar_value': e.arValue,
+        'url': e.url
       };
     });
-
     return result;
   }
+
+  @override
+  _ContactUsPageState createState() => _ContactUsPageState();
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
-  @override
-  void initState() {
-    super.initState();
-
-    if (!ScopedModel.of<StateModel>(context).ready) {
-      Navigator.of(context).pushReplacementNamed(Router.index);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
@@ -56,11 +47,13 @@ class _ContactUsPageState extends State<ContactUsPage> {
     });
   }
 
-  Widget _buildBodyWidget(Pagination<dynamic> obj) {
+  Widget _buildBodyWidget(Pagination<ContactUs> obj) {
     switch (obj.status) {
       case PaginationStatus.Null:
       case PaginationStatus.Loading:
-        throw new Exception('ContactUs model is not ready');
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       case PaginationStatus.Ready:
         return _buildContactUsWidget(context, ContactUsPage.asMap(obj.data));
     }

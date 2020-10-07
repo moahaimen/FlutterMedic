@@ -1,8 +1,9 @@
+import 'package:drugStore/models/pagination.dart';
 import 'package:flutter/material.dart';
 
 import '../localization/app_translation.dart';
 
-class Brand {
+class Brand extends IModel {
   static Brand fromJson(Map<String, dynamic> data) {
     final String photoUrl =
         data['attachment'] != null ? data['attachment']['url'] ?? '' : '';
@@ -31,5 +32,22 @@ class Brand {
   String getTitle(BuildContext context) {
     final name = getName(context);
     return name.length >= 12 ? '${name.substring(0, 12)}...' : name;
+  }
+
+  @override
+  int get identifier => this.id;
+
+  @override
+  bool verify(Map<String, dynamic> filter) {
+    if (filter == null || filter.isEmpty) {
+      return true;
+    }
+
+    if (filter.containsKey('name')) {
+      final name = filter['name'];
+      return this.enName.contains(name) || this.arName.contains(name);
+    }
+    print('false $filter');
+    return false;
   }
 }

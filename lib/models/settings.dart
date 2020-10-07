@@ -54,7 +54,9 @@ class Settings {
     final String alternate = current == 'en' ? 'ar' : 'en';
 
     this.data['locale'] = alternate;
-    this.store(data).then((value) => application.setLocale(alternate));
+    await this.store(data);
+
+    application.setLocale(alternate);
   }
 
   Future<Settings> getOrLoad() async {
@@ -62,5 +64,13 @@ class Settings {
       await this.load();
     }
     return this;
+  }
+
+  void checkStatus() {
+    if (this._data != null) {
+      this._status = SettingsStatus.Ready;
+    } else {
+      this._status = SettingsStatus.Null;
+    }
   }
 }
