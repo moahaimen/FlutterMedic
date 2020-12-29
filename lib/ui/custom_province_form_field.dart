@@ -69,12 +69,11 @@ class CustomProvinceFormField extends StatelessWidget {
                       }
                       return null;
                     },
-                    onTap: () =>
-                        _openProvincesModal(
-                          context,
-                          translator.locale.languageCode,
-                          model.provinces,
-                        ),
+                    onTap: () => _openProvincesModal(
+                      context,
+                      translator.locale.languageCode,
+                      model.provinces,
+                    ),
                   );
                 }
               },
@@ -85,8 +84,8 @@ class CustomProvinceFormField extends StatelessWidget {
     );
   }
 
-  void _openProvincesModal(BuildContext context, String locale,
-      List<Province> provinces) async {
+  void _openProvincesModal(
+      BuildContext context, String locale, List<Province> provinces) async {
     final result = await showDialog<Province>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
@@ -100,8 +99,8 @@ class CustomProvinceFormField extends StatelessWidget {
     controller.text = result.getName(locale);
   }
 
-  Widget _createSimpleDialogOption(BuildContext context, String locale,
-      Province e) {
+  Widget _createSimpleDialogOption(
+      BuildContext context, String locale, Province e) {
     return SimpleDialogOption(
       onPressed: () {
         Navigator.pop(context, e);

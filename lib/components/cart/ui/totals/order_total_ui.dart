@@ -9,9 +9,10 @@ class OrderTotalUi extends StatelessWidget {
   final PromoCodeState promoCode;
   final String currency;
 
-  OrderTotalUi({@required this.order,
-    @required this.promoCode,
-    @required this.currency});
+  OrderTotalUi(
+      {@required this.order,
+      @required this.promoCode,
+      @required this.currency});
 
   @override
   Widget build(BuildContext context) {

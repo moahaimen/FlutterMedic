@@ -17,18 +17,19 @@ class CustomFormField extends StatelessWidget {
 
   final TextEditingController controller;
 
-  CustomFormField({@required this.title,
-    this.initialValue,
-    @required this.onSave,
-    @required this.onChanged,
-    @required this.validator,
-    @required this.color,
-    int maxLines,
-    TextInputType keyboardType,
-    bool obscureText,
-    List<String> autoFillHints,
-    bool enabled,
-    TextEditingController controller})
+  CustomFormField(
+      {@required this.title,
+      this.initialValue,
+      @required this.onSave,
+      @required this.onChanged,
+      @required this.validator,
+      @required this.color,
+      int maxLines,
+      TextInputType keyboardType,
+      bool obscureText,
+      List<String> autoFillHints,
+      bool enabled,
+      TextEditingController controller})
       : this.maxLines = maxLines ?? 1,
         this.keyboardType = keyboardType ?? TextInputType.text,
         this.obscureText = obscureText ?? false,

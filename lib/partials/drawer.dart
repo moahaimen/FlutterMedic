@@ -82,8 +82,8 @@ class DrawerBuilder {
     );
   }
 
-  static List<Widget> _buildListOfRoutes(BuildContext ctx, ThemeData theme,
-      AppTranslations translator) {
+  static List<Widget> _buildListOfRoutes(
+      BuildContext ctx, ThemeData theme, AppTranslations translator) {
     // Header
     final Widget header = Container(
       height: 120,
@@ -123,7 +123,7 @@ class DrawerBuilder {
     routes.add(header);
     routes.addAll(_routes
         .map((e) => _buildDrawerListItem(ctx, e.iconData,
-        translator.text(e.title), e.name, e.arguments, theme))
+            translator.text(e.title), e.name, e.arguments, theme))
         .toList());
     routes.add(share);
     routes.add(auth);

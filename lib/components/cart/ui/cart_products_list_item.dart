@@ -43,10 +43,7 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
               Expanded(
                 child: Text(
                   widget.item.product.getTitle(context, length: 25),
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .headline5,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
               ),
               IconButton(
@@ -60,10 +57,7 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
               Expanded(
                 child: Text(
                   "${widget.item.subTotal} $currency",
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyText1,
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
               ),
               Container(

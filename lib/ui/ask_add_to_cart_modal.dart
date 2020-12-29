@@ -45,21 +45,16 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "${translator.text('ask_add_to_cart_message')} ${this.item
-                    .product.enName}",
+                "${translator.text('ask_add_to_cart_message')} ${this.item.product.enName}",
                 style: TextStyle(
-                    color: Theme
-                        .of(context)
-                        .primaryColorDark,
+                    color: Theme.of(context).primaryColorDark,
                     fontSize: 20,
                     fontWeight: FontWeight.w600),
               ),
               Text(
                 translator.text('set_num_of_pieces'),
                 style: TextStyle(
-                    color: Theme
-                        .of(context)
-                        .primaryColorDark,
+                    color: Theme.of(context).primaryColorDark,
                     fontSize: 16,
                     fontWeight: FontWeight.w300),
               ),
@@ -67,10 +62,9 @@ class _AskAddToCartModalState extends State<AskAddToCartModal> {
                 width: 200.0,
                 child: Chip(
                   labelPadding:
-                  EdgeInsets.symmetric(horizontal: 22, vertical: 4),
+                      EdgeInsets.symmetric(horizontal: 22, vertical: 4),
                   label: Text(
-                      "${this.item.product.price} ${translator.text(
-                          model.currency)}"),
+                      "${this.item.product.price} ${translator.text(model.currency)}"),
                 ),
               ),
               Container(

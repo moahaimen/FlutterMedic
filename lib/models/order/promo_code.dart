@@ -24,6 +24,6 @@ class OrderPromoCode {
 
   OrderPromoCode.json(Map<String, dynamic> data)
       : this(data['code'], PromoCodeType.values[int.parse(data['type'])],
-      num.parse(data['discount']),
-      valid: false);
+            num.parse(data['discount']),
+            valid: false);
 }

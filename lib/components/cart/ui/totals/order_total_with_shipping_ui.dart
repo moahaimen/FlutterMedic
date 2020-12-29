@@ -33,8 +33,7 @@ class OrderTotalWithShippingUi extends StatelessWidget {
                         style: theme.accentTextTheme.bodyText2
                             .copyWith(color: theme.primaryColorDark)),
                     Text(
-                        "${model.order.fees.toString()} ${translator.text(
-                            model.currency)}",
+                        "${model.order.fees.toString()} ${translator.text(model.currency)}",
                         style: theme.accentTextTheme.headline6
                             .copyWith(color: theme.accentColor)),
                   ],

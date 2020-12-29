@@ -412,7 +412,7 @@ class StateModel extends Model {
 
     final response = this._user != null
         ? await Http.post(Environment.userOrdersUrl, this._order.toJson(true),
-        headers: {'Authorization': 'Bearer ${user.token}'})
+            headers: {'Authorization': 'Bearer ${user.token}'})
         : await Http.post(Environment.postOrderUrl, this._order.toJson(true));
 
     this._orderUploading = false;
@@ -471,7 +471,7 @@ class StateModel extends Model {
   ///
   Future<void> setOrderProductQuantity(int productId, int quantity) async {
     final item =
-    this._order.products.firstWhere((e) => e.product.id == productId);
+        this._order.products.firstWhere((e) => e.product.id == productId);
     item?.quantity = quantity;
     await this.persistOrder();
     notifyListeners();
@@ -499,13 +499,14 @@ class StateModel extends Model {
   ///
   /// setOrderClient
   ///
-  Future<void> setOrderClientDetails({String name,
-    String phone,
-    int provinceId,
-    String address,
-    String notes,
-    String userId,
-    bool notify = true}) async {
+  Future<void> setOrderClientDetails(
+      {String name,
+      String phone,
+      int provinceId,
+      String address,
+      String notes,
+      String userId,
+      bool notify = true}) async {
     if (this._order == null || this._order.client == null) {
       throw new Exception("OrderDoesnotRestored");
     }
@@ -521,7 +522,7 @@ class StateModel extends Model {
     if (provinceId != null) {
       print(provinceId);
       final province =
-      this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+          this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
       this._order.client.province = province;
     }
 
@@ -552,7 +553,7 @@ class StateModel extends Model {
   ///
   Future<bool> setPromoCode(String promoCode) async {
     final String url =
-    Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
+        Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
     return Http.get(url).then((response) async {
       if (response == null) {
         this._order.promoCode = null;
@@ -647,7 +648,7 @@ class StateModel extends Model {
     registerData.addAll({'role_id': 4});
 
     final dynamic result =
-    await Http.post(Environment.registerUrl, registerData);
+        await Http.post(Environment.registerUrl, registerData);
 
     if (result == null) {
       this._userLoading = false;
@@ -701,7 +702,7 @@ class StateModel extends Model {
       await prefs.remove('_token');
     } else {
       final ok1 =
-      await prefs.setString('_user', jsonEncode(this._user.toJson()));
+          await prefs.setString('_user', jsonEncode(this._user.toJson()));
       final ok2 = await prefs.setString('_token', this._user.token);
 
       if (!ok1 || !ok2) {

@@ -41,9 +41,8 @@ class AppRouter {
       // the correct page
       index: (BuildContext ctx) => _configureRoute(ctx, index, IndexPage()),
       // Authentication routes
-      login: (BuildContext ctx) =>
-          _configureRoute(
-              ctx, login, LoginPage(LoginPageMode.LoginThenNavigate)),
+      login: (BuildContext ctx) => _configureRoute(
+          ctx, login, LoginPage(LoginPageMode.LoginThenNavigate)),
       register: (BuildContext ctx) =>
           _configureRoute(ctx, login, RegisterPage()),
       search: (BuildContext ctx) => _configureRoute(ctx, search, SearchPage()),
@@ -66,29 +65,26 @@ class AppRouter {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-    // Home
+      // Home
       case home:
         return MaterialPageRoute(
-          builder: (BuildContext context) =>
-              HomePage(
-                id: settings.arguments ?? PageId.Home,
-              ),
+          builder: (BuildContext context) => HomePage(
+            id: settings.arguments ?? PageId.Home,
+          ),
         );
-    // Cart
+      // Cart
       case cart:
         return MaterialPageRoute(
-          builder: (BuildContext context) =>
-              HomePage(
-                id: PageId.Cart,
-              ),
+          builder: (BuildContext context) => HomePage(
+            id: PageId.Cart,
+          ),
         );
-    // Products
+      // Products
       case products:
         return MaterialPageRoute(
-          builder: (BuildContext context) =>
-              ProductsPage(
-                filter: settings.arguments ?? new Map<String, dynamic>(),
-              ),
+          builder: (BuildContext context) => ProductsPage(
+            filter: settings.arguments ?? new Map<String, dynamic>(),
+          ),
         );
     }
     return null;
@@ -103,8 +99,8 @@ class AppRouter {
     );
   }
 
-  static Widget _configureRoute(BuildContext context, String route,
-      Widget widget,
+  static Widget _configureRoute(
+      BuildContext context, String route, Widget widget,
       {bool auth = false}) {
     current = route;
     if (auth) {

@@ -27,36 +27,36 @@ class Order {
 
   Order.json(Map<String, dynamic> data, StateModel model)
       : this(
-      (data['products'] as List<dynamic>)
-          .map((e) => OrderProduct.json(e, model))
-          .toList(),
-      data['client'] != null
-          ? new OrderClient.json(data['client'], model)
-          : null,
-      data['promo_code'] != null
-          ? new OrderPromoCode.json(data['promo_code'])
-          : null,
-      model.user ?? null,
-      []);
+            (data['products'] as List<dynamic>)
+                .map((e) => OrderProduct.json(e, model))
+                .toList(),
+            data['client'] != null
+                ? new OrderClient.json(data['client'], model)
+                : null,
+            data['promo_code'] != null
+                ? new OrderPromoCode.json(data['promo_code'])
+                : null,
+            model.user ?? null,
+            []);
 
   Order.empty() : this([], OrderClient.empty(), null, null, null);
 
   Order.full(User user, dynamic data, double exchange)
       : this(
-      OrderProduct.toList(data['order_products'], exchange),
-      new OrderClient.full(data['client']),
-      data['promo_code'] != null
-          ? new OrderPromoCode.json(data['promo_code'])
-          : null,
-      user,
-      OrderStatus.toList(data['statuses'] as List));
+            OrderProduct.toList(data['order_products'], exchange),
+            new OrderClient.full(data['client']),
+            data['promo_code'] != null
+                ? new OrderPromoCode.json(data['promo_code'])
+                : null,
+            user,
+            OrderStatus.toList(data['statuses'] as List));
 
   double get total {
     print(this.toJson(false));
     return products != null && products.length > 0
         ? products
-        .map((e) => e.subTotal)
-        .reduce((value, element) => value + element)
+            .map((e) => e.subTotal)
+            .reduce((value, element) => value + element)
         : 0;
   }
 

@@ -36,9 +36,8 @@ class CategoryListItem extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () =>
-          Navigator.of(context).pushNamed(AppRouter.products,
-              arguments: {'category': this.category}),
+      onTap: () => Navigator.of(context).pushNamed(AppRouter.products,
+          arguments: {'category': this.category}),
     );
   }
 }

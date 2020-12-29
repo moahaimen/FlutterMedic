@@ -37,21 +37,21 @@ class Product {
 
   Product.json(Map<String, dynamic> data, double exchange)
       : this(
-      data['id'],
-      data['en_name'],
-      data['ar_name'],
-      data['en_description'],
-      data['ar_description'],
-      data['price']['value'] * exchange,
-      data['price']['is_discount']
-          ? data['price']['previous']['value'] * exchange
-          : null,
-      DateTime.parse(data['price']['updated_at']),
-      Attachment.toList(data['attachments'] as List),
-      Brand.fromJson(data['brand']),
-      Category.fromJson(data['category']),
-      data['is_main'],
-      data['available']);
+            data['id'],
+            data['en_name'],
+            data['ar_name'],
+            data['en_description'],
+            data['ar_description'],
+            data['price']['value'] * exchange,
+            data['price']['is_discount']
+                ? data['price']['previous']['value'] * exchange
+                : null,
+            DateTime.parse(data['price']['updated_at']),
+            Attachment.toList(data['attachments'] as List),
+            Brand.fromJson(data['brand']),
+            Category.fromJson(data['category']),
+            data['is_main'],
+            data['available']);
 
   String getName(BuildContext context) {
     return AppTranslations.of(context).locale.languageCode == "en"

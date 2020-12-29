@@ -5,9 +5,8 @@ import '../product.dart';
 class OrderProduct {
   static List<OrderProduct> toList(List<dynamic> products, double exchange) {
     return products
-        .map((p) =>
-    new OrderProduct(
-        Product.json(p['product'], exchange), p['quantity']))
+        .map((p) => new OrderProduct(
+            Product.json(p['product'], exchange), p['quantity']))
         .toList();
   }
 
@@ -18,7 +17,7 @@ class OrderProduct {
 
   OrderProduct.json(Map<String, dynamic> data, StateModel model)
       : this(model.products.firstWhere((e) => e.id == data['product_id']),
-      data['quantity']);
+            data['quantity']);
 
   double get subTotal {
     if (this.quantity == null && this.product == null) {

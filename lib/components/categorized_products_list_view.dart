@@ -59,7 +59,7 @@ class _CategorizedProductsListViewState
                             textColor: theme.accentColor,
                             child: Text(categories[index].getName(context)),
                             onPressed: () => setState(
-                                    () => this.tapped = categories[index]))),
+                                () => this.tapped = categories[index]))),
               ),
               SizedBox(height: 10),
               Container(

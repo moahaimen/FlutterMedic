@@ -36,8 +36,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
   static Map<String, dynamic> data;
 
-  String _provinceNameOrDefault(String locale, StateModel state,
-      int provinceId) {
+  String _provinceNameOrDefault(
+      String locale, StateModel state, int provinceId) {
     if (provinceId == null) {
       return '';
     }
@@ -62,7 +62,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
     final state = ScopedModel.of<StateModel>(context);
 
     data =
-    state.user != null ? state.user.toClient() : state.client.toJson(false);
+        state.user != null ? state.user.toClient() : state.client.toJson(false);
     state.setOrderClientDetails(provinceId: data['province']);
 
     return Padding(
