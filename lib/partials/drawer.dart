@@ -82,7 +82,8 @@ class DrawerBuilder {
     );
   }
 
-  static List<Widget> _buildListOfRoutes(BuildContext ctx, ThemeData theme, AppTranslations translator) {
+  static List<Widget> _buildListOfRoutes(BuildContext ctx, ThemeData theme,
+      AppTranslations translator) {
     // Header
     final Widget header = Container(
       height: 120,
