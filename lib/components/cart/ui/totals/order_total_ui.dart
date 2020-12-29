@@ -1,6 +1,5 @@
-import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/order.dart';
+import 'package:drugStore/models/order/order.dart';
 import 'package:flutter/material.dart';
 
 enum PromoCodeState { None, OnlyCalc, ViewTotal }
@@ -8,13 +7,15 @@ enum PromoCodeState { None, OnlyCalc, ViewTotal }
 class OrderTotalUi extends StatelessWidget {
   final Order order;
   final PromoCodeState promoCode;
+  final String currency;
 
-  OrderTotalUi({@required this.order, @required this.promoCode});
+  OrderTotalUi({@required this.order,
+    @required this.promoCode,
+    @required this.currency});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currency = Strings.currency(context);
     final translator = AppTranslations.of(context);
 
     return Container(
@@ -26,14 +27,10 @@ class OrderTotalUi extends StatelessWidget {
     );
   }
 
-  Widget _getTotal(
-    ThemeData theme,
-    AppTranslations translator,
-    String currency,
-  ) {
+  Widget _getTotal(ThemeData theme, AppTranslations trans, String currency) {
     return Column(
       children: [
-        Text(translator.text('total'),
+        Text(trans.text('total'),
             style: theme.accentTextTheme.bodyText2.copyWith(color: Colors.red)),
         Text("${order.total.toString()} $currency",
             style: theme.accentTextTheme.headline6

@@ -1,6 +1,6 @@
 import 'package:drugStore/components/cart/ui/totals/order_total_ui.dart';
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/order_product.dart';
+import 'package:drugStore/models/order/order_product.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -41,6 +41,7 @@ class CartProductsList extends StatelessWidget {
         return OrderTotalUi(
           order: order,
           promoCode: PromoCodeState.ViewTotal,
+          currency: AppTranslations.of(context).text(model.currency),
         );
       },
     );
@@ -89,9 +90,7 @@ class CartProductsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
       builder: (context, child, model) => _getProductsList(
-          context,
-          model.order.products.where((e) => e.quantity > 0).toList(),
-          model.removeProductFromOrder),
+          context, model.order.products.toList(), model.removeProductFromOrder),
     );
   }
 }

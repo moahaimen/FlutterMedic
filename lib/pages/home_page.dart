@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 import '../components/brands_list_view.dart';
 import '../components/categories_list_view.dart';
+import '../partials/app_router.dart';
 import '../partials/drawer.dart';
-import '../partials/router.dart';
 
 enum PageId { Brands, Home, Categories, Cart }
 
@@ -61,7 +61,7 @@ class HomePageState extends State<HomePage> {
       length: 4,
       child: Scaffold(
         key: _scaffold,
-        drawer: DrawerBuilder.build(context, Router.home),
+        drawer: DrawerBuilder.build(context, AppRouter.home),
         appBar:
             Toolbar.get(title: this._page.getTitle(context), context: context),
         body: Container(
@@ -90,19 +90,19 @@ class HomePageState extends State<HomePage> {
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance),
-          title: Text(tt.text("brands")),
+          label: tt.text("brands"),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          title: Text(tt.text("home")),
+          label: tt.text("home"),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.widgets),
-          title: Text(tt.text("categories")),
+          label: tt.text("categories"),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
-          title: Text(tt.text("cart")),
+          label: tt.text("cart"),
         ),
       ],
       currentIndex: _page.id.index,

@@ -74,25 +74,19 @@ flutter:
     - assets/images/facebook.png
 
   fonts:
-    - family: Changa
+    - family: Tajawal
       fonts:
-        - asset: assets/fonts/changa/changa-regular.ttf
-        - asset: assets/fonts/changa/changa-extra-light.ttf
-          weight: 100
-        - asset: assets/fonts/changa/changa-light.ttf
+        - asset: assets/fonts/tajawal/tajawal-extra-light.ttf
+          weight: 200
+        - asset: assets/fonts/tajawal/tajawal-light.ttf
           weight: 300
-        - asset: assets/fonts/changa/changa-medium.ttf
+        - asset: assets/fonts/tajawal/tajawal-regular.ttf
+          weight: 400
+        - asset: assets/fonts/tajawal/tajawal-medium.ttf
           weight: 500
-        - asset: assets/fonts/changa/changa-semi-bold.ttf
-          weight: 600
-        - asset: assets/fonts/changa/changa-bold.ttf
+        - asset: assets/fonts/tajawal/tajawal-bold.ttf
           weight: 700
-        - asset: assets/fonts/changa/changa-extra-bold.ttf
+        - asset: assets/fonts/tajawal/tajawal-extra-bold.ttf
           weight: 800
-
-    - family: Cairo
-      fonts:
-      - asset: assets/fonts/Cairo-Regular.ttf
-      - asset: assets/fonts/Cairo-Bold.ttf
-        weight: 700
-#        - asset: assets/fonts/Changa-Medium.ttf
+        - asset: assets/fonts/tajawal/tajawal-black.ttf
+          weight: 900

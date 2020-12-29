@@ -1,4 +1,6 @@
 class Environment {
+  static final String fetchExchangeUrl =
+      'https://molardentalmaterials.com/api/exchange/current';
   static final String fetchContactUsUrl =
       'https://molardentalmaterials.com/api/contactUs?all=true';
   static final String fetchProvincesUrl =
@@ -10,7 +12,20 @@ class Environment {
   static final String fetchProductsUrl =
       'https://molardentalmaterials.com/api/products?all=true';
   static final String postOrderUrl =
-      'https://molardentalmaterials.com/api/orders2?o=:o';
+      'https://molardentalmaterials.com/api/orders';
   static final String checkPromoCodeUrl =
       'https://molardentalmaterials.com/api/promocodes/:code';
+
+  static final String loginUrl =
+      'https://molardentalmaterials.com/api/auth/login';
+  static final String registerUrl =
+      'https://molardentalmaterials.com/api/auth/register';
+  static final String logoutUrl =
+      'https://molardentalmaterials.com/api/auth/me/logout';
+  static final String updateUserDetailsUrl =
+      'https://molardentalmaterials.com/api/auth/me';
+  static final String userDetailsUrl =
+      'https://molardentalmaterials.com/api/auth/me';
+  static final String userOrdersUrl =
+      'https://molardentalmaterials.com/api/orders/me';
 }

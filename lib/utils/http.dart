@@ -25,19 +25,45 @@ class Http {
     });
   }
 
-  static Future<dynamic> post(String url, dynamic data) async {
+  static Future<dynamic> post(String url, Map<String, dynamic> data,
+      {Map<String, String> headers}) async {
+    if (headers == null) {
+      headers = new Map();
+    }
+    headers['content-Type'] = 'application/json';
+    headers['accept'] = 'application/json';
+
     var requestData = json.jsonEncode(data);
-
     print(requestData);
-
-    final Map<String, String> headers = {
-      'Host': '',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
 
     return http
         .post(url, body: requestData, headers: headers)
+        .catchError(_onError)
+        .then((http.Response response) {
+      if (response.statusCode != 200) {
+        print(response.statusCode);
+        print(json.jsonEncode(response.headers));
+        print(response.body);
+        return response.headers['Message'];
+      }
+
+      return json.jsonDecode(response.body);
+    });
+  }
+
+  static Future<dynamic> put(String url, Map<String, dynamic> data,
+      {Map<String, String> headers}) async {
+    if (headers == null) {
+      headers = new Map();
+    }
+    headers['content-Type'] = 'application/json';
+    headers['accept'] = 'application/json';
+
+    var requestData = json.jsonEncode(data);
+    print(requestData);
+
+    return http
+        .put(url, body: requestData, headers: headers)
         .catchError(_onError)
         .then((http.Response response) {
       if (response.statusCode != 200) {

@@ -1,9 +1,9 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/pages/home_page.dart';
-import 'package:drugStore/partials/router.dart';
-import 'package:drugStore/ui/main_products_carousel.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/ui/brands_list_for_home.dart';
+import 'package:drugStore/ui/main_products_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -114,7 +114,7 @@ class HomePageContent extends StatelessWidget {
         ),
       ),
       onTap: () => Navigator.of(context).pushReplacementNamed(
-        Router.home,
+        AppRouter.home,
         arguments: PageId.Categories,
       ),
     );

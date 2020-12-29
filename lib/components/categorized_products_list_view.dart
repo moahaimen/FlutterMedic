@@ -34,6 +34,7 @@ class _CategorizedProductsListViewState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              SizedBox(height: 10),
               Center(
                 child: Text(
                   AppTranslations.of(context)

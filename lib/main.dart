@@ -5,7 +5,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'localization/app_translation_delegate.dart';
 import 'localization/application.dart';
-import 'partials/router.dart';
+import 'partials/app_router.dart';
 import 'partials/theme.dart';
 import 'utils/state.dart';
 
@@ -41,10 +41,10 @@ class _MyAppState extends State<MyApp> {
         // debugShowCheckedModeBanner: false,
         title: title,
         theme: ThemeBuilder.getTheme(),
-        initialRoute: Router.index,
-        routes: Router.routes(),
-        onGenerateRoute: Router.onGenerateRoute,
-        onUnknownRoute: Router.onUnknownRoute,
+        initialRoute: AppRouter.index,
+        routes: AppRouter.routes(),
+        onGenerateRoute: AppRouter.onGenerateRoute,
+        onUnknownRoute: AppRouter.onUnknownRoute,
         localizationsDelegates: [
           _newLocaleDelegate,
           //provides localised strings

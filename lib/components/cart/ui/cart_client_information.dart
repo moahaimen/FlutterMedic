@@ -36,7 +36,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
   static Map<String, dynamic> data;
 
-  String _provinceNameOrDefault(StateModel state, int provinceId) {
+  String _provinceNameOrDefault(String locale, StateModel state,
+      int provinceId) {
     if (provinceId == null) {
       return '';
     }
@@ -47,8 +48,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
     if (province == null) {
       return '';
     }
-
-    return province.getName(context);
+    return province.getName(locale);
   }
 
   @override
@@ -61,8 +61,9 @@ class _CartClientInformationState extends State<CartClientInformation> {
     final translator = AppTranslations.of(context);
     final state = ScopedModel.of<StateModel>(context);
 
-    data = state.client.toJson(false);
-    print(data);
+    data =
+    state.user != null ? state.user.toClient() : state.client.toJson(false);
+    state.setOrderClientDetails(provinceId: data['province']);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: paddingWidth),
@@ -94,7 +95,8 @@ class _CartClientInformationState extends State<CartClientInformation> {
             // Province
             CustomProvinceFormField(
               title: translator.text('order_client_province'),
-              initialValue: _provinceNameOrDefault(state, data['province']),
+              initialValue: _provinceNameOrDefault(
+                  translator.locale.languageCode, state, data['province']),
               onSave: (int value) {
                 data['province'] = value;
                 state.setOrderClientDetails(provinceId: value);

@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:drugStore/constants/envirnoment.dart';
 import 'package:drugStore/localization/application.dart';
-import 'package:drugStore/models/order.dart';
-import 'package:drugStore/models/order_client.dart';
-import 'package:drugStore/models/order_product.dart';
-import 'package:drugStore/models/order_promo_code.dart';
+import 'package:drugStore/models/order/order.dart';
+import 'package:drugStore/models/order/order_client.dart';
+import 'package:drugStore/models/order/order_product.dart';
+import 'package:drugStore/models/order/promo_code.dart';
 import 'package:drugStore/models/province.dart';
+import 'package:drugStore/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,16 @@ import '../models/product.dart';
 import 'http.dart';
 
 class StateModel extends Model {
+  //
+  // Auth user
+  //
+  bool _userLoading = false;
+  User _user;
+
+  bool get userLoading => this._userLoading;
+
+  User get user => _user;
+
   //
   // Provinces
   //
@@ -42,13 +53,16 @@ class StateModel extends Model {
   bool _settingsLoading = false;
   final Map<String, dynamic> _defaultSettings = {
     'locale': 'ar',
-    'notifications': true
+    'notifications': true,
+    'exchange': 'USD'
   };
   Map<String, dynamic> _settings;
 
   bool get settingsLoading => this._settingsLoading;
 
   Map<String, dynamic> get settings => Map.from(_settings);
+
+  String get currency => _settings['exchange'] ?? 'USD';
 
   //
   // Brands
@@ -69,6 +83,16 @@ class StateModel extends Model {
   bool get categoriesLoading => this._categoriesLoading;
 
   List<Category> get categories => List.from(this._categories);
+
+  //
+  // Exchange
+  //
+  bool _exchangeLoading = false;
+  double _exchange;
+
+  bool get exchangeLoading => _exchangeLoading;
+
+  double get exchange => _exchange;
 
   //
   // Products
@@ -128,13 +152,19 @@ class StateModel extends Model {
     this.fetchModelData();
   }
 
-  void fetchModelData() {
-    this.fetchBrands();
-    this.fetchCategories();
-    this.fetchProducts().then((value) => this.restoreStoredOrder());
-    this.loadSettings();
-    this.fetchContactUs();
-    this.fetchProvinces();
+  void fetchModelData() async {
+    await this.restoreStoredUser();
+    await this.loadSettings();
+    await this.fetchCurrentExchange();
+
+    await this.fetchBrands();
+    await this.fetchCategories();
+    //
+    await this.fetchProducts();
+    await this.restoreStoredOrder();
+    //
+    await this.fetchContactUs();
+    await this.fetchProvinces();
   }
 
   ///
@@ -184,9 +214,25 @@ class StateModel extends Model {
       }
 
       this._provinces =
-          provinces['data'].map<Province>((e) => Province.fromJson(e)).toList();
+          provinces['data'].map<Province>((e) => Province.json(e)).toList();
 
       this._provincesLoading = false;
+      this.notifyListeners();
+    });
+  }
+
+  ///
+  /// Fetch current exchange
+  ///
+  Future<void> fetchCurrentExchange() {
+    _exchangeLoading = true;
+    notifyListeners();
+
+    return Http.get(Environment.fetchExchangeUrl).then((dynamic exchange) {
+      if (exchange != null) {
+        this._exchange = exchange['value'].toDouble();
+      }
+      this._exchangeLoading = false;
       this.notifyListeners();
     });
   }
@@ -249,6 +295,11 @@ class StateModel extends Model {
     });
   }
 
+  Future<void> setSettingsItem(String key, dynamic value) {
+    _settings.addAll({key: value});
+    return setSettings(_settings);
+  }
+
   //
   // If the current language 'en' then change to 'ar' and vice versa
   //
@@ -296,8 +347,9 @@ class StateModel extends Model {
         return;
       }
 
-      this._products =
-          products['data'].map<Product>((e) => Product.fromJson(e)).toList();
+      final double e = currency == 'USD' ? 1 : exchange;
+      _products =
+          (products['data'] as List).map((p) => Product.json(p, e)).toList();
 
       this._productsLoading = false;
       this.notifyListeners();
@@ -323,14 +375,14 @@ class StateModel extends Model {
       try {
         final String orderString = prefs.getString('_order');
         final Map<String, dynamic> orderData = jsonDecode(orderString);
-        final Order order = Order.fromJson(orderData, this);
 
+        final Order order = Order.json(orderData, this);
         this._order = order;
       } catch (e) {
-        this._order = Order(client: OrderClient.empty, products: []);
+        this._order = Order.empty();
       }
     } else {
-      this._order = Order(client: OrderClient.empty, products: []);
+      this._order = Order.empty();
     }
 
     this._orderRestoring = false;
@@ -354,26 +406,24 @@ class StateModel extends Model {
   ///
   /// Post order
   ///
-  Future<bool> postOrder() {
+  Future<bool> postOrder() async {
     this._orderUploading = true;
     this.notifyListeners();
 
-    final base64 =
-        base64Encode(utf8.encode(jsonEncode(this._order.toJson(true))));
+    final response = this._user != null
+        ? await Http.post(Environment.userOrdersUrl, this._order.toJson(true),
+        headers: {'Authorization': 'Bearer ${user.token}'})
+        : await Http.post(Environment.postOrderUrl, this._order.toJson(true));
 
-    return Http.get(Environment.postOrderUrl.replaceFirst(':o', base64))
-        .then((dynamic response) {
-      this._orderUploading = false;
-
-      if (response == null) {
-        this.notifyListeners();
-        return false;
-      }
-
-      this.clearOrder();
+    this._orderUploading = false;
+    if (response == null) {
       this.notifyListeners();
-      return true;
-    });
+      return false;
+    }
+
+    this.clearOrder();
+    this.notifyListeners();
+    return true;
   }
 
   ///
@@ -405,10 +455,7 @@ class StateModel extends Model {
       return false;
     }
 
-    return this.addProductToOrder(new OrderProduct(
-      product: product,
-      quantity: quantity,
-    ));
+    return this.addProductToOrder(new OrderProduct(product, quantity));
   }
 
   bool hasOrderItem(int productId) {
@@ -424,7 +471,7 @@ class StateModel extends Model {
   ///
   Future<void> setOrderProductQuantity(int productId, int quantity) async {
     final item =
-        this._order.products.firstWhere((e) => e.product.id == productId);
+    this._order.products.firstWhere((e) => e.product.id == productId);
     item?.quantity = quantity;
     await this.persistOrder();
     notifyListeners();
@@ -452,14 +499,13 @@ class StateModel extends Model {
   ///
   /// setOrderClient
   ///
-  Future<void> setOrderClientDetails(
-      {String name,
-      String phone,
-      int provinceId,
-      String address,
-      String notes,
-      String userId,
-      bool notify = true}) async {
+  Future<void> setOrderClientDetails({String name,
+    String phone,
+    int provinceId,
+    String address,
+    String notes,
+    String userId,
+    bool notify = true}) async {
     if (this._order == null || this._order.client == null) {
       throw new Exception("OrderDoesnotRestored");
     }
@@ -475,7 +521,7 @@ class StateModel extends Model {
     if (provinceId != null) {
       print(provinceId);
       final province =
-          this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
+      this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
       this._order.client.province = province;
     }
 
@@ -485,10 +531,6 @@ class StateModel extends Model {
 
     if (notes != null) {
       this._order.client.notes = notes;
-    }
-
-    if (userId != null) {
-      this._order.client.userId = userId;
     }
 
     print(this._order.client.toJson(false));
@@ -510,14 +552,14 @@ class StateModel extends Model {
   ///
   Future<bool> setPromoCode(String promoCode) async {
     final String url =
-        Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
+    Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
     return Http.get(url).then((response) async {
       if (response == null) {
         this._order.promoCode = null;
         notifyListeners();
         return false;
       }
-      final code = OrderPromoCode.fromJson(response as Map<String, dynamic>);
+      final code = OrderPromoCode.json(response as Map<String, dynamic>);
       _order.promoCode = code;
       _order.promoCode.valid = true;
 
@@ -562,5 +604,154 @@ class StateModel extends Model {
         .toList()
         .reduce((value, e) => value + e)
         .toString();
+  }
+
+  Future<List<Order>> fetchUserOrders() async {
+    if (this._user == null) {
+      await this.restoreStoredUser();
+    }
+    final List result = await Http.get(Environment.userOrdersUrl,
+        headers: {'Authorization': 'Bearer ${user.token}'});
+
+    return result.map<Order>((e) => Order.full(_user, e, exchange)).toList();
+  }
+
+  ///
+  ///
+  ///
+  Future<bool> loginUser(Map<String, dynamic> loginData) async {
+    this._userLoading = true;
+    this._user = null;
+    this.notifyListeners();
+
+    final dynamic result = await Http.post(Environment.loginUrl, loginData);
+
+    if (result == null) {
+      this._userLoading = false;
+      this.notifyListeners();
+      return false;
+    }
+
+    this._user = new User.json(result['user'], result['token']);
+    await this.saveUser();
+    this._userLoading = false;
+    this.notifyListeners();
+    return true;
+  }
+
+  Future<bool> registerUser(Map<String, dynamic> registerData) async {
+    this._userLoading = true;
+    this._user = null;
+    this.notifyListeners();
+
+    registerData.addAll({'role_id': 4});
+
+    final dynamic result =
+    await Http.post(Environment.registerUrl, registerData);
+
+    if (result == null) {
+      this._userLoading = false;
+      this.notifyListeners();
+      return false;
+    }
+
+    this._user = new User.json(result['user'], result['token']);
+    await this.saveUser();
+    this._userLoading = false;
+    this.notifyListeners();
+    return true;
+  }
+
+  ///
+  ///
+  ///
+  Future<void> restoreStoredUser() async {
+    this._userLoading = true;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getKeys().containsAll(['_user', '_token'])) {
+      try {
+        final String token = prefs.getString('_token');
+
+        final String userJson = prefs.getString('_user');
+        final Map<String, dynamic> userData = jsonDecode(userJson);
+        final User user = User.json(userData, token);
+
+        this._user = user;
+        print(userData);
+      } catch (e) {
+        this._user = null;
+      }
+    }
+
+    this._userLoading = false;
+    notifyListeners();
+  }
+
+  ///
+  ///
+  ///
+  Future<void> saveUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (this._user == null) {
+      await prefs.remove('_user');
+      await prefs.remove('_token');
+    } else {
+      final ok1 =
+      await prefs.setString('_user', jsonEncode(this._user.toJson()));
+      final ok2 = await prefs.setString('_token', this._user.token);
+
+      if (!ok1 || !ok2) {
+        throw new Exception("Shared Prefecnces Save Exception");
+      }
+    }
+  }
+
+  Future<bool> logout() async {
+    final dynamic result = await Http.post(
+        Environment.logoutUrl, this.user.toJson(),
+        headers: {'Authorization': 'Bearer ${user.token}'});
+
+    if (result == null) {
+      return false;
+    }
+
+    this._user = null;
+    await this.saveUser();
+    this.notifyListeners();
+    return true;
+  }
+
+  Future<bool> updateUser(Map<String, dynamic> updateData) async {
+    final dynamic result = await Http.put(
+        Environment.updateUserDetailsUrl, updateData,
+        headers: {'Authorization': 'Bearer ${user.token}'});
+    if (result == null) {
+      return false;
+    }
+
+    this._user = new User.json(result, this._user.token);
+    await this.saveUser();
+    this.notifyListeners();
+    return true;
+  }
+
+  Future<User> refreshUser() async {
+    final dynamic result = await Http.get(
+      Environment.userDetailsUrl,
+      headers: {'Authorization': 'Bearer ${user.token}'},
+    );
+
+    if (result == null) {
+      return null;
+    }
+
+    this._user = new User.json(result, this._user.token);
+    await this.saveUser();
+    this.notifyListeners();
+    return user;
   }
 }

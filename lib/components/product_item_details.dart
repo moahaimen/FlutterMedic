@@ -4,7 +4,7 @@ import 'package:carousel_pro/carousel_pro.dart';
 import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/attachment.dart';
-import 'package:drugStore/partials/router.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:share/share.dart';
 
 import '../models/product.dart';
+import 'products/product_price_component.dart';
 
 class ProductItemDetails extends StatefulWidget {
   final Product product;
@@ -66,7 +67,7 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
                     color: theme.accentColor,
                     icon: Icon(Icons.shopping_cart, size: 30),
                     onPressed: () =>
-                        Navigator.of(context).pushNamed(Router.cart)),
+                        Navigator.of(context).pushNamed(AppRouter.cart)),
                 badgeContent: Text(
                   model.orderItemsCount,
                   style: TextStyle(fontSize: 8),
@@ -186,43 +187,13 @@ class _ProductItemDetailsState extends State<ProductItemDetails> {
           size: 25.0,
           color: Theme.of(context).primaryColorDark,
         ),
-        title: buildProductPrice,
+        title: ProductPriceComponent(this.product),
         subtitle: Text(title,
             style: TextStyle(
                 color: Theme.of(context).accentColor, fontSize: 15.0)),
       ),
     );
   }
-
-  Widget get buildProductPrice => product.isDiscount
-      ? Center(
-          child: Row(
-            children: [
-              Text(
-                "${product.oldPrice.toString()} ${Strings.currency(context)}",
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      // fontStyle: FontStyle.italic,
-                      decoration: TextDecoration.lineThrough,
-                    ),
-              ),
-              SizedBox(width: 4),
-              Text(
-                "${product.price.toString()} ${Strings.currency(context)}",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        )
-      : Text(
-          "${product.price.toString()} ${Strings.currency(context)}",
-          style: Theme.of(context)
-              .textTheme
-              .bodyText1
-              .copyWith(fontWeight: FontWeight.bold),
-        );
 
   void _shareProduct(AppTranslations translator) async {
     final downloadUrl = await Strings.downloadUrl;

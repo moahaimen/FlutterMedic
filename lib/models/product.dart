@@ -6,41 +6,13 @@ import 'brand.dart';
 import 'category.dart';
 
 class Product {
-  static Product fromJson(Map<String, dynamic> data) {
-    final brand = Brand.fromJson(data['brand']);
-    final category = Category.fromJson(data['category']);
-
-    final List<Attachment> attachments = (data['attachments'] as List<dynamic>)
-        .map((e) => new Attachment(
-            e['type'] == 0 ? AttachmentType.Image : AttachmentType.Video,
-            e['url']))
-        .toList();
-
-    return new Product(
-        data['id'],
-        data['en_name'] ?? '',
-        data['ar_name'] ?? '',
-        data['en_description'] ?? '',
-        data['ar_description'] ?? '',
-        data['price']['value'] ?? '',
-        data['price']['is_discount']
-            ? data['price']['previous']['value']
-            : null,
-        DateTime.parse(data['price']['updated_at']),
-        attachments,
-        brand,
-        category,
-        data['is_main'],
-        data['available']);
-  }
-
   final int id;
   final String enName;
   final String arName;
   final String enDescription;
   final String arDescription;
   final num price;
-  final num oldPrice;
+  final num previousPrice;
   final DateTime dateOfPriceChange;
   final Brand brand;
   final Category category;
@@ -55,13 +27,31 @@ class Product {
       this.enDescription,
       this.arDescription,
       this.price,
-      this.oldPrice,
+      this.previousPrice,
       this.dateOfPriceChange,
       this.attachments,
       this.brand,
       this.category,
       this.isMain,
       this.available);
+
+  Product.json(Map<String, dynamic> data, double exchange)
+      : this(
+      data['id'],
+      data['en_name'],
+      data['ar_name'],
+      data['en_description'],
+      data['ar_description'],
+      data['price']['value'] * exchange,
+      data['price']['is_discount']
+          ? data['price']['previous']['value'] * exchange
+          : null,
+      DateTime.parse(data['price']['updated_at']),
+      Attachment.toList(data['attachments'] as List),
+      Brand.fromJson(data['brand']),
+      Category.fromJson(data['category']),
+      data['is_main'],
+      data['available']);
 
   String getName(BuildContext context) {
     return AppTranslations.of(context).locale.languageCode == "en"
@@ -88,6 +78,6 @@ class Product {
   }
 
   bool get isDiscount {
-    return this.oldPrice != null;
+    return this.previousPrice != null;
   }
 }

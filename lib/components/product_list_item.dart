@@ -1,6 +1,5 @@
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/ui/add_to_cart_button.dart';
 import 'package:drugStore/ui/ask_add_to_cart_modal.dart';
@@ -9,8 +8,9 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
 import '../models/product.dart';
-import '../partials/router.dart';
+import '../partials/app_router.dart';
 import '../utils/state.dart';
+import 'products/product_price_component.dart';
 
 class ProductListItem extends StatefulWidget {
   final Product product;
@@ -40,7 +40,7 @@ class ProductListItemState extends State<ProductListItem> {
                 child: productImageWrapper,
               ),
               Text(product.getTitle(context)),
-              buildProductPrice,
+              ProductPriceComponent(product),
               AddToCartButton(id: product.id),
             ],
           ),
@@ -51,46 +51,6 @@ class ProductListItemState extends State<ProductListItem> {
       onLongPressUp: _askAddToCart,
     );
   }
-
-  Widget get buildProductPrice => product.isDiscount
-      ? Center(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                child: Text(
-                  "${product.oldPrice.toString()} ${Strings.currency(context)}",
-                  maxLines: 1,
-                  textAlign: TextAlign.end,
-                  style: Theme.of(context).textTheme.bodyText2.copyWith(
-                        // fontStyle: FontStyle.italic,
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                ),
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Expanded(
-                child: Text(
-                  "${product.price.toString()} ${Strings.currency(context)}",
-                  maxLines: 1,
-                  textAlign: TextAlign.start,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2
-                      .copyWith(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
-        )
-      : Text(
-          "${product.price.toString()} ${Strings.currency(context)}",
-          style:
-              Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.red),
-        );
 
   Widget get productImageContent => CachedNetworkImage(
       imageUrl: product?.image?.url ?? '',
@@ -115,7 +75,7 @@ class ProductListItemState extends State<ProductListItem> {
 
   void _gotoProductDetails() {
     ScopedModel.of<StateModel>(context).setSelectedProduct(product.id);
-    Navigator.of(context).pushNamed(Router.productDetails);
+    Navigator.of(context).pushNamed(AppRouter.productDetails);
   }
 
   void _askAddToCart() {

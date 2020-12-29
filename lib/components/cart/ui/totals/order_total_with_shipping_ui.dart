@@ -1,5 +1,4 @@
 import 'package:drugStore/components/cart/ui/totals/order_total_ui.dart';
-import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,10 @@ class OrderTotalWithShippingUi extends StatelessWidget {
             // Total
             Expanded(
               child: OrderTotalUi(
-                  order: model.order, promoCode: PromoCodeState.OnlyCalc),
+                order: model.order,
+                promoCode: PromoCodeState.OnlyCalc,
+                currency: translator.text(model.currency),
+              ),
             ),
             // Total + Shipping fees
             Expanded(
@@ -31,7 +33,8 @@ class OrderTotalWithShippingUi extends StatelessWidget {
                         style: theme.accentTextTheme.bodyText2
                             .copyWith(color: theme.primaryColorDark)),
                     Text(
-                        "${model.order.fees.toString()} ${Strings.currency(context)}",
+                        "${model.order.fees.toString()} ${translator.text(
+                            model.currency)}",
                         style: theme.accentTextTheme.headline6
                             .copyWith(color: theme.accentColor)),
                   ],

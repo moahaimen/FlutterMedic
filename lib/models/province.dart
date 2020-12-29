@@ -1,12 +1,4 @@
-import 'package:drugStore/localization/app_translation.dart';
-import 'package:flutter/material.dart';
-
 class Province {
-  static Province fromJson(Map<String, dynamic> data) {
-    return new Province(
-        data['id'], data['en_name'], data['ar_name'], data['fees']);
-  }
-
   Map<String, dynamic> toJson() {
     return {
       'id': this.id,
@@ -23,9 +15,10 @@ class Province {
 
   const Province(this.id, this.enName, this.arName, this.fees);
 
-  String getName(BuildContext context) {
-    return AppTranslations.of(context).locale.languageCode == "en"
-        ? enName
-        : arName;
+  Province.json(Map<String, dynamic> data)
+      : this(data['id'], data['en_name'], data['ar_name'], data['fees']);
+
+  String getName(String locale) {
+    return locale == "en" ? enName : arName;
   }
 }

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
-import 'steps/cart_products_step.dart';
-import 'steps/cart_shipping_info_step.dart';
-import 'steps/cart_step.dart';
 import '../../constants/colors.dart';
 import '../../localization/app_translation.dart';
 import '../../pages/home_page.dart';
-import '../../partials/router.dart';
+import '../../partials/app_router.dart';
 import '../../utils/state.dart';
+import 'steps/cart_products_step.dart';
+import 'steps/cart_shipping_info_step.dart';
+import 'steps/cart_step.dart';
 
 class CartStepsManager extends StatefulWidget {
   @override
@@ -113,7 +113,7 @@ class _CartStepsManagerState extends State<CartStepsManager> {
             Toast.show(translator.text('order_submit_done'), context);
             currentStep = 0;
             Navigator.of(context)
-                .pushReplacementNamed(Router.home, arguments: PageId.Home);
+                .pushReplacementNamed(AppRouter.home, arguments: PageId.Home);
             return;
           } else {
             Toast.show(translator.text('order_submit_failed'), context);

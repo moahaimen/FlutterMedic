@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:drugStore/partials/router.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:flutter/material.dart';
 
 import '../models/brand.dart';
@@ -30,7 +30,7 @@ class BrandListItem extends StatelessWidget {
           ),
         ),
         onTap: () => Navigator.of(context).pushNamed(
-          Router.products,
+          AppRouter.products,
           arguments: {'brand': this.brand},
         ),
       ),

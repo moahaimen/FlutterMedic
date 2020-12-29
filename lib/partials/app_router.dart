@@ -1,7 +1,12 @@
 import 'package:drugStore/pages/contact_us_page.dart';
 import 'package:drugStore/pages/search_page.dart';
 import 'package:drugStore/pages/settings_page.dart';
+import 'package:drugStore/pages/user_orders.dart';
+import 'package:drugStore/pages/user_profile_edit_page.dart';
+import 'package:drugStore/pages/user_profile_page.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../pages/home_page.dart';
 import '../pages/index_page.dart';
@@ -10,7 +15,7 @@ import '../pages/product_details_page.dart';
 import '../pages/products_page.dart';
 import '../pages/register_page.dart';
 
-class Router {
+class AppRouter {
   static String current;
 
   static const String index = '/';
@@ -26,24 +31,36 @@ class Router {
   static const String cart = '/cart/';
   static const String search = '/search/';
 
+  static const String userProfile = '/me/';
+  static const String userProfileEdit = '/me/edit';
+  static const String userOrders = '/me/orders/';
+
   static Map<String, Widget Function(BuildContext)> routes() {
     return {
       // Index: Always starts from splash, then you will redirected to
       // the correct page
-      index: (BuildContext ctx) => _routePageBuilder(ctx, index, IndexPage()),
+      index: (BuildContext ctx) => _configureRoute(ctx, index, IndexPage()),
       // Authentication routes
-      login: (BuildContext ctx) => _routePageBuilder(ctx, login, LoginPage()),
+      login: (BuildContext ctx) =>
+          _configureRoute(
+              ctx, login, LoginPage(LoginPageMode.LoginThenNavigate)),
       register: (BuildContext ctx) =>
-          _routePageBuilder(ctx, login, RegisterPage()),
-      search: (BuildContext ctx) =>
-          _routePageBuilder(ctx, search, SearchPage()),
+          _configureRoute(ctx, login, RegisterPage()),
+      search: (BuildContext ctx) => _configureRoute(ctx, search, SearchPage()),
       productDetails: (BuildContext ctx) =>
-          _routePageBuilder(ctx, productDetails, ProductDetailsPage()),
+          _configureRoute(ctx, productDetails, ProductDetailsPage()),
 //      cart: (BuildContext ctx) => _routePageBuilder(ctx, cart, CartPage()),
       settings: (BuildContext ctx) =>
-          _routePageBuilder(ctx, settings, SettingsPage()),
+          _configureRoute(ctx, settings, SettingsPage()),
       contactUs: (BuildContext ctx) =>
-          _routePageBuilder(ctx, settings, ContactUsPage()),
+          _configureRoute(ctx, settings, ContactUsPage()),
+
+      userProfile: (BuildContext ctx) =>
+          _configureRoute(ctx, settings, UserProfilePage(), auth: true),
+      userProfileEdit: (BuildContext ctx) =>
+          _configureRoute(ctx, settings, UserProfileEditPage(), auth: true),
+      userOrders: (BuildContext ctx) =>
+          _configureRoute(ctx, settings, UserOrdersPage(), auth: true),
     };
   }
 
@@ -86,9 +103,27 @@ class Router {
     );
   }
 
-  static Widget _routePageBuilder(BuildContext context, String route,
-      Widget widget) {
+  static Widget _configureRoute(BuildContext context, String route,
+      Widget widget,
+      {bool auth = false}) {
     current = route;
+    if (auth) {
+      return ScopedModelDescendant<StateModel>(
+        builder: (context, child, model) {
+          if (model.userLoading) {
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (model.user == null) {
+            return LoginPage(LoginPageMode.Login);
+          } else {
+            return widget;
+          }
+        },
+      );
+    }
     return widget;
   }
 }

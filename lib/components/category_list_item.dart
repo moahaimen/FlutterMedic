@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:drugStore/partials/router.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:flutter/material.dart';
 
 import '../models/category.dart';
@@ -36,8 +36,9 @@ class CategoryListItem extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () => Navigator.of(context)
-          .pushNamed(Router.products, arguments: {'category': this.category}),
+      onTap: () =>
+          Navigator.of(context).pushNamed(AppRouter.products,
+              arguments: {'category': this.category}),
     );
   }
 }

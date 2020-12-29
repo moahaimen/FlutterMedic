@@ -1,8 +1,8 @@
 import 'package:drugStore/constants/colors.dart';
 import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/partials/drawer.dart';
-import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/partials/toolbar.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +21,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
     return ScopedModelDescendant<StateModel>(
         builder: (BuildContext context, Widget child, StateModel model) {
       return Scaffold(
-        drawer: DrawerBuilder.build(context, Router.contactUs),
-        appBar: Toolbar.get(title: Router.contactUs, context: context),
+        drawer: DrawerBuilder.build(context, AppRouter.contactUs),
+        appBar: Toolbar.get(title: AppRouter.contactUs, context: context),
         body: model.contactUsLoading
             ? Center(child: CircularProgressIndicator())
             : _buildContactUsWidget(context, model.contactUs),
@@ -181,19 +181,20 @@ class _ContactUsPageState extends State<ContactUsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-
             Text(" لعمل متجر ومذاخر الكترونية",
-              style:  const TextStyle(
-                fontSize: 18,
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF130f40),)),
-            Text("ITM for Tech Solutions",
-                style:  const TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF130f40),)),
+                  color: Color(0xFF130f40),
+                )),
+            Text("ITM for Tech Solutions",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF130f40),
+                )),
           ],
         ),
         onPressed: _launchPersonalMessenger,
@@ -208,7 +209,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
   void _launchEmail(String url) => _launchUrl('mailto:$url');
 
   // Replace 'zappos' with your facebbok username
-  void _launchPersonalMessenger() => _launchUrl('http://m.me/gathanfer.gathanfer.7');
+  void _launchPersonalMessenger() =>
+      _launchUrl('http://m.me/gathanfer.gathanfer.7');
 
   Future<void> _launchUrl(String url) async {
     if (url == null) {

@@ -1,4 +1,4 @@
-import 'package:drugStore/models/order_client.dart';
+import 'package:drugStore/models/order/order_client.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +35,7 @@ class CartShippingInfoStep extends CartStep {
 
     child.form.currentState.save();
 
-    final clientData = OrderClient.fromJson(child.data, state);
+    final clientData = OrderClient.json(child.data, state);
     state.setOrderClientFromInstance(clientData);
     print('client: ${state.order.client.name}');
   }
