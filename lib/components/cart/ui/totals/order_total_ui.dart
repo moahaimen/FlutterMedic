@@ -33,7 +33,7 @@ class OrderTotalUi extends StatelessWidget {
       children: [
         Text(trans.text('total'),
             style: theme.accentTextTheme.bodyText2.copyWith(color: Colors.red)),
-        Text("${order.total.toString()} $currency",
+        Text("${order.total.toStringAsFixed(2)} $currency",
             style: theme.accentTextTheme.headline6
                 .copyWith(color: theme.primaryColorDark))
       ],
@@ -57,7 +57,7 @@ class OrderTotalUi extends StatelessWidget {
     // Check if should add total without promoCode
     if (this.promoCode == PromoCodeState.ViewTotal) {
       children.add(
-        Text("${order.total.toString()} $currency",
+        Text("${order.total.toStringAsFixed(2)} $currency",
             style: theme.accentTextTheme.headline6.copyWith(
                 fontStyle: FontStyle.italic,
                 decoration: TextDecoration.lineThrough,
@@ -67,7 +67,7 @@ class OrderTotalUi extends StatelessWidget {
 
     // Add total with promoCode Text
     children.add(
-      Text('${order.totalWithCode.toString()} $currency',
+      Text('${order.totalWithCode.toStringAsFixed(2)} $currency',
           style: theme.accentTextTheme.headline6.copyWith(color: Colors.red)),
     );
 

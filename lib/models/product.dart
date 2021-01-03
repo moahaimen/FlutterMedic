@@ -11,8 +11,8 @@ class Product {
   final String arName;
   final String enDescription;
   final String arDescription;
-  final num price;
-  final num previousPrice;
+  final double price;
+  final double previousPrice;
   final DateTime dateOfPriceChange;
   final Brand brand;
   final Category category;
@@ -65,7 +65,7 @@ class Product {
         : arDescription;
   }
 
-  String getTitle(BuildContext context, {int length = 12}) {
+  String getTitle(BuildContext context, {int length = 20}) {
     final name = getName(context);
     return name.length >= length ? '${name.substring(0, length)}...' : name;
   }

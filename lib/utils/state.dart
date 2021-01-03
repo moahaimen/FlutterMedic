@@ -139,6 +139,8 @@ class StateModel extends Model {
 
   Order get order => this._order;
 
+  Stream<String> messages;
+
   StateModel() {
     _initializeModelData();
   }
@@ -149,13 +151,24 @@ class StateModel extends Model {
     this._products = [];
     this._provinces = [];
 
-    this.fetchModelData();
+    this.messages = new Stream.fromFutures([
+      this.restoreStoredUser(),
+      this.loadSettings(),
+      this.fetchLatestExchange(),
+      this.fetchBrands(),
+      this.fetchCategories(),
+      this.fetchProducts(),
+      this.restoreStoredOrder(),
+      this.fetchContactUs(),
+      this.fetchProvinces(),
+    ]);
+    // this.fetchModelData();
   }
 
-  void fetchModelData() async {
+  Future<void> fetchModelData() async {
     await this.restoreStoredUser();
     await this.loadSettings();
-    await this.fetchCurrentExchange();
+    await this.fetchLatestExchange();
 
     await this.fetchBrands();
     await this.fetchCategories();
@@ -170,7 +183,7 @@ class StateModel extends Model {
   ///
   /// Fetch contact us information
   ///
-  Future<void> fetchContactUs() {
+  Future<String> fetchContactUs() {
     _contactUsLoading = true;
     notifyListeners();
 
@@ -178,7 +191,7 @@ class StateModel extends Model {
       if (contactUs == null) {
         _contactUsLoading = false;
         notifyListeners();
-        return;
+        return 'Failed to fetch contact information';
       }
       final List<dynamic> xx = contactUs['data'] as List<dynamic>;
       _contactUs = new Map();
@@ -196,13 +209,14 @@ class StateModel extends Model {
 
       _contactUsLoading = false;
       notifyListeners();
+      return 'Contact information fetched successfully';
     });
   }
 
   ///
   /// Fetch provinces list
   ///
-  Future<void> fetchProvinces() {
+  Future<String> fetchProvinces() {
     _provincesLoading = true;
     notifyListeners();
 
@@ -210,7 +224,7 @@ class StateModel extends Model {
       if (provinces == null) {
         this._provincesLoading = false;
         this.notifyListeners();
-        return;
+        return 'Failed to fetch provinces';
       }
 
       this._provinces =
@@ -218,13 +232,14 @@ class StateModel extends Model {
 
       this._provincesLoading = false;
       this.notifyListeners();
+      return 'Provinces fetched successfully';
     });
   }
 
   ///
   /// Fetch current exchange
   ///
-  Future<void> fetchCurrentExchange() {
+  Future<String> fetchLatestExchange() {
     _exchangeLoading = true;
     notifyListeners();
 
@@ -234,13 +249,14 @@ class StateModel extends Model {
       }
       this._exchangeLoading = false;
       this.notifyListeners();
+      return 'Loading latest exchange data';
     });
   }
 
   ///
   /// Fetch list of categories
   ///
-  Future<void> fetchCategories() {
+  Future<String> fetchCategories() {
     this._categoriesLoading = true;
     this.notifyListeners();
 
@@ -248,7 +264,7 @@ class StateModel extends Model {
       if (categories == null) {
         this._categoriesLoading = false;
         this.notifyListeners();
-        return;
+        return 'Failed to fetch categories list';
       }
 
       this._categories = categories['data']
@@ -257,13 +273,14 @@ class StateModel extends Model {
 
       this._categoriesLoading = false;
       this.notifyListeners();
+      return 'Categories list fetched successfully';
     });
   }
 
   ///
   /// Load settings from preferences
   ///
-  Future<void> loadSettings() {
+  Future<String> loadSettings() {
     this._settingsLoading = true;
     this.notifyListeners();
 
@@ -274,6 +291,7 @@ class StateModel extends Model {
 
       this._settingsLoading = false;
       this.notifyListeners();
+      return 'Settings loaded successfully';
     });
   }
 
@@ -315,7 +333,7 @@ class StateModel extends Model {
   ///
   /// Fetch list of brands
   ///
-  Future<void> fetchBrands() {
+  Future<String> fetchBrands() {
     this._brandsLoading = true;
     this.notifyListeners();
 
@@ -323,20 +341,21 @@ class StateModel extends Model {
       if (result == null) {
         this._brandsLoading = false;
         this.notifyListeners();
-        return;
+        return 'Brands List Loading Failed';
       }
       this._brands =
           result['data'].map<Brand>((e) => Brand.fromJson(e)).toList();
 
       this._brandsLoading = false;
       this.notifyListeners();
+      return 'Brands list fetched successfully';
     });
   }
 
   ///
   /// Fetch list of products
   ///
-  Future<void> fetchProducts() {
+  Future<String> fetchProducts() {
     this._productsLoading = true;
     this.notifyListeners();
 
@@ -344,7 +363,7 @@ class StateModel extends Model {
       if (products == null) {
         this._productsLoading = false;
         this.notifyListeners();
-        return;
+        return 'Failed to fetch products';
       }
 
       final double e = currency == 'USD' ? 1 : exchange;
@@ -353,6 +372,7 @@ class StateModel extends Model {
 
       this._productsLoading = false;
       this.notifyListeners();
+      return 'Products fetched successfully';
     });
   }
 
@@ -366,7 +386,7 @@ class StateModel extends Model {
   ///
   /// Restore the stored version of order
   ///
-  Future<void> restoreStoredOrder() async {
+  Future<String> restoreStoredOrder() async {
     this._orderRestoring = true;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
@@ -387,6 +407,7 @@ class StateModel extends Model {
 
     this._orderRestoring = false;
     notifyListeners();
+    return 'Cart stored successfully';
   }
 
   ///
@@ -645,8 +666,6 @@ class StateModel extends Model {
     this._user = null;
     this.notifyListeners();
 
-    registerData.addAll({'role_id': 4});
-
     final dynamic result =
         await Http.post(Environment.registerUrl, registerData);
 
@@ -666,7 +685,7 @@ class StateModel extends Model {
   ///
   ///
   ///
-  Future<void> restoreStoredUser() async {
+  Future<String> restoreStoredUser() async {
     this._userLoading = true;
     notifyListeners();
 
@@ -681,7 +700,6 @@ class StateModel extends Model {
         final User user = User.json(userData, token);
 
         this._user = user;
-        print(userData);
       } catch (e) {
         this._user = null;
       }
@@ -689,6 +707,7 @@ class StateModel extends Model {
 
     this._userLoading = false;
     notifyListeners();
+    return 'Finishing user restoring';
   }
 
   ///

@@ -58,6 +58,7 @@ class _SettingsFormState extends State<SettingsForm> {
                             model.settings['exchange'] == 'USD' ? 'IQD' : 'USD';
                         model.settings['exchange'] = exchange;
                         await model.setSettingsItem('exchange', exchange);
+                        model.fetchProducts();
                         final message = translator.text('settings_save_done');
                         Toast.show(message, this.context);
                       });

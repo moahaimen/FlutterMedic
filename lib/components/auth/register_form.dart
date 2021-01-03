@@ -11,12 +11,15 @@ import 'form_caption_widget.dart';
 
 class RegisterForm extends StatelessWidget {
   final Map<String, dynamic> _data = {
-    'first_name': '',
-    'last_name': '',
-    'user_name': '',
-    'email': '',
-    'password': '',
-    'password_confirmation': ''
+    'first_name': null,
+    'last_name': null,
+    'user_name': null,
+    'email': null,
+    'password': null,
+    'password_confirmation': null,
+    'province_id': null,
+    'address': null,
+    'phone_number': null
   };
 
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
@@ -204,10 +207,10 @@ class RegisterForm extends StatelessWidget {
 
     state.registerUser(_data).then((ok) {
       if (!ok) {
-        Toast.show(translator.text('user_registeration_failed'), context);
+        Toast.show(translator.text('user_registration_failed'), context);
         return;
       }
-      Toast.show(translator.text('user_registeration_succeeded'), context);
+      Toast.show(translator.text('user_registration_succeeded'), context);
       Navigator.pushReplacementNamed(context, AppRouter.login);
     });
   }

@@ -56,7 +56,7 @@ class _CartProductsListItemState extends State<CartProductsListItem> {
             children: [
               Expanded(
                 child: Text(
-                  "${widget.item.subTotal} $currency",
+                  "${widget.item.subTotal.toStringAsFixed(2)} $currency",
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
               ),

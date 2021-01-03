@@ -138,7 +138,10 @@ class _ProductsListViewState extends State<ProductsListView> {
 
         if (widget.filter.containsKey('home') &&
             widget.filter['home'] == true) {
-          return list;
+          return Container(
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2.5),
+            child: list,
+          );
         }
 
         return RefreshIndicator(

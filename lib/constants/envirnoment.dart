@@ -1,6 +1,6 @@
 class Environment {
   static final String fetchExchangeUrl =
-      'https://molardentalmaterials.com/api/exchange/current';
+      'https://molardentalmaterials.com/api/exchange/latest';
   static final String fetchContactUsUrl =
       'https://molardentalmaterials.com/api/contactUs?all=true';
   static final String fetchProvincesUrl =
@@ -19,7 +19,7 @@ class Environment {
   static final String loginUrl =
       'https://molardentalmaterials.com/api/auth/login';
   static final String registerUrl =
-      'https://molardentalmaterials.com/api/auth/register';
+      'https://molardentalmaterials.com/api/auth/register/client';
   static final String logoutUrl =
       'https://molardentalmaterials.com/api/auth/me/logout';
   static final String updateUserDetailsUrl =

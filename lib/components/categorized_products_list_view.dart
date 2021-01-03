@@ -49,17 +49,28 @@ class _CategorizedProductsListViewState
                 height: 30,
                 color: Colors.white,
                 child: ListView.separated(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: categories.length,
-                    separatorBuilder: (BuildContext context, int index) =>
-                        SizedBox(width: 6),
-                    itemBuilder: (BuildContext context, int index) =>
-                        FlatButton(
-                            textColor: theme.accentColor,
-                            child: Text(categories[index].getName(context)),
-                            onPressed: () => setState(
-                                () => this.tapped = categories[index]))),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      SizedBox(width: 6),
+                  itemBuilder: (BuildContext context, int index) =>
+                      FlatButton(
+                        textColor: theme.accentColor,
+                        child: Text(categories[index].getName(context)),
+                        onPressed: () =>
+                            setState(() => this.tapped = categories[index]),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(
+                            color: Theme
+                                .of(context)
+                                .primaryColorDark,
+                            width: .5,
+                          ),
+                        ),
+                      ),
+                ),
               ),
               SizedBox(height: 10),
               Container(

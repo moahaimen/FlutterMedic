@@ -21,7 +21,7 @@ class OrderGrandTotalUi extends StatelessWidget {
           Text(translator.text("total_grand_total"),
               style: theme.accentTextTheme.bodyText2
                   .copyWith(color: theme.accentColor.withOpacity(.65))),
-          Text("${state.order.totalWithFees.toString()} $currency",
+          Text("${state.order.totalWithFees.toStringAsFixed(2)} $currency",
               style: theme.accentTextTheme.headline6
                   .copyWith(color: theme.accentColor)),
         ],

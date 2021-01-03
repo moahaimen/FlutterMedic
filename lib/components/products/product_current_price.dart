@@ -9,7 +9,7 @@ class ProductCurrentPrice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("${product.price.toString()} $currency",
+    return Text("${product.price.toStringAsFixed(2)} $currency",
         maxLines: 1,
         textAlign: TextAlign.start,
         style:

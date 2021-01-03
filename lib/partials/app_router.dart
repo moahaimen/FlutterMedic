@@ -1,6 +1,7 @@
 import 'package:drugStore/pages/contact_us_page.dart';
 import 'package:drugStore/pages/search_page.dart';
 import 'package:drugStore/pages/settings_page.dart';
+import 'package:drugStore/pages/user_order_details_page.dart';
 import 'package:drugStore/pages/user_orders.dart';
 import 'package:drugStore/pages/user_profile_edit_page.dart';
 import 'package:drugStore/pages/user_profile_page.dart';
@@ -34,6 +35,7 @@ class AppRouter {
   static const String userProfile = '/me/';
   static const String userProfileEdit = '/me/edit';
   static const String userOrders = '/me/orders/';
+  static const String userOrderDetails = '/me/orders/:id';
 
   static Map<String, Widget Function(BuildContext)> routes() {
     return {
@@ -52,14 +54,21 @@ class AppRouter {
       settings: (BuildContext ctx) =>
           _configureRoute(ctx, settings, SettingsPage()),
       contactUs: (BuildContext ctx) =>
-          _configureRoute(ctx, settings, ContactUsPage()),
+          _configureRoute(ctx, contactUs, ContactUsPage()),
 
       userProfile: (BuildContext ctx) =>
-          _configureRoute(ctx, settings, UserProfilePage(), auth: true),
+          _configureRoute(ctx, userProfile, UserProfilePage(), auth: true),
       userProfileEdit: (BuildContext ctx) =>
-          _configureRoute(ctx, settings, UserProfileEditPage(), auth: true),
+          _configureRoute(
+              ctx, userProfileEdit, UserProfileEditPage(),
+              auth: true),
+
       userOrders: (BuildContext ctx) =>
-          _configureRoute(ctx, settings, UserOrdersPage(), auth: true),
+          _configureRoute(ctx, userOrders, UserOrdersPage(), auth: true),
+      userOrderDetails: (BuildContext ctx) =>
+          _configureRoute(
+              ctx, userOrderDetails, UserOrderDetailsPage(),
+              auth: true),
     };
   }
 
