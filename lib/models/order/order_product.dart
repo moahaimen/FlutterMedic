@@ -27,11 +27,9 @@ class OrderProduct {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {
+    return {
       'product_id': this.product.id,
       'quantity': this.quantity,
     };
-
-    return data;
   }
 }

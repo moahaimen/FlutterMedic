@@ -36,9 +36,7 @@ class ProductListItemState extends State<ProductListItem> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5),
           side: BorderSide(
-            color: Theme
-                .of(context)
-                .canvasColor,
+            color: Theme.of(context).canvasColor,
             width: .5,
           ),
         ),
@@ -99,15 +97,15 @@ class ProductListItemImage extends StatelessWidget {
     return available
         ? image
         : Badge(
-      shape: BadgeShape.square,
-      borderRadius: 18,
-      position: BadgePosition.topRight(top: 5, right: 10),
-      padding: EdgeInsets.all(2),
-      badgeContent: Text(
-        AppTranslations.of(context).text('not_available'),
-        style: TextStyle(color: Colors.white, fontSize: 10),
-      ),
-      child: image,
-    );
+            shape: BadgeShape.square,
+            borderRadius: 18,
+            position: BadgePosition.topRight(top: 5, right: 10),
+            padding: EdgeInsets.all(2),
+            badgeContent: Text(
+              AppTranslations.of(context).text('not_available'),
+              style: TextStyle(color: Colors.white, fontSize: 10),
+            ),
+            child: image,
+          );
   }
 }

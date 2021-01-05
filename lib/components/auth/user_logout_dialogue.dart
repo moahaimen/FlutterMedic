@@ -1,5 +1,7 @@
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/user.dart';
+import 'package:drugStore/pages/home_page.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -43,6 +45,10 @@ class UserLogoutDialogue {
       Toast.show(
           AppTranslations.of(context).text('logout_done_message'), context);
       Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed(
+        AppRouter.home,
+        arguments: PageId.Home,
+      );
     }
   }
 }

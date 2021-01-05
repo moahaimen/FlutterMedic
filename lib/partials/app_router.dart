@@ -58,17 +58,15 @@ class AppRouter {
 
       userProfile: (BuildContext ctx) =>
           _configureRoute(ctx, userProfile, UserProfilePage(), auth: true),
-      userProfileEdit: (BuildContext ctx) =>
-          _configureRoute(
-              ctx, userProfileEdit, UserProfileEditPage(),
-              auth: true),
+      userProfileEdit: (BuildContext ctx) => _configureRoute(
+          ctx, userProfileEdit, UserProfileEditPage(),
+          auth: true),
 
       userOrders: (BuildContext ctx) =>
           _configureRoute(ctx, userOrders, UserOrdersPage(), auth: true),
-      userOrderDetails: (BuildContext ctx) =>
-          _configureRoute(
-              ctx, userOrderDetails, UserOrderDetailsPage(),
-              auth: true),
+      userOrderDetails: (BuildContext ctx) => _configureRoute(
+          ctx, userOrderDetails, UserOrderDetailsPage(),
+          auth: true),
     };
   }
 

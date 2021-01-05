@@ -157,8 +157,7 @@ class StateModel extends Model {
       this.fetchLatestExchange(),
       this.fetchBrands(),
       this.fetchCategories(),
-      this.fetchProducts(),
-      this.restoreStoredOrder(),
+      this.fetchProducts().then((e) => this.restoreStoredOrder()),
       this.fetchContactUs(),
       this.fetchProvinces(),
     ]);
@@ -396,18 +395,21 @@ class StateModel extends Model {
         final String orderString = prefs.getString('_order');
         final Map<String, dynamic> orderData = jsonDecode(orderString);
 
+        print(orderData);
         final Order order = Order.json(orderData, this);
         this._order = order;
       } catch (e) {
+        print('asdasdasdasd $e');
         this._order = Order.empty();
       }
     } else {
+      print('asdasdasdasd');
       this._order = Order.empty();
     }
 
     this._orderRestoring = false;
     notifyListeners();
-    return 'Cart stored successfully';
+    return 'Cart restored successfully';
   }
 
   ///
@@ -415,13 +417,16 @@ class StateModel extends Model {
   ///
   Future<void> persistOrder() async {
     final prefs = await SharedPreferences.getInstance();
-
-    final orderString = jsonEncode(this._order.toJson(false));
-    return prefs.setString('_order', orderString).then((ok) {
-      if (!ok) {
-        throw new Exception("Failed to save on Shared Prefrences");
-      }
-    });
+    try {
+      final orderString = jsonEncode(this._order.toJson(false));
+      return prefs.setString('_order', orderString).then((ok) {
+        if (!ok) {
+          throw new Exception("Failed to save on Shared Prefrences");
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   ///

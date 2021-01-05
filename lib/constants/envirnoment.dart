@@ -12,7 +12,7 @@ class Environment {
   static final String fetchProductsUrl =
       'https://molardentalmaterials.com/api/products?all=true';
   static final String postOrderUrl =
-      'https://molardentalmaterials.com/api/orders';
+      'https://molardentalmaterials.com/api/orders/anonymous';
   static final String checkPromoCodeUrl =
       'https://molardentalmaterials.com/api/promocodes/:code';
 

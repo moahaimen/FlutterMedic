@@ -17,8 +17,7 @@ class IndexPageState extends State<IndexPage> {
   void initState() {
     super.initState();
 
-    ScopedModel
-        .of<StateModel>(context)
+    ScopedModel.of<StateModel>(context)
         .messages
         .listen(setTitle, onDone: onDone);
   }

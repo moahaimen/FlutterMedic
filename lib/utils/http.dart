@@ -33,9 +33,9 @@ class Http {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
-    var requestData = json.jsonEncode(data);
-    print(requestData);
+    print(url);
 
+    var requestData = json.jsonEncode(data);
     return http
         .post(url, body: requestData, headers: headers)
         .catchError(_onError)
@@ -60,7 +60,6 @@ class Http {
     headers['accept'] = 'application/json';
 
     var requestData = json.jsonEncode(data);
-    print(requestData);
 
     return http
         .put(url, body: requestData, headers: headers)

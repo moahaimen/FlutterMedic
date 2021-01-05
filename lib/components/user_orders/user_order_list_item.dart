@@ -49,8 +49,7 @@ class UserOrderListItem extends StatelessWidget {
                       new Row(
                         children: [
                           Text(
-                              "${order.client.province.getName(lang)}, ${order
-                                  .client.address}"),
+                              "${order.client.province.getName(lang)}, ${order.client.address}"),
                         ],
                       )
                     ],
@@ -60,8 +59,7 @@ class UserOrderListItem extends StatelessWidget {
                   children: <Widget>[
                     new Chip(
                       label: Text(
-                        "${order.status.name}, Since ${order.status
-                            .changeDate}",
+                        "${order.status.name}, Since ${order.status.changeDate}",
                         style: theme.textTheme.caption,
                       ),
                     ),
