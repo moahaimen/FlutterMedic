@@ -53,8 +53,9 @@ class Order {
 
   double getTotal({bool code = false, bool fees = false}) {
     assert(this.products != null);
-    double total =
-        this.products.map((e) => e.subTotal).reduce((value, e) => value + e);
+    double total = this.products.length > 0
+        ? this.products.map((e) => e.subTotal).reduce((value, e) => value + e)
+        : 0;
 
     if (code) {
       try {
