@@ -1,4 +1,3 @@
-import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -7,30 +6,32 @@ import 'package:scoped_model/scoped_model.dart';
 class OrderGrandTotalUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<StateModel>(
-      builder: (context, child, model) {
-        final translator = AppTranslations.of(context);
-        final theme = Theme.of(context);
+    final state = ScopedModel.of<StateModel>(context);
 
-        final order = model.order.order;
+    final translator = AppTranslations.of(context);
+    final theme = Theme.of(context);
+    final currency = translator.text(state.currency);
 
-        return Container(
-          color: Colors.white60,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(translator.text("total_grand_total"),
-                  style: theme.accentTextTheme.bodyText2
-                      .copyWith(color: theme.accentColor.withOpacity(.65))),
-              Text(
-                  "${order.totalWithFees.toString()} ${Strings.currency(context)}",
-                  style: theme.accentTextTheme.headline6
-                      .copyWith(color: theme.accentColor)),
-            ],
+    return Container(
+      color: Colors.white60,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            translator.text("total_grand_total"),
+            style: theme.accentTextTheme.bodyText2.copyWith(
+              color: theme.accentColor.withOpacity(.65),
+            ),
           ),
-        );
-      },
+          Text(
+            "${state.order?.getTotal(code: true, fees: true)?.toStringAsFixed(2)} $currency",
+            style: theme.accentTextTheme.headline6.copyWith(
+              color: theme.accentColor,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

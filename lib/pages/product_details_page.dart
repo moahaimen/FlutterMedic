@@ -10,7 +10,7 @@ class ProductDetailsPage extends StatelessWidget {
     return Scaffold(
       body: ScopedModelDescendant<StateModel>(
         builder: (BuildContext context, Widget child, StateModel model) =>
-            ProductItemDetails(product: model.products.selected),
+            ProductItemDetails(product: model.selectedOrFirstProduct),
       ),
     );
   }

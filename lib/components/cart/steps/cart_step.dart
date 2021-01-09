@@ -1,15 +1,10 @@
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/order_management.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
 enum CartStepId { Products, Client, PromoCode }
 
 abstract class CartStep extends StatelessWidget {
-  ///
-  ///
-  ///
-  final OrderManagement manager;
-
   ///
   /// Unique number for each step
   ///
@@ -28,24 +23,19 @@ abstract class CartStep extends StatelessWidget {
   ///
   /// Get icon for current state of the step
   ///
-  IconData getState();
+  IconData getState(StateModel state);
 
   ///
   /// Save the step data into the source
   ///
-  void save();
+  void save(StateModel state);
 
   ///
   /// Check if the step is finished and We can move to the next
   ///
-  bool finished();
+  bool finished(StateModel state);
 
-  CartStep({
-    @required this.manager,
-    @required this.id,
-    @required this.title,
-    @required this.child,
-  });
+  CartStep({@required this.id, @required this.title, @required this.child});
 
   @override
   Widget build(BuildContext context) {

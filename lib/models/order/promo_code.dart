@@ -1,15 +1,6 @@
 enum PromoCodeType { Percentage, Constant }
 
 class OrderPromoCode {
-  static OrderPromoCode fromJson(Map<String, dynamic> data) {
-    if (data == null) return null;
-    return new OrderPromoCode(
-        data['code'],
-        PromoCodeType.values[int.parse(data['type'])],
-        num.parse(data['discount']),
-        valid: false);
-  }
-
   dynamic toJson(bool isPost) {
     return isPost
         ? this.code
@@ -27,4 +18,12 @@ class OrderPromoCode {
   bool valid;
 
   OrderPromoCode(this.code, this.type, this.discount, {this.valid});
+
+  OrderPromoCode.empty()
+      : this(null, PromoCodeType.Percentage, null, valid: false);
+
+  OrderPromoCode.json(Map<String, dynamic> data)
+      : this(data['code'], PromoCodeType.values[int.parse(data['type'])],
+            num.parse(data['discount']),
+            valid: false);
 }

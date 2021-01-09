@@ -1,21 +1,20 @@
-import 'package:drugStore/models/order_client.dart';
-import 'package:drugStore/models/order_management.dart';
+import 'package:drugStore/models/order/order_client.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 
 import '../ui/cart_client_information.dart';
 import 'cart_step.dart';
 
 class CartShippingInfoStep extends CartStep {
-  CartShippingInfoStep(OrderManagement manager)
+  CartShippingInfoStep()
       : super(
-            manager: manager,
             id: CartStepId.Client,
             title: 'cart_client_step',
-            child: CartClientInformation(manager));
+            child: CartClientInformation());
 
   @override
-  bool finished() {
-    final order = this.manager.order;
+  bool finished(StateModel state) {
+    final order = state.order;
     final child = this.child as CartClientInformation;
 
     return order != null &&
@@ -31,21 +30,19 @@ class CartShippingInfoStep extends CartStep {
   }
 
   @override
-  void save() {
-    final order = this.manager;
+  void save(StateModel state) {
     final child = this.child as CartClientInformation;
 
-    OrderClient.fromJson(child.data, this.manager).then((client) {
-      child.form.currentState.save();
-      order.setOrderClient(client);
-      print('client: ${order.client.name}');
-    });
+    child.form.currentState.save();
+
+    final clientData = OrderClient.json(child.data, state);
+    state.setOrderClientFromInstance(clientData);
+    print('client: ${state.order.client.name}');
   }
 
   @override
-  IconData getState() {
-    final order = this.manager.order;
-    final client = order.client;
+  IconData getState(StateModel state) {
+    final client = state.order.client;
 
     if (client == null) {
       return Icons.chevron_right;

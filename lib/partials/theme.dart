@@ -30,10 +30,12 @@ class ThemeBuilder {
       buttonTheme: ButtonThemeData(
         buttonColor: accentColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
-          side: BorderSide(color: accentColor),
+          borderRadius: BorderRadius.circular(25.0),
+//          side: BorderSide(
+//            color: secondaryColor,
+//          ),
         ),
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
         disabledColor: primaryColor.withAlpha(100),
       ),
       textTheme: TextTheme(
@@ -81,14 +83,13 @@ class ThemeBuilder {
         button: TextStyle(
           color: primaryColor,
         ),
-
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: primaryColor,
         selectedItemColor: accentColor,
         unselectedItemColor: primaryTextColor,
       ),
-      fontFamily: 'Changa',
+      fontFamily: 'Tajawal',
     );
   }
 }

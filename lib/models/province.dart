@@ -1,13 +1,4 @@
-import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/pagination.dart';
-import 'package:flutter/material.dart';
-
-class Province extends IModel {
-  static Province fromJson(Map<String, dynamic> data) {
-    return new Province(
-        data['id'], data['en_name'], data['ar_name'], data['fees']);
-  }
-
+class Province {
   Map<String, dynamic> toJson() {
     return {
       'id': this.id,
@@ -20,35 +11,19 @@ class Province extends IModel {
   final int id;
   final String enName;
   final String arName;
-  final int fees;
+  final double fees;
 
-  Province(this.id, this.enName, this.arName, this.fees);
+  const Province(this.id, this.enName, this.arName, this.fees);
 
-  Province.from(Province source)
-      : this.id = source.id,
-        this.enName = source.enName,
-        this.arName = source.arName,
-        this.fees = source.fees;
+  Province.json(Map<String, dynamic> data, double exchange)
+      : this(
+          data['id'],
+          data['en_name'],
+          data['ar_name'],
+          data['fees'] * exchange,
+        );
 
-  String getName(BuildContext context) {
-    return AppTranslations.of(context).locale.languageCode == "en"
-        ? enName
-        : arName;
-  }
-
-  @override
-  int get identifier => this.id;
-
-  @override
-  bool verify(Map<String, dynamic> filter) {
-    if (filter == null || filter.isEmpty) {
-      return true;
-    }
-
-    if (filter.containsKey('name')) {
-      final name = filter['name'];
-      return this.enName.contains(name) || this.arName.contains(name);
-    }
-    return false;
+  String getName(String locale) {
+    return locale == "en" ? enName : arName;
   }
 }

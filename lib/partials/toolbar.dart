@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
-import 'router.dart';
+import 'app_router.dart';
 
 class Toolbar {
   // static final Map<String, String> _titles = {
@@ -45,16 +45,14 @@ class Toolbar {
               IconButton(
             icon: Icon(Icons.language, size: 28),
             padding: EdgeInsets.symmetric(horizontal: 0),
-            onPressed: () async {
-              await model.settings.alternateLanguage();
-              Toast.show("Language changed successfully", context);
-            },
+            onPressed: () => model.toggleLanguage().then((value) =>
+                Toast.show("Language changed successfully", context)),
           ),
         ),
         IconButton(
           icon: Icon(Icons.search, size: 28),
           padding: EdgeInsets.symmetric(horizontal: 0),
-          onPressed: () => Navigator.of(context).pushNamed(Router.search),
+          onPressed: () => Navigator.of(context).pushNamed(AppRouter.search),
         ),
         ScopedModelDescendant<StateModel>(
           builder: (BuildContext context, Widget child, StateModel model) =>
@@ -66,11 +64,10 @@ class Toolbar {
               icon: Icon(Icons.shopping_cart, size: 28),
               padding: EdgeInsets.symmetric(horizontal: 0),
               onPressed: () => Navigator.of(context)
-                  .pushReplacementNamed(Router.home, arguments: PageId.Cart),
+                  .pushReplacementNamed(AppRouter.home, arguments: PageId.Cart),
             ),
-            badgeContent: Text(
-              model.order?.status?.index != 1 ? "0" : model.order.itemsCount,
-            ),
+            badgeContent:
+                Text(model.orderRestoring ? '0' : model.orderItemsCount),
             badgeColor: Colors.transparent,
           ),
         ),

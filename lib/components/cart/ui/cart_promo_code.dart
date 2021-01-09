@@ -1,21 +1,18 @@
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/order.dart';
-import 'package:drugStore/models/order_management.dart';
+import 'package:drugStore/models/order/order.dart';
+import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
 enum CartPromoCodeStatus { Clean, Verefying, Active, InActive }
 
 class CartPromoCode extends StatefulWidget {
-  final OrderManagement manager;
-
-  CartPromoCode(this.manager);
-
   @override
   State<StatefulWidget> createState() => _CartPromoCodeState();
 
-  bool isValid() {
-    final Order order = this.manager.order;
+  bool isValid(StateModel state) {
+    final Order order = state.order;
 
     return _CartPromoCodeState.currentStatus == CartPromoCodeStatus.Active &&
         order != null &&
@@ -25,19 +22,19 @@ class CartPromoCode extends StatefulWidget {
         order.promoCode.valid;
   }
 
-  bool isEmpty() {
-    return (this.manager.order.promoCode == null ||
-            this.manager.order.promoCode.code.isEmpty) &&
+  bool isEmpty(StateModel state) {
+    return (state.order.promoCode == null ||
+            state.order.promoCode.code.isEmpty) &&
         _CartPromoCodeState.controller.text.isEmpty;
   }
 }
 
 class _CartPromoCodeState extends State<CartPromoCode> {
-  static String getPromoCodeOrDefault(OrderManagement manager) {
-    assert(manager != null);
-    assert(manager.order != null);
-
-    return manager.order.promoCode?.code ?? '';
+  static String getPromoCodeOrDefault(StateModel state) {
+    if (state != null && state.order != null && state.order.promoCode != null) {
+      return state.order.promoCode.code;
+    }
+    return "";
   }
 
   static CartPromoCodeStatus currentStatus = CartPromoCodeStatus.Clean;
@@ -48,12 +45,14 @@ class _CartPromoCodeState extends State<CartPromoCode> {
   void initState() {
     super.initState();
     currentStatus = CartPromoCodeStatus.Clean;
-    controller.text = getPromoCodeOrDefault(widget.manager);
+    controller.text =
+        getPromoCodeOrDefault(ScopedModel.of<StateModel>(context));
   }
 
   Widget _buildPromoCodeField(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppTranslations translator = AppTranslations.of(context);
+    final StateModel state = ScopedModel.of<StateModel>(context);
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
@@ -82,7 +81,7 @@ class _CartPromoCodeState extends State<CartPromoCode> {
               textInputAction: TextInputAction.done,
               onChanged: (String value) {
                 if (value.length == 8) {
-                  _checkPromoCodeActivation();
+                  _checkPromoCodeActivation(state);
                 }
               },
             ),
@@ -114,13 +113,11 @@ class _CartPromoCodeState extends State<CartPromoCode> {
     return null;
   }
 
-  void _checkPromoCodeActivation() {
+  void _checkPromoCodeActivation(StateModel state) {
     final translator = AppTranslations.of(context);
 
     setState(() => currentStatus = CartPromoCodeStatus.Verefying);
-    widget.manager
-        .setPromoCode(this.context, controller.value.text)
-        .then((active) {
+    state.setPromoCode(controller.value.text).then((active) {
       if (active == null || !active) {
         setState(() => currentStatus = CartPromoCodeStatus.InActive);
         Toast.show(translator.text('promo_code_in_active'), context);

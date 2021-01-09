@@ -23,85 +23,89 @@ class CustomProvinceFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<StateModel>(
-      builder: (BuildContext context, Widget child, StateModel model) {
-        final translator = AppTranslations.of(context);
+    final translator = AppTranslations.of(context);
 
-        return Container(
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title),
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.black12,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(15)),
-                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-                child: TextFormField(
-                  readOnly: true,
-                  controller: controller,
-                  minLines: 1,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: title,
-                  ),
-                  cursorColor: color,
-                  textAlign: TextAlign.center,
-                  textAlignVertical: TextAlignVertical.center,
-                  textInputAction: TextInputAction.done,
-                  autovalidate: true,
-                  validator: (String v) {
-                    if (v == null || v.isEmpty) {
-                      return translator.text('required_field');
-                    } else {
-                      final index = model.provinces.data
-                          .indexWhere((e) => e.enName == v || e.arName == v);
-                      if (index < 0 || index >= model.provinces.data.length) {
-                        return translator.text('province_must_be_valid');
-                      } else {
-                        return null;
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title),
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.black12,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(15)),
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+            child: ScopedModelDescendant<StateModel>(
+              builder: (context, child, model) {
+                if (controller.text == null && model.provincesLoading ||
+                    model.provinces == null ||
+                    model.provinces.isEmpty) {
+                  if (model.provinces == null || model.provinces.isEmpty) {
+                    model.fetchProvinces();
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return TextFormField(
+                    readOnly: true,
+                    controller: controller,
+                    minLines: 1,
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: title,
+                    ),
+                    cursorColor: color,
+                    textAlign: TextAlign.center,
+                    textAlignVertical: TextAlignVertical.center,
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (String province) {
+                      if (province == null || province.isEmpty) {
+                        return translator.text('required_field');
                       }
-                    }
-                  },
-                  onTap: () async {
-                    final province = await _openProvincesModal(
-                        context,
-                        translator.text('select_province'),
-                        model.provinces.data);
-                    onSave(province.id);
-                    controller.text = province.getName(context);
-                  },
-                ),
-              ),
-            ],
+                      return null;
+                    },
+                    onTap: () => _openProvincesModal(
+                      context,
+                      translator.locale.languageCode,
+                      model.provinces,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Future<Province> _openProvincesModal(
-      BuildContext context, String title, List<Province> provinces) async {
-    return showDialog<Province>(
+  void _openProvincesModal(
+      BuildContext context, String locale, List<Province> provinces) async {
+    final result = await showDialog<Province>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
-          title: Text(title),
-          children: _getSimpleDialogChildren(context, provinces)),
+        title: Text(title),
+        children: provinces
+            .map((e) => _createSimpleDialogOption(context, locale, e))
+            .toList(),
+      ),
     );
+    onSave(result.id);
+    controller.text = result.getName(locale);
   }
 
-  List<Widget> _getSimpleDialogChildren(
-      BuildContext context, List<Province> provinces) {
-    assert(provinces != null);
-
-    return provinces
-        .map((e) => SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, e),
-              child: Text(e.getName(context)),
-            ))
-        .toList();
+  Widget _createSimpleDialogOption(
+      BuildContext context, String locale, Province e) {
+    return SimpleDialogOption(
+      onPressed: () {
+        Navigator.pop(context, e);
+      },
+      child: Text(e.getName(locale)),
+    );
   }
 }

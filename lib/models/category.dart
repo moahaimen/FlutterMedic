@@ -1,13 +1,11 @@
-import 'package:drugStore/models/pagination.dart';
 import 'package:flutter/material.dart';
 
 import '../localization/app_translation.dart';
 import 'category_icon.dart';
 
-class Category extends IModel {
+class Category {
   static Category fromJson(Map<String, dynamic> data) {
     return new Category(
-      data['id'],
       data['en_name'],
       data['ar_name'],
       data['en_description'],
@@ -16,32 +14,29 @@ class Category extends IModel {
     );
   }
 
-  final int id;
   final String enName;
   final String arName;
   final String enDescription;
   final String arDescription;
   final CategoryIcon icon;
 
-  Category(this.id, this.enName, this.arName, this.enDescription,
-      this.arDescription, this.icon);
-
-  Category.from(Category source)
-      : this.id = source.id,
-        this.enName = source.enName,
-        this.arName = source.arName,
-        this.enDescription = source.enDescription,
-        this.arDescription = source.arDescription,
-        this.icon = source.icon;
+  Category(this.enName, this.arName, this.enDescription, this.arDescription,
+      this.icon);
 
   String getName(BuildContext context) {
-    return AppTranslations.of(context).locale.languageCode == "en"
+    return AppTranslations
+        .of(context)
+        .locale
+        .languageCode == "en"
         ? enName
         : arName;
   }
 
   String getDescription(BuildContext context) {
-    return AppTranslations.of(context).locale.languageCode == "en"
+    return AppTranslations
+        .of(context)
+        .locale
+        .languageCode == "en"
         ? enDescription
         : arDescription;
   }
@@ -49,21 +44,5 @@ class Category extends IModel {
   String getTitle(BuildContext context) {
     final name = getName(context);
     return name.length >= 12 ? '${name.substring(0, 12)}...' : name;
-  }
-
-  @override
-  int get identifier => this.id;
-
-  @override
-  bool verify(Map<String, dynamic> filter) {
-    if (filter == null || filter.isEmpty) {
-      return true;
-    }
-
-    if (filter.containsKey('name')) {
-      final name = filter['name'];
-      return this.enName.contains(name) || this.arName.contains(name);
-    }
-    return false;
   }
 }

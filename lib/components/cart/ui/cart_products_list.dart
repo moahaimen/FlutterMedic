@@ -1,7 +1,6 @@
 import 'package:drugStore/components/cart/ui/totals/order_total_ui.dart';
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/order_management.dart';
-import 'package:drugStore/models/order_product.dart';
+import 'package:drugStore/models/order/order_product.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -11,9 +10,8 @@ import 'cart_promo_code.dart';
 
 class CartProductsList extends StatelessWidget {
   final CartPromoCode promoCode;
-  final OrderManagement manager;
 
-  CartProductsList(this.manager) : promoCode = new CartPromoCode(manager);
+  CartProductsList() : promoCode = new CartPromoCode();
 
   Widget _getCartEmpty(BuildContext context, ThemeData theme) {
     return Container(
@@ -38,9 +36,14 @@ class CartProductsList extends StatelessWidget {
 
   Widget _buildOrderTotalWidget() {
     return ScopedModelDescendant<StateModel>(
-      builder: (BuildContext context, Widget child, StateModel model) =>
-          OrderTotalUi(
-              order: this.manager.order, promoCode: PromoCodeState.ViewTotal),
+      builder: (BuildContext context, Widget child, StateModel model) {
+        final order = model.order;
+        return OrderTotalUi(
+          order: order,
+          promoCode: PromoCodeState.ViewTotal,
+          currency: AppTranslations.of(context).text(model.currency),
+        );
+      },
     );
   }
 
@@ -86,12 +89,8 @@ class CartProductsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
-      builder: (context, child, model) {
-        return _getProductsList(
-            context,
-            this.manager.order.products.where((e) => e.quantity > 0).toList(),
-            this.manager.removeOrderItem);
-      },
+      builder: (context, child, model) => _getProductsList(
+          context, model.order.products.toList(), model.removeProductFromOrder),
     );
   }
 }

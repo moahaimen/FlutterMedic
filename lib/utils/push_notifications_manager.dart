@@ -1,5 +1,5 @@
 import 'package:drugStore/models/notification.dart' as MM;
-import 'package:drugStore/partials/router.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -47,7 +47,7 @@ class PushNotificationsManager {
     var messageData = message['notification'];
     final String title = messageData['title'] ?? 'Drugs Store';
     final String description = messageData['body'] ?? '';
-    final String route = messageData['route'] ?? Router.home;
+    final String route = messageData['route'] ?? AppRouter.home;
 
     print("$title, $description, $route");
     return new MM.Notification(title, description, route);
@@ -161,7 +161,7 @@ class PushNotificationsManager {
     final MM.Notification notification = parseMessage(message);
 
     Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
-    if (Router.current.compareTo(notification.route) != 0) {
+    if (AppRouter.current.compareTo(notification.route) != 0) {
       Navigator.pushNamed(context, notification.route);
     }
   }
@@ -193,7 +193,7 @@ class PushNotificationsManager {
   }
 
   Future onSelectNotification(String payload) async {
-    Navigator.pushNamed(context, Router.home);
+    Navigator.pushNamed(context, AppRouter.home);
   }
 
   Future onDidReceiveLocalNotification(

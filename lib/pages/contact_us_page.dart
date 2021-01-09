@@ -1,10 +1,8 @@
 import 'package:drugStore/constants/colors.dart';
 import 'package:drugStore/constants/strings.dart';
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/models/contact_us.dart';
-import 'package:drugStore/models/pagination.dart';
+import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/partials/drawer.dart';
-import 'package:drugStore/partials/router.dart';
 import 'package:drugStore/partials/toolbar.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -13,23 +11,6 @@ import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsPage extends StatefulWidget {
-  static asMap(List<ContactUs> source) {
-    final result = new Map<String, dynamic>();
-
-    source.forEach((e) {
-      if (!result.containsKey(e.section)) {
-        result[e.section] = new Map<String, dynamic>();
-      }
-
-      result[e.section][e.key] = {
-        'en_value': e.enValue,
-        'ar_value': e.arValue,
-        'url': e.url
-      };
-    });
-    return result;
-  }
-
   @override
   _ContactUsPageState createState() => _ContactUsPageState();
 }
@@ -40,24 +21,13 @@ class _ContactUsPageState extends State<ContactUsPage> {
     return ScopedModelDescendant<StateModel>(
         builder: (BuildContext context, Widget child, StateModel model) {
       return Scaffold(
-        drawer: DrawerBuilder.build(context, Router.contactUs),
-        appBar: Toolbar.get(title: Router.contactUs, context: context),
-        body: _buildBodyWidget(model.contactUs),
+        drawer: DrawerBuilder.build(context, AppRouter.contactUs),
+        appBar: Toolbar.get(title: AppRouter.contactUs, context: context),
+        body: model.contactUsLoading
+            ? Center(child: CircularProgressIndicator())
+            : _buildContactUsWidget(context, model.contactUs),
       );
     });
-  }
-
-  Widget _buildBodyWidget(Pagination<ContactUs> obj) {
-    switch (obj.status) {
-      case PaginationStatus.Null:
-      case PaginationStatus.Loading:
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      case PaginationStatus.Ready:
-        return _buildContactUsWidget(context, ContactUsPage.asMap(obj.data));
-    }
-    return null;
   }
 
   Widget _buildContactUsWidget(
@@ -127,7 +97,11 @@ class _ContactUsPageState extends State<ContactUsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('assets/images/facebook.png', width: 40, height: 40),
+              Image.asset(
+                'assets/images/facebook.png',
+                width: 40,
+                height: 40,
+              ),
               Text(AppTranslations.of(context).locale.languageCode == "en"
                   ? facebook['en_value']
                   : facebook['ar_value']),
@@ -149,7 +123,11 @@ class _ContactUsPageState extends State<ContactUsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.alternate_email, size: 40, color: Colors.grey),
+              Icon(
+                Icons.alternate_email,
+                size: 40,
+                color: Colors.grey,
+              ),
               Text(AppTranslations.of(context).locale.languageCode == "en"
                   ? email['en_value']
                   : email['ar_value']),
@@ -171,10 +149,13 @@ class _ContactUsPageState extends State<ContactUsPage> {
           child: Center(
             child: Column(
               children: [
-                Text(Strings.applicationTitle,
-                    textAlign: TextAlign.justify,
-                    style: theme.textTheme.headline2
-                        .copyWith(color: AppColors.accentColor)),
+                Text(
+                  Strings.applicationTitle,
+                  textAlign: TextAlign.justify,
+                  style: theme.textTheme.headline2.copyWith(
+                    color: AppColors.accentColor,
+                  ),
+                ),
                 Text(
                   AppTranslations.of(context).locale.languageCode == "en"
                       ? about['en_value']

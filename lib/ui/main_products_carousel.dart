@@ -21,12 +21,21 @@ class _MainProductsCarouselState extends State<MainProductsCarousel> {
     final themeData = Theme.of(context);
     final translator = AppTranslations.of(context);
 
-    assert(model != null);
-    assert(model.products != null);
+    if (model.productsLoading) {
+      return Container(
+        width: double.infinity,
+        height: height,
+        child: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(themeData.accentColor),
+          ),
+        ),
+      );
+    }
 
-    List<Product> data = model.featured;
+    final List<Product> products = model.mainProducts;
 
-    if (data == null || data.length == 0) {
+    if (products == null || products.length == 0) {
       return Container(
         width: double.infinity,
         height: height,
@@ -36,28 +45,25 @@ class _MainProductsCarouselState extends State<MainProductsCarousel> {
           ),
         ),
       );
-    } else {
-      return SizedBox(
-        height: height,
-        child: Carousel(
-          images: data
-              .map(
-                (p) =>
-                CachedNetworkImage(
+    }
+
+    return SizedBox(
+      height: height,
+      child: Carousel(
+        images: products
+            .map((p) => CachedNetworkImage(
                   imageUrl: p.image.url,
                   errorWidget: (context, url, error) => Icon(Icons.error),
                   fit: BoxFit.fitWidth,
-                ),
-          )
-              .toList(),
-          dotSize: 4.0,
-          dotSpacing: 15.0,
-          dotColor: themeData.accentColor,
-          indicatorBgPadding: 5.0,
-          dotBgColor: Colors.transparent,
-          borderRadius: true,
-        ),
-      );
-    }
+                ))
+            .toList(),
+        dotSize: 4.0,
+        dotSpacing: 15.0,
+        dotColor: themeData.accentColor,
+        indicatorBgPadding: 5.0,
+        dotBgColor: Colors.transparent,
+        borderRadius: true,
+      ),
+    );
   }
 }

@@ -1,32 +1,32 @@
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/pages/home_page.dart';
+import 'package:drugStore/partials/app_router.dart';
+import 'package:drugStore/ui/brands_list_for_home.dart';
+import 'package:drugStore/ui/main_products_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import '../localization/app_translation.dart';
-import '../pages/home_page.dart';
-import '../partials/router.dart';
-import '../ui/brands_list_for_home.dart';
-import '../ui/main_products_carousel.dart';
+import '../models/brand.dart';
+import '../models/category.dart';
 import '../utils/state.dart';
+import 'categorized_products_list_view.dart';
 import 'category_list_item.dart';
-import 'categorized_products/categorized_products_component.dart';
 
 class HomePageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<StateModel>(
       builder: (BuildContext context, Widget widget, StateModel model) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildLogoWidget(context),
-              _buildBrandsWidget(context),
-              _buildMainProductsWidget(),
+        return ListView(
+          children: [
+            _buildLogoWidget(context),
+            _buildBrandsWidget(context, model.brands),
+            _buildMainProductsWidget(),
 //            _buildMainProductsWidget(model.mainProducts),
-              _buildCategoriesWidget(context, model),
-              _buildCategorizedProductsListView(),
-            ],
-          ),
+            _buildCategoriesWidget(context, model.categories),
+            _buildCategorizedProductsListView(),
+          ],
         );
       },
     );
@@ -62,37 +62,39 @@ class HomePageContent extends StatelessWidget {
     return Container(
       color: Colors.transparent,
       padding: EdgeInsets.symmetric(vertical: 10),
-      child: CategorizedProductsComponent(),
+      child: CategorizedProductsListView(),
     );
   }
 
-  Widget _buildBrandsWidget(BuildContext context) {
+  Widget _buildBrandsWidget(BuildContext context, List<Brand> brands) {
     return Container(
       height: 200.0,
       padding: EdgeInsets.symmetric(vertical: 10),
       color: Colors.white,
-      child: BrandsListForHome(),
+      child: BrandsListForHome(brands: brands),
     );
   }
 
-  Widget _buildCategoriesWidget(BuildContext context, StateModel model) {
+  Widget _buildCategoriesWidget(
+      BuildContext context, List<Category> categories) {
     return Container(
       color: Colors.white,
       height: 150.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: model.categories.data.length + 1,
+        itemCount: categories.length + 1,
         itemBuilder: (BuildContext context, int index) => Container(
-            width: 100,
-            height: 100,
-            child: index == 0
-                ? _buildCategoryAllWidget(context)
-                : CategoryListItem(category: model.categories.data[index - 1])),
+          width: 100,
+          height: 100,
+          child: index == 0
+              ? _buildWatchAllCategoriesWidget(context)
+              : CategoryListItem(category: categories[index - 1]),
+        ),
       ),
     );
   }
 
-  Widget _buildCategoryAllWidget(BuildContext context) {
+  Widget _buildWatchAllCategoriesWidget(BuildContext context) {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
@@ -112,7 +114,7 @@ class HomePageContent extends StatelessWidget {
         ),
       ),
       onTap: () => Navigator.of(context).pushReplacementNamed(
-        Router.home,
+        AppRouter.home,
         arguments: PageId.Categories,
       ),
     );
