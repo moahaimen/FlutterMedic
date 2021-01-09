@@ -12,6 +12,10 @@ class SettingsForm extends StatefulWidget {
 }
 
 class _SettingsFormState extends State<SettingsForm> {
+  bool setting1 = false;
+  bool setting2 = false;
+  bool setting3 = false;
+
   @override
   Widget build(BuildContext context) {
     final translator = AppTranslations.of(context);
@@ -23,7 +27,6 @@ class _SettingsFormState extends State<SettingsForm> {
             child: CircularProgressIndicator(),
           );
         } else {
-          print(model.settings);
           return SettingsList(
             sections: [
               SettingsSection(
@@ -34,46 +37,56 @@ class _SettingsFormState extends State<SettingsForm> {
                     subtitle: model.settings['locale'] == 'en'
                         ? 'English'
                         : 'العربية',
-                    leading: Icon(Icons.language),
-                    onTap: () {
-                      setState(() async {
-                        final locale =
-                            model.settings['locale'] == 'en' ? 'ar' : 'en';
-                        model.settings['locale'] = locale;
-                        await model.setSettingsItem('locale', locale);
-                        application.setLocale(locale);
-                        final message = translator.text('settings_save_done');
-                        Toast.show(message, this.context);
-                      });
+                    leading: setting1
+                        ? CircularProgressIndicator()
+                        : Icon(Icons.language),
+                    onTap: () async {
+                      setState(() => setting1 = true);
+                      final locale =
+                          model.settings['locale'] == 'en' ? 'ar' : 'en';
+                      model.settings['locale'] = locale;
+                      await model.setSettingsItem('locale', locale);
+                      application.setLocale(locale);
+                      final message = translator.text('settings_save_done');
+                      Toast.show(message, this.context);
+                      setState(() => setting1 = false);
                     },
                   ),
                   SettingsTile(
                     title: translator.text('settings_exchange_currency'),
                     subtitle:
                         model.settings['exchange'] == 'USD' ? 'USD' : 'IQD',
-                    leading: Icon(Icons.monetization_on),
-                    onTap: () {
-                      setState(() async {
-                        final exchange =
-                            model.settings['exchange'] == 'USD' ? 'IQD' : 'USD';
-                        model.settings['exchange'] = exchange;
-                        await model.setSettingsItem('exchange', exchange);
-                        model.fetchProducts();
-                        final message = translator.text('settings_save_done');
-                        Toast.show(message, this.context);
-                      });
+                    leading: setting2
+                        ? CircularProgressIndicator()
+                        : Icon(Icons.monetization_on),
+                    onTap: () async {
+                      setState(() => setting2 = true);
+                      final exchange =
+                          model.settings['exchange'] == 'USD' ? 'IQD' : 'USD';
+                      model.settings['exchange'] = exchange;
+                      await model.setSettingsItem('exchange', exchange);
+                      await model.fetchProducts();
+                      await model.fetchProvinces();
+                      await model.restoreStoredOrder();
+                      final message = translator.text('settings_save_done');
+                      Toast.show(message, this.context);
+                      setState(() => setting2 = false);
                     },
                   ),
                   SettingsTile.switchTile(
-                      leading: Icon(Icons.notifications),
+                      leading: setting3
+                          ? CircularProgressIndicator()
+                          : Icon(
+                              Icons.notifications,
+                            ),
                       title: translator.text('settings_notifications'),
-                      onToggle: (bool value) {
-                        setState(() async {
-                          model.settings['notifications'] = value;
-                          await model.setSettingsItem('notifications', value);
-                          final message = translator.text('settings_save_done');
-                          Toast.show(message, this.context);
-                        });
+                      onToggle: (bool value) async {
+                        setState(() => setting3 = false);
+                        model.settings['notifications'] = value;
+                        await model.setSettingsItem('notifications', value);
+                        final message = translator.text('settings_save_done');
+                        Toast.show(message, this.context);
+                        setState(() => setting3 = false);
                       },
                       switchValue: model.settings['notifications'] ?? true),
                 ],

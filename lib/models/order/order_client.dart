@@ -21,10 +21,14 @@ class OrderClient {
             data['address'],
             notes: data['notes']);
 
-  OrderClient.full(Map<String, dynamic> data)
-      : this(data['name'], data['phone'], Province.json(data['province']),
-            data['address'],
-            notes: data['notes']);
+  OrderClient.full(Map<String, dynamic> data, double exchange)
+      : this(
+          data['name'],
+          data['phone'],
+          Province.json(data['province'], exchange),
+          data['address'],
+          notes: data['notes'],
+        );
 
   bool get completed {
     return this.name != null &&

@@ -13,7 +13,10 @@ class Cart extends StatelessWidget {
       textDirection: translator.locale.languageCode == "en"
           ? TextDirection.ltr
           : TextDirection.rtl,
-      child: Container(child: new CartStepsManager()),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: new CartStepsManager(),
+      ),
     );
   }
 

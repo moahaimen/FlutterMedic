@@ -11,12 +11,17 @@ class Province {
   final int id;
   final String enName;
   final String arName;
-  final int fees;
+  final double fees;
 
   const Province(this.id, this.enName, this.arName, this.fees);
 
-  Province.json(Map<String, dynamic> data)
-      : this(data['id'], data['en_name'], data['ar_name'], data['fees']);
+  Province.json(Map<String, dynamic> data, double exchange)
+      : this(
+          data['id'],
+          data['en_name'],
+          data['ar_name'],
+          data['fees'] * exchange,
+        );
 
   String getName(String locale) {
     return locale == "en" ? enName : arName;

@@ -54,7 +54,7 @@ class StateModel extends Model {
   final Map<String, dynamic> _defaultSettings = {
     'locale': 'ar',
     'notifications': true,
-    'exchange': 'USD'
+    'exchange': 'IQD'
   };
   Map<String, dynamic> _settings;
 
@@ -62,7 +62,7 @@ class StateModel extends Model {
 
   Map<String, dynamic> get settings => Map.from(_settings);
 
-  String get currency => _settings['exchange'] ?? 'USD';
+  String get currency => _settings['exchange'] ?? 'IQD';
 
   //
   // Brands
@@ -92,7 +92,7 @@ class StateModel extends Model {
 
   bool get exchangeLoading => _exchangeLoading;
 
-  double get exchange => _exchange;
+  double get exchange => currency == 'USD' ? 1 : _exchange;
 
   //
   // Products
@@ -226,8 +226,9 @@ class StateModel extends Model {
         return 'Failed to fetch provinces';
       }
 
-      this._provinces =
-          provinces['data'].map<Province>((e) => Province.json(e)).toList();
+      this._provinces = provinces['data']
+          .map<Province>((e) => Province.json(e, exchange))
+          .toList();
 
       this._provincesLoading = false;
       this.notifyListeners();
@@ -364,10 +365,9 @@ class StateModel extends Model {
         this.notifyListeners();
         return 'Failed to fetch products';
       }
-
-      final double e = currency == 'USD' ? 1 : exchange;
-      _products =
-          (products['data'] as List).map((p) => Product.json(p, e)).toList();
+      _products = (products['data'] as List)
+          .map((p) => Product.json(p, exchange))
+          .toList();
 
       this._productsLoading = false;
       this.notifyListeners();

@@ -44,56 +44,61 @@ class Order {
   Order.full(User user, dynamic data, double exchange)
       : this(
             OrderProduct.toList(data['order_products'], exchange),
-            new OrderClient.full(data['client']),
+            new OrderClient.full(data['client'], exchange),
             data['promo_code'] != null
                 ? new OrderPromoCode.json(data['promo_code'])
                 : null,
             user,
             OrderStatus.toList(data['statuses'] as List));
 
-  double get total {
-    print(this.toJson(false));
-    return products != null && products.length > 0
-        ? products
-            .map((e) => e.subTotal)
-            .reduce((value, element) => value + element)
-        : 0;
-  }
+  double getTotal({bool code = false, bool fees = false}) {
+    assert(this.products != null);
+    double total =
+        this.products.map((e) => e.subTotal).reduce((value, e) => value + e);
 
-  double get totalWithCode {
-    if (this.promoCode == null) {
-      throw new Exception("PromoCode is null");
+    if (code) {
+      try {
+        assert(this.promoCode != null);
+
+        final discount = this.promoCode.discount;
+        switch (this.promoCode.type) {
+          case PromoCodeType.Constant:
+            total -= discount;
+            break;
+          case PromoCodeType.Percentage:
+            total -= total * (100 - discount) / 100;
+            break;
+          default:
+            throw "PROMOCODE TYPE NOT SUPPORTED";
+        }
+      } catch (e) {
+        print('getTotal, PROMOCODE IS NULL OR FROM UNSUPPORTED TYPE');
+      }
     }
 
-    final discount = this.promoCode.discount;
-    final total = this.total;
+    if (fees) {
+      try {
+        assert(this.client != null);
+        assert(this.client.province != null);
 
-    switch (this.promoCode.type) {
-      case PromoCodeType.Constant:
-        return (total.toDouble() - discount);
-      case PromoCodeType.Percentage:
-        return (total * ((100 - discount) / 100));
-      default:
-        throw new Exception("Unsupported PromoCode type");
+        total += this.client.province.fees;
+      } catch (e) {
+        print('getTotal, CLIENT OR PROVINCE IS NULL');
+      }
     }
-  }
-
-  double get totalWithFees {
-    final fees = this.fees;
-    return this.promoCode == null
-        ? this.total + fees
-        : this.totalWithCode + fees;
+    return total;
   }
 
   double get fees {
-    if (this.client == null) {
-      throw new Exception("Client is null");
+    try {
+      assert(this.client != null);
+      assert(this.client.province != null);
+
+      return this.client.province.fees;
+    } catch (e) {
+      print('fees, CLIENT OR PROVINCE IS NULL');
+      return 0.0;
     }
-
-    final province = this.client.province;
-    final fees = province != null ? province.fees : 0;
-
-    return fees * 1.0;
   }
 
   OrderStatus get status => this.statuses.first;

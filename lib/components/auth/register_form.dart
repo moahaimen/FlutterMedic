@@ -185,9 +185,13 @@ class RegisterForm extends StatelessWidget {
                           ? CircularProgressIndicator()
                           : RaisedButton(
                               textColor: Colors.white,
-                              child: Text(translator.text("register_button")),
-                              onPressed: () =>
-                                  _register(context, model, translator));
+                              child: Text(
+                                translator.text("register_button"),
+                              ),
+                              onPressed: () {
+                                _register(context, model, translator);
+                              },
+                            );
                     },
                   ),
                 )
@@ -211,7 +215,7 @@ class RegisterForm extends StatelessWidget {
         return;
       }
       Toast.show(translator.text('user_registration_succeeded'), context);
-      Navigator.pushReplacementNamed(context, AppRouter.login);
+      Navigator.pushReplacementNamed(context, AppRouter.home);
     });
   }
 }

@@ -95,7 +95,8 @@
   "save_button": "حفظ",
   "user_orders_empty": "ما من طلبيات سابقة لعرضها",
   "settings_exchange_currency": "العملة المستخدمة",
-  "USD": "دولار أمريكي",
-  "IQD": "دينار عراقي",
-  "user_fetch_done": "تم التحديث بنجاح"
+  "USD": "د.أ",
+  "IQD": "د.ع",
+  "user_fetch_done": "تم التحديث بنجاح",
+  "cancel": "رجوع"
 }

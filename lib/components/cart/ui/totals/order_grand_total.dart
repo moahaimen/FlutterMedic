@@ -18,12 +18,18 @@ class OrderGrandTotalUi extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(translator.text("total_grand_total"),
-              style: theme.accentTextTheme.bodyText2
-                  .copyWith(color: theme.accentColor.withOpacity(.65))),
-          Text("${state.order.totalWithFees.toStringAsFixed(2)} $currency",
-              style: theme.accentTextTheme.headline6
-                  .copyWith(color: theme.accentColor)),
+          Text(
+            translator.text("total_grand_total"),
+            style: theme.accentTextTheme.bodyText2.copyWith(
+              color: theme.accentColor.withOpacity(.65),
+            ),
+          ),
+          Text(
+            "${state.order?.getTotal(code: true, fees: true)?.toStringAsFixed(2)} $currency",
+            style: theme.accentTextTheme.headline6.copyWith(
+              color: theme.accentColor,
+            ),
+          ),
         ],
       ),
     );

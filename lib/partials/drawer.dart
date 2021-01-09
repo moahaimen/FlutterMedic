@@ -77,8 +77,7 @@ class DrawerBuilder {
         title,
         style: theme.textTheme.bodyText2,
       ),
-      onTap: () =>
-          Navigator.of(ctx).pushReplacementNamed(route, arguments: args),
+      onTap: () => Navigator.of(ctx).pushNamed(route, arguments: args),
     );
   }
 
