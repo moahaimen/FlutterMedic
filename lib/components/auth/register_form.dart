@@ -1,4 +1,5 @@
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/models/user.dart';
 import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/ui/custom_form_field.dart';
 import 'package:drugStore/ui/custom_province_form_field.dart';
@@ -9,7 +10,14 @@ import 'package:toast/toast.dart';
 
 import 'form_caption_widget.dart';
 
-class RegisterForm extends StatelessWidget {
+class RegisterForm extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _RegisterFormState();
+  }
+}
+
+class _RegisterFormState extends State<RegisterForm> {
   final Map<String, dynamic> _data = {
     'first_name': null,
     'last_name': null,
@@ -24,6 +32,9 @@ class RegisterForm extends StatelessWidget {
 
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
+
+  bool okay = true;
+  Map<String, List<dynamic>> errors;
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +65,20 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                     title: translator.text('user_name'),
                     initialValue: _data['user_name'],
-                    onSave: (value) => _data['user_name'] = value,
                     onChanged: (value) => _data['user_name'] = value,
-                    validator: (String email) {
-                      if (email.isEmpty) {
+                    onSave: (value) {
+                      _data['user_name'] = value;
+                      setState(() {
+                        this.errors.remove('user_name');
+                      });
+                    },
+                    validator: (String username) {
+                      if (username.isEmpty) {
                         return "User name is required field";
+                      }
+
+                      if (!okay && this.errors.containsKey('user_name')) {
+                        return this.errors['user_name'].first;
                       }
                       return null;
                     },
@@ -67,11 +87,20 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                     title: translator.text('first_name'),
                     initialValue: _data['first_name'],
-                    onSave: (value) => _data['first_name'] = value,
                     onChanged: (value) => _data['first_name'] = value,
-                    validator: (String email) {
-                      if (email.isEmpty) {
+                    onSave: (value) {
+                      _data['first_name'] = value;
+                      setState(() {
+                        this.errors.remove('first_name');
+                      });
+                    },
+                    validator: (String firstName) {
+                      if (firstName.isEmpty) {
                         return "First name is required field";
+                      }
+
+                      if (!okay && this.errors.containsKey('first_name')) {
+                        return this.errors['first_name'].first;
                       }
                       return null;
                     },
@@ -80,11 +109,20 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                     title: translator.text('last_name'),
                     initialValue: _data['last_name'],
-                    onSave: (value) => _data['last_name'] = value,
                     onChanged: (value) => _data['last_name'] = value,
-                    validator: (String email) {
-                      if (email.isEmpty) {
-                        return "User name is required field";
+                    onSave: (value) {
+                      _data['last_name'] = value;
+                      setState(() {
+                        this.errors.remove('last_name');
+                      });
+                    },
+                    validator: (String lastName) {
+                      if (lastName.isEmpty) {
+                        return "Last name is required field";
+                      }
+
+                      if (!okay && this.errors.containsKey('last_name')) {
+                        return this.errors['last_name'].first;
                       }
                       return null;
                     },
@@ -93,8 +131,13 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                     title: translator.text('email_address'),
                     initialValue: _data['email'],
-                    onSave: (value) => _data['email'] = value,
                     onChanged: (value) => _data['email'] = value,
+                    onSave: (value) {
+                      _data['email'] = value;
+                      setState(() {
+                        this.errors.remove('email');
+                      });
+                    },
                     validator: (String email) {
                       if (email.isEmpty) {
                         return "Email is required field";
@@ -104,6 +147,10 @@ class RegisterForm extends StatelessWidget {
                           .hasMatch(email)) {
                         return "Email must be in a valid format";
                       }
+
+                      if (!okay && this.errors.containsKey('email')) {
+                        return this.errors['email'].first;
+                      }
                       return null;
                     },
                     color: theme.accentColor),
@@ -111,13 +158,20 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                   controller: _passwordController,
                   title: translator.text('password'),
-                  onSave: (value) => _data['password'] = value,
-                  onChanged: (value) {
+                  onChanged: (value) => _data['password'] = value,
+                  onSave: (value) {
                     _data['password'] = value;
+                    setState(() {
+                      this.errors.remove('password');
+                    });
                   },
                   validator: (String password) {
                     if (password.isEmpty || password.length < 8) {
                       return "Password is required field and length must be +8 chars";
+                    }
+
+                    if (!okay && this.errors.containsKey('password')) {
+                      return this.errors['password'].first;
                     }
                     return null;
                   },
@@ -128,11 +182,21 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                   title: translator.text('password_confirmation'),
                   initialValue: _data['password_confirmation'],
-                  onSave: (value) => _data['password_confirmation'] = value,
                   onChanged: (value) => _data['password_confirmation'] = value,
+                  onSave: (value) {
+                    _data['password_confirmation'] = value;
+                    setState(() {
+                      this.errors.remove('password_confirmation');
+                    });
+                  },
                   validator: (String password) {
                     if (password != _passwordController.text) {
                       return "Password confirmation doesn't match";
+                    }
+
+                    if (!okay &&
+                        this.errors.containsKey('password_cofirmation')) {
+                      return this.errors['password_cofirmation'].first;
                     }
                     return null;
                   },
@@ -151,11 +215,20 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                   title: translator.text('address'),
                   initialValue: _data['address'],
-                  onSave: (value) => _data['address'] = value,
                   onChanged: (value) => _data['address'] = value,
+                  onSave: (value) {
+                    _data['address'] = value;
+                    setState(() {
+                      this.errors.remove('address');
+                    });
+                  },
                   validator: (String address) {
                     if (address.isEmpty) {
                       return "Address is required field";
+                    }
+
+                    if (!okay && this.errors.containsKey('address')) {
+                      return this.errors['address'].first;
                     }
                     return null;
                   },
@@ -165,11 +238,20 @@ class RegisterForm extends StatelessWidget {
                 CustomFormField(
                   title: translator.text('phone_number'),
                   initialValue: _data['phone_number'],
-                  onSave: (value) => _data['phone_number'] = value,
                   onChanged: (value) => _data['phone_number'] = value,
+                  onSave: (value) {
+                    _data['phone_number'] = value;
+                    setState(() {
+                      this.errors.remove('phone_number');
+                    });
+                  },
                   validator: (String phoneNumber) {
                     if (phoneNumber.isEmpty) {
                       return "Phone number is required field";
+                    }
+
+                    if (!okay && this.errors.containsKey('phone_number')) {
+                      return this.errors['phone_number'].first;
                     }
                     return null;
                   },
@@ -210,12 +292,21 @@ class RegisterForm extends StatelessWidget {
     }
 
     state.registerUser(_data).then((ok) {
-      if (!ok) {
-        Toast.show(translator.text('user_registration_failed'), context);
-        return;
+      // then it okay
+      if (ok is User) {
+        this.okay = true;
+        Toast.show(translator.text('user_registration_succeeded'), context);
+        Navigator.pushReplacementNamed(context, AppRouter.home);
       }
-      Toast.show(translator.text('user_registration_succeeded'), context);
-      Navigator.pushReplacementNamed(context, AppRouter.home);
+      // something went wrong
+      else {
+        setState(() {
+          this.okay = false;
+          this.errors = Map.from(ok);
+          print(this.errors);
+        });
+        Toast.show(translator.text('user_registration_failed'), context);
+      }
     });
   }
 }

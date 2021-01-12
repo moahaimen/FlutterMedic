@@ -2,11 +2,17 @@ import 'dart:convert' as json;
 
 import 'package:http/http.dart' as http;
 
+class Result<T> {
+  final T result;
+  final dynamic error;
+  final String message;
+
+  Result(this.result, this.error, this.message)
+      : assert(result != null || error != null);
+}
+
 class Http {
-  static Future<dynamic> get(String url, {Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = new Map();
-    }
+  static Future<Result<T>> get<T>(String url, Map<String, String> headers) {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
@@ -14,22 +20,26 @@ class Http {
         .get(url, headers: headers)
         .catchError(_onError)
         .then((http.Response response) {
-      if (response == null) {
-        return null;
+      if (response == null || response.statusCode != 200) {
+        return new Result(
+          null,
+          json.jsonDecode(response.body),
+          response.headers['Message'],
+        );
       }
-      if (response.statusCode != 200) {
-        return null;
-      }
-
-      return json.jsonDecode(response.body);
+      return new Result(
+        json.jsonDecode(response.body),
+        null,
+        response.headers['Message'],
+      );
     });
   }
 
-  static Future<dynamic> post(String url, Map<String, dynamic> data,
-      {Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = new Map();
-    }
+  static Future<Result<T>> post<T>(
+    String url,
+    Map<String, dynamic> data,
+    Map<String, String> headers,
+  ) {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
@@ -44,18 +54,26 @@ class Http {
         print(response.statusCode);
         print(json.jsonEncode(response.headers));
         print(response.body);
-        return response.headers['Message'];
+        return new Result(
+          null,
+          json.jsonDecode(response.body),
+          response.headers['Message'],
+        );
       }
 
-      return json.jsonDecode(response.body);
+      return new Result(
+        json.jsonDecode(response.body),
+        null,
+        response.headers['Message'],
+      );
     });
   }
 
-  static Future<dynamic> put(String url, Map<String, dynamic> data,
-      {Map<String, String> headers}) async {
-    if (headers == null) {
-      headers = new Map();
-    }
+  static Future<Result<T>> put<T>(
+    String url,
+    Map<String, dynamic> data,
+    Map<String, String> headers,
+  ) {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
@@ -69,10 +87,18 @@ class Http {
         print(response.statusCode);
         print(json.jsonEncode(response.headers));
         print(response.body);
-        return response.headers['Message'];
+        return new Result(
+          null,
+          json.jsonDecode(response.body),
+          response.headers['Message'],
+        );
       }
 
-      return json.jsonDecode(response.body);
+      return new Result(
+        json.jsonDecode(response.body),
+        null,
+        response.headers['Message'],
+      );
     });
   }
 

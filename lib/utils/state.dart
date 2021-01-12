@@ -186,13 +186,14 @@ class StateModel extends Model {
     _contactUsLoading = true;
     notifyListeners();
 
-    return Http.get(Environment.fetchContactUsUrl).then((dynamic contactUs) {
+    return Http.get(Environment.fetchContactUsUrl, new Map())
+        .then((Result<dynamic> contactUs) {
       if (contactUs == null) {
         _contactUsLoading = false;
         notifyListeners();
         return 'Failed to fetch contact information';
       }
-      final List<dynamic> xx = contactUs['data'] as List<dynamic>;
+      final List<dynamic> xx = contactUs.result['data'] as List<dynamic>;
       _contactUs = new Map();
 
       xx.forEach((e) {
@@ -219,14 +220,15 @@ class StateModel extends Model {
     _provincesLoading = true;
     notifyListeners();
 
-    return Http.get(Environment.fetchProvincesUrl).then((dynamic provinces) {
-      if (provinces == null) {
+    return Http.get(Environment.fetchProvincesUrl, new Map<String, String>())
+        .then((Result<dynamic> provinces) {
+      if (provinces == null || provinces.error != null) {
         this._provincesLoading = false;
         this.notifyListeners();
         return 'Failed to fetch provinces';
       }
 
-      this._provinces = provinces['data']
+      this._provinces = provinces.result['data']
           .map<Province>((e) => Province.json(e, exchange))
           .toList();
 
@@ -243,9 +245,10 @@ class StateModel extends Model {
     _exchangeLoading = true;
     notifyListeners();
 
-    return Http.get(Environment.fetchExchangeUrl).then((dynamic exchange) {
+    return Http.get(Environment.fetchExchangeUrl, new Map<String, String>())
+        .then((Result exchange) {
       if (exchange != null) {
-        this._exchange = exchange['value'].toDouble();
+        this._exchange = exchange.result['value'].toDouble();
       }
       this._exchangeLoading = false;
       this.notifyListeners();
@@ -260,14 +263,15 @@ class StateModel extends Model {
     this._categoriesLoading = true;
     this.notifyListeners();
 
-    return Http.get(Environment.fetchCategoriesUrl).then((dynamic categories) {
+    return Http.get(Environment.fetchCategoriesUrl, new Map<String, String>())
+        .then((Result categories) {
       if (categories == null) {
         this._categoriesLoading = false;
         this.notifyListeners();
         return 'Failed to fetch categories list';
       }
 
-      this._categories = categories['data']
+      this._categories = categories.result['data']
           .map<Category>((e) => Category.fromJson(e))
           .toList();
 
@@ -337,14 +341,15 @@ class StateModel extends Model {
     this._brandsLoading = true;
     this.notifyListeners();
 
-    return Http.get(Environment.fetchBrandsUrl).then((dynamic result) {
+    return Http.get(Environment.fetchBrandsUrl, new Map<String, String>())
+        .then((Result result) {
       if (result == null) {
         this._brandsLoading = false;
         this.notifyListeners();
         return 'Brands List Loading Failed';
       }
       this._brands =
-          result['data'].map<Brand>((e) => Brand.fromJson(e)).toList();
+          result.result['data'].map<Brand>((e) => Brand.fromJson(e)).toList();
 
       this._brandsLoading = false;
       this.notifyListeners();
@@ -359,13 +364,14 @@ class StateModel extends Model {
     this._productsLoading = true;
     this.notifyListeners();
 
-    return Http.get(Environment.fetchProductsUrl).then((dynamic products) {
+    return Http.get(Environment.fetchProductsUrl, new Map<String, String>())
+        .then((Result products) {
       if (products == null) {
         this._productsLoading = false;
         this.notifyListeners();
         return 'Failed to fetch products';
       }
-      _products = (products['data'] as List)
+      _products = (products.result['data'] as List)
           .map((p) => Product.json(p, exchange))
           .toList();
 
@@ -438,8 +444,9 @@ class StateModel extends Model {
 
     final response = this._user != null
         ? await Http.post(Environment.userOrdersUrl, this._order.toJson(true),
-            headers: {'Authorization': 'Bearer ${user.token}'})
-        : await Http.post(Environment.postOrderUrl, this._order.toJson(true));
+            {'Authorization': 'Bearer ${user.token}'})
+        : await Http.post(Environment.postOrderUrl, this._order.toJson(true),
+            new Map<String, String>());
 
     this._orderUploading = false;
     if (response == null) {
@@ -580,7 +587,7 @@ class StateModel extends Model {
   Future<bool> setPromoCode(String promoCode) async {
     final String url =
         Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
-    return Http.get(url).then((response) async {
+    return Http.get(url, new Map<String, String>()).then((response) async {
       if (response == null) {
         this._order.promoCode = null;
         notifyListeners();
@@ -637,10 +644,12 @@ class StateModel extends Model {
     if (this._user == null) {
       await this.restoreStoredUser();
     }
-    final List result = await Http.get(Environment.userOrdersUrl,
-        headers: {'Authorization': 'Bearer ${user.token}'});
+    final result = await Http.get(
+        Environment.userOrdersUrl, {'Authorization': 'Bearer ${user.token}'});
 
-    return result.map<Order>((e) => Order.full(_user, e, exchange)).toList();
+    return result.result
+        .map<Order>((e) => Order.full(_user, e, exchange))
+        .toList();
   }
 
   ///
@@ -651,40 +660,41 @@ class StateModel extends Model {
     this._user = null;
     this.notifyListeners();
 
-    final dynamic result = await Http.post(Environment.loginUrl, loginData);
+    final result = await Http.post(
+        Environment.loginUrl, loginData, new Map<String, String>());
 
-    if (result == null) {
+    if (result == null || result.error != null) {
       this._userLoading = false;
       this.notifyListeners();
       return false;
     }
 
-    this._user = new User.json(result['user'], result['token']);
+    this._user = new User.json(result.result['user'], result.result['token']);
     await this.saveUser();
     this._userLoading = false;
     this.notifyListeners();
     return true;
   }
 
-  Future<bool> registerUser(Map<String, dynamic> registerData) async {
+  Future<dynamic> registerUser(Map<String, dynamic> registerData) async {
     this._userLoading = true;
     this._user = null;
     this.notifyListeners();
 
-    final dynamic result =
-        await Http.post(Environment.registerUrl, registerData);
+    final result = await Http.post(
+        Environment.registerUrl, registerData, new Map<String, String>());
 
-    if (result == null) {
+    if (result == null || result.error != null) {
       this._userLoading = false;
       this.notifyListeners();
-      return false;
+      return result.error;
     }
 
-    this._user = new User.json(result['user'], result['token']);
+    this._user = new User.json(result.result['user'], result.result['token']);
     await this.saveUser();
     this._userLoading = false;
     this.notifyListeners();
-    return true;
+    return this.user;
   }
 
   ///
@@ -736,9 +746,8 @@ class StateModel extends Model {
   }
 
   Future<bool> logout() async {
-    final dynamic result = await Http.post(
-        Environment.logoutUrl, this.user.toJson(),
-        headers: {'Authorization': 'Bearer ${user.token}'});
+    final dynamic result = await Http.post(Environment.logoutUrl,
+        this.user.toJson(), {'Authorization': 'Bearer ${user.token}'});
 
     if (result == null) {
       return false;
@@ -751,9 +760,8 @@ class StateModel extends Model {
   }
 
   Future<bool> updateUser(Map<String, dynamic> updateData) async {
-    final dynamic result = await Http.put(
-        Environment.updateUserDetailsUrl, updateData,
-        headers: {'Authorization': 'Bearer ${user.token}'});
+    final dynamic result = await Http.put(Environment.updateUserDetailsUrl,
+        updateData, {'Authorization': 'Bearer ${user.token}'});
     if (result == null) {
       return false;
     }
@@ -767,7 +775,7 @@ class StateModel extends Model {
   Future<User> refreshUser() async {
     final dynamic result = await Http.get(
       Environment.userDetailsUrl,
-      headers: {'Authorization': 'Bearer ${user.token}'},
+      {'Authorization': 'Bearer ${user.token}'},
     );
 
     if (result == null) {
