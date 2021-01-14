@@ -228,6 +228,8 @@ class StateModel extends Model {
         return 'Failed to fetch provinces';
       }
 
+      print(provinces.result['data']);
+
       this._provinces = provinces.result['data']
           .map<Province>((e) => Province.json(e, exchange))
           .toList();

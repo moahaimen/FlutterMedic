@@ -34,7 +34,7 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool okay = true;
-  Map<String, List<dynamic>> errors;
+  Map<String, List<dynamic>> errors = new Map<String, List<dynamic>>();
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +129,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     color: theme.accentColor),
                 // Email
                 CustomFormField(
+                    keyboardType: TextInputType.emailAddress,
                     title: translator.text('email_address'),
                     initialValue: _data['email'],
                     onChanged: (value) => _data['email'] = value,
@@ -292,7 +293,7 @@ class _RegisterFormState extends State<RegisterForm> {
     }
 
     state.registerUser(_data).then((ok) {
-      // then it okay
+      // User registered correctly
       if (ok is User) {
         this.okay = true;
         Toast.show(translator.text('user_registration_succeeded'), context);

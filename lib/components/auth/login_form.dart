@@ -20,6 +20,9 @@ class LoginForm extends StatelessWidget {
     'password': '',
   };
 
+  bool okay = true;
+  Map<String, List<dynamic>> errors = new Map<String, List<dynamic>>();
+
   LoginForm(this.mode);
 
   @override
@@ -49,6 +52,7 @@ class LoginForm extends StatelessWidget {
                 ),
                 // Email
                 CustomFormField(
+                    keyboardType: TextInputType.emailAddress,
                     title: translator.text('email_address'),
                     initialValue: _formData['email'],
                     onChanged: (value) => _formData['email'] = value,
