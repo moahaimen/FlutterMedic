@@ -36,21 +36,6 @@ class _CartClientInformationState extends State<CartClientInformation> {
 
   static Map<String, dynamic> data;
 
-  String _provinceNameOrDefault(
-      String locale, StateModel state, int provinceId) {
-    if (provinceId == null) {
-      return '';
-    }
-
-    final province =
-        state.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
-
-    if (province == null) {
-      return '';
-    }
-    return province.getName(locale);
-  }
-
   @override
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
@@ -95,8 +80,7 @@ class _CartClientInformationState extends State<CartClientInformation> {
             // Province
             CustomProvinceFormField(
               title: translator.text('order_client_province'),
-              initialValue: _provinceNameOrDefault(
-                  translator.locale.languageCode, state, data['province']),
+              initialValue: data['province'],
               onSave: (int value) {
                 data['province'] = value;
                 state.setOrderClientDetails(provinceId: value);

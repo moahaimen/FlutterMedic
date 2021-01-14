@@ -7,19 +7,19 @@ import 'package:scoped_model/scoped_model.dart';
 
 class CustomProvinceFormField extends StatelessWidget {
   final String title;
-  final String initialValue;
+  final int initialValue;
 
   final void Function(int value) onSave;
   final Color color;
 
-  final controller;
+  final TextEditingController controller;
 
   CustomProvinceFormField({
     @required this.title,
     @required this.initialValue,
     @required this.onSave,
     @required this.color,
-  }) : this.controller = new TextEditingController(text: initialValue);
+  }) : this.controller = new TextEditingController(text: '');
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +39,14 @@ class CustomProvinceFormField extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
             child: ScopedModelDescendant<StateModel>(
               builder: (context, child, model) {
-                if (controller.text == null && model.provincesLoading ||
-                    model.provinces == null ||
-                    model.provinces.isEmpty) {
-                  if (model.provinces == null || model.provinces.isEmpty) {
-                    model.fetchProvinces();
-                  }
+                this.controller.text = model.provinces
+                    .firstWhere(
+                      (p) => p.id == this.initialValue,
+                      orElse: () => model.provinces.first,
+                    )
+                    .getName(translator.locale.languageCode);
+
+                if (model.provincesLoading) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );

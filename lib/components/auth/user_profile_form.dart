@@ -105,7 +105,7 @@ class UserProfileForm extends StatelessWidget {
                 ),
                 CustomProvinceFormField(
                   title: translator.text('province'),
-                  initialValue: (state.user.provinceId ?? '').toString(),
+                  initialValue: state.user.provinceId,
                   onSave: (int value) {
                     _data['province_id'] = value;
                   },

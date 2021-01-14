@@ -206,7 +206,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
                 CustomProvinceFormField(
                   title: translator.text('province'),
-                  initialValue: null,
+                  initialValue: _data['province_id'],
                   onSave: (int value) {
                     _data['province_id'] = value;
                   },

@@ -12,94 +12,74 @@ class Result<T> {
 }
 
 class Http {
-  static Future<Result<T>> get<T>(String url, Map<String, String> headers) {
+  static Future<Result<T>> get<T>(
+      String url, Map<String, String> headers) async {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
-    return http
-        .get(url, headers: headers)
-        .catchError(_onError)
-        .then((http.Response response) {
-      if (response == null || response.statusCode != 200) {
-        return new Result(
-          null,
-          json.jsonDecode(response.body),
-          response.headers['Message'],
-        );
-      }
+    final http.Response response =
+        await http.get(url, headers: headers).catchError(_onError);
+    if (response == null || response.statusCode != 200) {
+      print(json.jsonDecode(response.body));
       return new Result(
-        json.jsonDecode(response.body),
-        null,
-        response.headers['Message'],
-      );
-    });
+          null, json.jsonDecode(response.body), response.headers['Message']);
+    }
+    return new Result(
+      json.jsonDecode(response.body),
+      null,
+      response.headers['Message'],
+    );
   }
 
-  static Future<Result<T>> post<T>(
-    String url,
-    Map<String, dynamic> data,
-    Map<String, String> headers,
-  ) {
+  static Future<Result<T>> post<T>(String url, Map<String, dynamic> data,
+      Map<String, String> headers) async {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
-    print(url);
-
     var requestData = json.jsonEncode(data);
-    return http
+
+    final http.Response response = await http
         .post(url, body: requestData, headers: headers)
-        .catchError(_onError)
-        .then((http.Response response) {
-      if (response.statusCode != 200) {
-        print(response.statusCode);
-        print(json.jsonEncode(response.headers));
-        print(response.body);
-        return new Result(
-          null,
-          json.jsonDecode(response.body),
-          response.headers['Message'],
-        );
-      }
+        .catchError(_onError);
 
+    print(response.statusCode);
+
+    if (response == null || response.statusCode != 200) {
       return new Result(
-        json.jsonDecode(response.body),
-        null,
-        response.headers['Message'],
-      );
-    });
+          null, json.jsonDecode(response.body), response.headers['Message']);
+    }
+
+    return new Result(
+      json.jsonDecode(response.body),
+      null,
+      response.headers['Message'],
+    );
   }
 
-  static Future<Result<T>> put<T>(
-    String url,
-    Map<String, dynamic> data,
-    Map<String, String> headers,
-  ) {
+  static Future<Result<T>> put<T>(String url, Map<String, dynamic> data,
+      Map<String, String> headers) async {
     headers['content-Type'] = 'application/json';
     headers['accept'] = 'application/json';
 
     var requestData = json.jsonEncode(data);
 
-    return http
+    final http.Response response = await http
         .put(url, body: requestData, headers: headers)
-        .catchError(_onError)
-        .then((http.Response response) {
-      if (response.statusCode != 200) {
-        print(response.statusCode);
-        print(json.jsonEncode(response.headers));
-        print(response.body);
-        return new Result(
-          null,
-          json.jsonDecode(response.body),
-          response.headers['Message'],
-        );
-      }
+        .catchError(_onError);
 
+    if (response == null || response.statusCode != 200) {
+      print(response.statusCode);
+      print(json.jsonEncode(response.headers));
+      print(response.body);
       return new Result(
-        json.jsonDecode(response.body),
-        null,
-        response.headers['Message'],
-      );
-    });
+          null, json.jsonDecode(response.body), response.headers['Message']);
+    }
+
+    return new Result(
+      json.jsonDecode(response.body),
+      null,
+      response.headers['Message'],
+    );
   }
 
   static void _onError(dynamic err) {

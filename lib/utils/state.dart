@@ -182,62 +182,60 @@ class StateModel extends Model {
   ///
   /// Fetch contact us information
   ///
-  Future<String> fetchContactUs() {
+  Future<String> fetchContactUs() async {
     _contactUsLoading = true;
     notifyListeners();
 
-    return Http.get(Environment.fetchContactUsUrl, new Map())
-        .then((Result<dynamic> contactUs) {
-      if (contactUs == null) {
-        _contactUsLoading = false;
-        notifyListeners();
-        return 'Failed to fetch contact information';
-      }
-      final List<dynamic> xx = contactUs.result['data'] as List<dynamic>;
-      _contactUs = new Map();
+    Result<dynamic> response =
+        await Http.get(Environment.fetchContactUsUrl, new Map());
 
-      xx.forEach((e) {
-        if (!_contactUs.containsKey(e['section'])) {
-          _contactUs[e['section']] = new Map();
-        }
-        _contactUs[e['section']][e['key']] = {
-          'en_value': e['en_value'],
-          'ar_value': e['ar_value'],
-          'url': e['url'],
-        };
-      });
-
+    if (response == null || response.error != null) {
       _contactUsLoading = false;
       notifyListeners();
-      return 'Contact information fetched successfully';
+      return 'Failed to fetch contact information';
+    }
+    final List<dynamic> data = response.result['data'] as List<dynamic>;
+    _contactUs = new Map();
+
+    data.forEach((e) {
+      if (!_contactUs.containsKey(e['section'])) {
+        _contactUs[e['section']] = new Map();
+      }
+      _contactUs[e['section']][e['key']] = {
+        'en_value': e['en_value'],
+        'ar_value': e['ar_value'],
+        'url': e['url'],
+      };
     });
+
+    _contactUsLoading = false;
+    notifyListeners();
+    return 'Contact information fetched successfully';
   }
 
   ///
   /// Fetch provinces list
   ///
-  Future<String> fetchProvinces() {
+  Future<String> fetchProvinces() async {
     _provincesLoading = true;
     notifyListeners();
 
-    return Http.get(Environment.fetchProvincesUrl, new Map<String, String>())
-        .then((Result<dynamic> provinces) {
-      if (provinces == null || provinces.error != null) {
-        this._provincesLoading = false;
-        this.notifyListeners();
-        return 'Failed to fetch provinces';
-      }
+    final Result<dynamic> response = await Http.get(
+        Environment.fetchProvincesUrl, new Map<String, String>());
 
-      print(provinces.result['data']);
-
-      this._provinces = provinces.result['data']
-          .map<Province>((e) => Province.json(e, exchange))
-          .toList();
-
+    if (response == null || response.error != null) {
       this._provincesLoading = false;
       this.notifyListeners();
-      return 'Provinces fetched successfully';
-    });
+      return 'Failed to fetch provinces';
+    }
+
+    this._provinces = response.result['data']
+        .map<Province>((e) => Province.json(e, exchange))
+        .toList();
+
+    this._provincesLoading = false;
+    this.notifyListeners();
+    return 'Provinces fetched successfully';
   }
 
   ///
@@ -249,7 +247,7 @@ class StateModel extends Model {
 
     return Http.get(Environment.fetchExchangeUrl, new Map<String, String>())
         .then((Result exchange) {
-      if (exchange != null) {
+      if (exchange != null && exchange.error == null) {
         this._exchange = exchange.result['value'].toDouble();
       }
       this._exchangeLoading = false;
@@ -267,7 +265,7 @@ class StateModel extends Model {
 
     return Http.get(Environment.fetchCategoriesUrl, new Map<String, String>())
         .then((Result categories) {
-      if (categories == null) {
+      if (categories == null || categories.error != null) {
         this._categoriesLoading = false;
         this.notifyListeners();
         return 'Failed to fetch categories list';
@@ -345,7 +343,7 @@ class StateModel extends Model {
 
     return Http.get(Environment.fetchBrandsUrl, new Map<String, String>())
         .then((Result result) {
-      if (result == null) {
+      if (result == null || result.error != null) {
         this._brandsLoading = false;
         this.notifyListeners();
         return 'Brands List Loading Failed';
@@ -368,7 +366,7 @@ class StateModel extends Model {
 
     return Http.get(Environment.fetchProductsUrl, new Map<String, String>())
         .then((Result products) {
-      if (products == null) {
+      if (products == null || products.error != null) {
         this._productsLoading = false;
         this.notifyListeners();
         return 'Failed to fetch products';
@@ -444,14 +442,14 @@ class StateModel extends Model {
     this._orderUploading = true;
     this.notifyListeners();
 
-    final response = this._user != null
+    final Result<dynamic> response = this._user != null
         ? await Http.post(Environment.userOrdersUrl, this._order.toJson(true),
             {'Authorization': 'Bearer ${user.token}'})
         : await Http.post(Environment.postOrderUrl, this._order.toJson(true),
             new Map<String, String>());
 
     this._orderUploading = false;
-    if (response == null) {
+    if (response == null || response.error != null) {
       this.notifyListeners();
       return false;
     }
@@ -590,7 +588,7 @@ class StateModel extends Model {
     final String url =
         Environment.checkPromoCodeUrl.replaceAll(':code', promoCode);
     return Http.get(url, new Map<String, String>()).then((response) async {
-      if (response == null) {
+      if (response == null || response.error != null) {
         this._order.promoCode = null;
         notifyListeners();
         return false;
@@ -649,6 +647,9 @@ class StateModel extends Model {
     final result = await Http.get(
         Environment.userOrdersUrl, {'Authorization': 'Bearer ${user.token}'});
 
+    if (result == null || result.error != null) {
+      return [];
+    }
     return result.result
         .map<Order>((e) => Order.full(_user, e, exchange))
         .toList();
@@ -748,13 +749,18 @@ class StateModel extends Model {
   }
 
   Future<bool> logout() async {
-    final dynamic result = await Http.post(Environment.logoutUrl,
+    this._userLoading = true;
+    this.notifyListeners();
+
+    final Result<dynamic> result = await Http.post(Environment.logoutUrl,
         this.user.toJson(), {'Authorization': 'Bearer ${user.token}'});
 
-    if (result == null) {
+    if (result == null || result.error != null) {
+      this._userLoading = false;
+      this.notifyListeners();
       return false;
     }
-
+    this._userLoading = false;
     this._user = null;
     await this.saveUser();
     this.notifyListeners();
@@ -762,13 +768,16 @@ class StateModel extends Model {
   }
 
   Future<bool> updateUser(Map<String, dynamic> updateData) async {
-    final dynamic result = await Http.put(Environment.updateUserDetailsUrl,
-        updateData, {'Authorization': 'Bearer ${user.token}'});
-    if (result == null) {
+    final Result<dynamic> response = await Http.put(
+        Environment.updateUserDetailsUrl,
+        updateData,
+        {'Authorization': 'Bearer ${user.token}'});
+
+    if (response == null || response.error != null) {
       return false;
     }
 
-    this._user = new User.json(result, this._user.token);
+    this._user = new User.json(response.result, this._user.token);
     await this.saveUser();
     this.notifyListeners();
     return true;
@@ -776,14 +785,11 @@ class StateModel extends Model {
 
   Future<User> refreshUser() async {
     final dynamic result = await Http.get(
-      Environment.userDetailsUrl,
-      {'Authorization': 'Bearer ${user.token}'},
-    );
+        Environment.userDetailsUrl, {'Authorization': 'Bearer ${user.token}'});
 
-    if (result == null) {
+    if (result == null || result.error != null) {
       return null;
     }
-
     this._user = new User.json(result, this._user.token);
     await this.saveUser();
     this.notifyListeners();
