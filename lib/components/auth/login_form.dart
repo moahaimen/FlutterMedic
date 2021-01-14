@@ -20,9 +20,6 @@ class LoginForm extends StatelessWidget {
     'password': '',
   };
 
-  bool okay = true;
-  Map<String, List<dynamic>> errors = new Map<String, List<dynamic>>();
-
   LoginForm(this.mode);
 
   @override
