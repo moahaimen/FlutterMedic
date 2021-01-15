@@ -21,6 +21,15 @@ class CustomProvinceFormField extends StatelessWidget {
     @required this.color,
   }) : this.controller = new TextEditingController(text: '');
 
+  void _configureInitialValue(StateModel model, String locale) {
+    final Province province = model.provinces.firstWhere(
+      (p) => p.id == this.initialValue,
+      orElse: () => model.provinces.first,
+    );
+    this.onSave(province.id);
+    this.controller.text = province.getName(locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     final translator = AppTranslations.of(context);
@@ -39,18 +48,13 @@ class CustomProvinceFormField extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
             child: ScopedModelDescendant<StateModel>(
               builder: (context, child, model) {
-                this.controller.text = model.provinces
-                    .firstWhere(
-                      (p) => p.id == this.initialValue,
-                      orElse: () => model.provinces.first,
-                    )
-                    .getName(translator.locale.languageCode);
-
                 if (model.provincesLoading) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
                 } else {
+                  _configureInitialValue(model, translator.locale.languageCode);
+
                   return TextFormField(
                     readOnly: true,
                     controller: controller,
