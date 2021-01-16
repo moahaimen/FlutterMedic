@@ -19,7 +19,7 @@ class Environment {
   static final String loginUrl =
       'https://molardentalmaterials.com/api/auth/login';
   static final String registerUrl =
-      'https://molardentalmaterials.com/api/auth/register/new';
+      'https://molardentalmaterials.com/api/auth/register';
   static final String logoutUrl =
       'https://molardentalmaterials.com/api/auth/me/logout';
   static final String updateUserDetailsUrl =

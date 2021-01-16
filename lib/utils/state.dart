@@ -684,6 +684,10 @@ class StateModel extends Model {
     this._user = null;
     this.notifyListeners();
 
+    // Client
+    registerData.addAll({
+      'role_id': 4,
+    });
     final result = await Http.post(
         Environment.registerUrl, registerData, new Map<String, String>());
 
