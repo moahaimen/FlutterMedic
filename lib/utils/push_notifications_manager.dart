@@ -90,7 +90,10 @@ class PushNotificationsManager {
     var iOSSettings = new IOSInitializationSettings(
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
 
-    var settings = new InitializationSettings(androidSettings, iOSSettings);
+    var settings = new InitializationSettings(
+      android: androidSettings,
+      iOS: iOSSettings,
+    );
 
     _plugin.initialize(settings, onSelectNotification: onSelectNotification);
   }
@@ -173,15 +176,17 @@ class PushNotificationsManager {
       id,
       name,
       description,
-      importance: Importance.Max,
-      priority: Priority.High,
+      importance: Importance.max,
+      priority: Priority.high,
       ticker: 'ticker',
     );
 
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
 
     var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
 
     await _plugin.show(
       notificationsCounter++,

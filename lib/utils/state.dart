@@ -220,18 +220,23 @@ class StateModel extends Model {
     _provincesLoading = true;
     notifyListeners();
 
-    final Result<dynamic> response = await Http.get(
-        Environment.fetchProvincesUrl, new Map<String, String>());
+    try {
+      final Result<dynamic> response = await Http.get(
+          Environment.fetchProvincesUrl, new Map<String, String>());
 
-    if (response == null || response.error != null) {
-      this._provincesLoading = false;
-      this.notifyListeners();
-      return 'Failed to fetch provinces';
+      if (response == null || response.error != null) {
+        this._provincesLoading = false;
+        this.notifyListeners();
+        return 'Failed to fetch provinces';
+      }
+
+      this._provinces = response.result['data']
+          .map<Province>((e) => Province.json(e, exchange))
+          .toList();
+    } catch (e) {
+      _provinces = [];
+      print('FETCH PROVINCES | $e');
     }
-
-    this._provinces = response.result['data']
-        .map<Province>((e) => Province.json(e, exchange))
-        .toList();
 
     this._provincesLoading = false;
     this.notifyListeners();

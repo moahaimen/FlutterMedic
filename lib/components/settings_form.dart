@@ -40,7 +40,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     leading: setting1
                         ? CircularProgressIndicator()
                         : Icon(Icons.language),
-                    onTap: () async {
+                    onPressed: (BuildContext context) async {
                       setState(() => setting1 = true);
                       final locale =
                           model.settings['locale'] == 'en' ? 'ar' : 'en';
@@ -59,7 +59,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     leading: setting2
                         ? CircularProgressIndicator()
                         : Icon(Icons.monetization_on),
-                    onTap: () async {
+                    onPressed: (BuildContext context) async {
                       setState(() => setting2 = true);
                       final exchange =
                           model.settings['exchange'] == 'USD' ? 'IQD' : 'USD';

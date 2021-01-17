@@ -42,9 +42,10 @@ class CustomProvinceFormField extends StatelessWidget {
           Text(title),
           Container(
             decoration: BoxDecoration(
-                color: Colors.black12,
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(15)),
+              color: Colors.black12,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(15),
+            ),
             padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
             child: ScopedModelDescendant<StateModel>(
               builder: (context, child, model) {
@@ -67,7 +68,7 @@ class CustomProvinceFormField extends StatelessWidget {
                     cursorColor: color,
                     textAlign: TextAlign.center,
                     textAlignVertical: TextAlignVertical.center,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.next,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (String province) {
                       if (province == null || province.isEmpty) {

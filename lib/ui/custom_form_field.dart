@@ -66,7 +66,7 @@ class CustomFormField extends StatelessWidget {
               cursorColor: color,
               textAlign: TextAlign.center,
               textAlignVertical: TextAlignVertical.center,
-              textInputAction: TextInputAction.done,
+              textInputAction: TextInputAction.next,
               keyboardType: keyboardType,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               autofillHints: enabled ? this.autoFillHints : null,
