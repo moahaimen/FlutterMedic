@@ -111,7 +111,8 @@ class _SettingsFormState extends State<SettingsForm> {
                         setting4 = false;
                         _version = m;
                       });
-                      Toast.show('app.check.done', this.context);
+                      Toast.show(
+                          translator.text('app.check.done'), this.context);
                     },
                   ),
                 ],
