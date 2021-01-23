@@ -28,4 +28,7 @@ class Environment {
       'https://molardentalmaterials.com/api/auth/me';
   static final String userOrdersUrl =
       'https://molardentalmaterials.com/api/orders/me';
+
+  static final String latestVersionUrl =
+      'https://molardentalmaterials.com/api/version/latest';
 }

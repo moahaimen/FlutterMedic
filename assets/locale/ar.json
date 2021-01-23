@@ -98,5 +98,11 @@
   "USD": "د.أ",
   "IQD": "د.ع",
   "user_fetch_done": "تم التحديث بنجاح",
-  "cancel": "رجوع"
+  "cancel": "رجوع",
+  "new_version_available": "يتوفر تحديث جديد",
+  "buttons.update": "التحديث الآن",
+  "buttons.later": "لاحقاً",
+  "app.version": "نسخة التطبيق",
+  "app.check.version": "البحث عن تحديثات",
+  "app.check.done": "تم البحث بنجاح"
 }

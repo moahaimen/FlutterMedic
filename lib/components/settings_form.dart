@@ -1,6 +1,7 @@
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/localization/application.dart';
 import 'package:drugStore/utils/state.dart';
+import 'package:drugStore/utils/version_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -15,6 +16,9 @@ class _SettingsFormState extends State<SettingsForm> {
   bool setting1 = false;
   bool setting2 = false;
   bool setting3 = false;
+  bool setting4 = false;
+
+  String _version = '';
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +93,27 @@ class _SettingsFormState extends State<SettingsForm> {
                         setState(() => setting3 = false);
                       },
                       switchValue: model.settings['notifications'] ?? true),
+                ],
+              ),
+              SettingsSection(
+                title: translator.text('app.version'),
+                tiles: [
+                  SettingsTile(
+                    title: translator.text('app.check.version'),
+                    subtitle: _version,
+                    leading: setting4
+                        ? CircularProgressIndicator()
+                        : Icon(Icons.ac_unit),
+                    onPressed: (BuildContext context) async {
+                      setState(() => setting4 = true);
+                      final m = await VersionChecker.checkVersion(context);
+                      setState(() {
+                        setting4 = false;
+                        _version = m;
+                      });
+                      Toast.show('app.check.done', this.context);
+                    },
+                  ),
                 ],
               ),
             ],

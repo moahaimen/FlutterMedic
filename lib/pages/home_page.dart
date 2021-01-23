@@ -3,6 +3,7 @@ import 'package:drugStore/components/home_page_content.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/partials/toolbar.dart';
 import 'package:drugStore/utils/push_notifications_manager.dart';
+import 'package:drugStore/utils/version_checker.dart';
 import 'package:flutter/material.dart';
 
 import '../components/brands_list_view.dart';
@@ -51,6 +52,12 @@ class HomePageState extends State<HomePage> {
   HomePageState({PageId id})
       : _page = new _Page(id),
         _pageController = PageController(initialPage: id.index);
+
+  @override
+  void initState() {
+    super.initState();
+    VersionChecker.checkVersion(context);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -22,12 +22,19 @@ class CustomProvinceFormField extends StatelessWidget {
   }) : this.controller = new TextEditingController(text: '');
 
   void _configureInitialValue(StateModel model, String locale) {
-    final Province province = model.provinces.firstWhere(
-      (p) => p.id == this.initialValue,
-      orElse: () => model.provinces.first,
-    );
-    this.onSave(province.id);
-    this.controller.text = province.getName(locale);
+    final Province province = model.provinces != null
+        ? model.provinces.firstWhere(
+            (p) => p.id == this.initialValue,
+            orElse: () => model.provinces.first,
+          )
+        : null;
+    if (province != null) {
+      this.onSave(province.id);
+      this.controller.text = province.getName(locale);
+    } else {
+      this.onSave(null);
+      this.controller.text = '';
+    }
   }
 
   @override

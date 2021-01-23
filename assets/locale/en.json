@@ -98,5 +98,11 @@
   "USD": "USD",
   "IQD": "IQD",
   "user_fetch_done": "User data loaded successfully",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "new_version_available": "New version available",
+  "buttons.update": "Update Now",
+  "buttons.later": "Later",
+  "app.version": "Molar Dental Version",
+  "app.check.version": "Check For Updates",
+  "app.check.done": "Version check completed"
 }
