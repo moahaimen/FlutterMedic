@@ -1,5 +1,5 @@
 import 'package:drugStore/localization/app_translation.dart';
-import 'package:drugStore/pages/home_page.dart';
+import 'package:drugStore/models/user.dart';
 import 'package:drugStore/pages/login_page.dart';
 import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/ui/custom_form_field.dart';
@@ -11,16 +11,26 @@ import 'package:toast/toast.dart';
 
 import 'form_caption_widget.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   final LoginPageMode mode;
 
+  LoginForm({@required this.mode});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _LoginFormState();
+  }
+}
+
+class _LoginFormState extends State<LoginForm> {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   final Map<String, dynamic> _formData = {
     'email': '',
     'password': '',
   };
 
-  LoginForm(this.mode);
+  bool _okay = true;
+  Map<String, List<dynamic>> _errors = new Map<String, List<dynamic>>();
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +66,22 @@ class LoginForm extends StatelessWidget {
                     onSave: (value) {
                       _formData['email'] = value;
                       TextInput.finishAutofillContext(shouldSave: true);
+                      setState(() {
+                        this._errors.remove('email');
+                      });
                     },
                     validator: (String email) {
                       if (email.isEmpty) {
                         return "Email is required field";
                       }
                       if (!RegExp(
-                              r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
+                          r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
                           .hasMatch(email)) {
                         return "Email must be in a valid format";
+                      }
+
+                      if (!_okay && this._errors.containsKey('email')) {
+                        return this._errors['email'].first;
                       }
                       return null;
                     },
@@ -78,10 +95,16 @@ class LoginForm extends StatelessWidget {
                   onSave: (value) {
                     _formData['password'] = value;
                     TextInput.finishAutofillContext(shouldSave: true);
+                    setState(() {
+                      this._errors.remove('password');
+                    });
                   },
                   validator: (String password) {
                     if (password.isEmpty || password.length < 8) {
                       return "Password is required field and length must be +8 chars";
+                    }
+                    if (!_okay && this._errors.containsKey('password')) {
+                      return this._errors['password'].first;
                     }
                     return null;
                   },
@@ -97,10 +120,10 @@ class LoginForm extends StatelessWidget {
                       return model.userLoading
                           ? CircularProgressIndicator()
                           : RaisedButton(
-                              textColor: Colors.white,
-                              child: Text(translator.text("login_button")),
-                              onPressed: () =>
-                                  _login(context, model, translator));
+                          textColor: Colors.white,
+                          child: Text(translator.text("login_button")),
+                          onPressed: () =>
+                              _login(context, model, translator));
                     },
                   ),
                 )
@@ -112,25 +135,29 @@ class LoginForm extends StatelessWidget {
     );
   }
 
-  void _login(
-      BuildContext context, StateModel state, AppTranslations translator) {
+  void _login(BuildContext ctx, StateModel state, AppTranslations trans) {
     if (!_form.currentState.validate()) {
       return;
     }
 
-    state.loginUser(_formData).then((ok) {
-      if (!ok) {
-        Toast.show(translator.text('user_logging_failed'), context);
-        return;
-      }
-      Toast.show(translator.text('user_logging_succeeded'), context);
-      if (this.mode == LoginPageMode.LoginThenNavigate) {
-        final navigator = Navigator.of(context);
-        if (navigator.canPop()) {
-          navigator.pop();
-          return;
+    state.loginUser(_formData).then((result) {
+      if (result is User) {
+        setState(() {
+          _okay = true;
+          _errors = null;
+        });
+
+        if (this.widget.mode == LoginPageMode.LoginThenNavigate) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(AppRouter.home, (route) => false);
         }
-        navigator.pushReplacementNamed(AppRouter.home, arguments: PageId.Home);
+        Toast.show(trans.text('user_logging_succeeded'), ctx);
+      } else {
+        setState(() {
+          _okay = false;
+          // _errors = Map.from(result);
+        });
+        Toast.show(trans.text('user_logging_failed'), ctx);
       }
     });
   }

@@ -663,7 +663,7 @@ class StateModel extends Model {
   ///
   ///
   ///
-  Future<bool> loginUser(Map<String, dynamic> loginData) async {
+  Future<dynamic> loginUser(Map<String, dynamic> loginData) async {
     this._userLoading = true;
     this._user = null;
     this.notifyListeners();
@@ -674,14 +674,14 @@ class StateModel extends Model {
     if (result == null || result.error != null) {
       this._userLoading = false;
       this.notifyListeners();
-      return false;
+      return result.error;
     }
 
     this._user = new User.json(result.result['user'], result.result['token']);
     await this.saveUser();
     this._userLoading = false;
     this.notifyListeners();
-    return true;
+    return this.user;
   }
 
   Future<dynamic> registerUser(Map<String, dynamic> registerData) async {

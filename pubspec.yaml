@@ -38,7 +38,7 @@ dependencies:
   toast: ^0.1.5
   shared_preferences: ^0.5.12+4
   flutter_local_notifications: ^3.0.3
-  firebase_messaging: ^7.0.3
+  firebase_messaging: ^6.0.16
   share: ^0.6.4+3
   settings_ui: ^0.5.0
   cached_network_image: ^2.5.0

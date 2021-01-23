@@ -23,13 +23,14 @@ class VersionChecker {
       }
       final info = response.result;
 
-      double latest = double.parse(info['version'].trim().replaceAll(".", ""));
+      final double latest =
+          double.parse(info['version'].trim().replaceAll(".", ""));
       if (latest > current) {
         _openDialog(context, info['message']);
       }
-      return info.version;
+      return info['version'];
     } catch (exception) {
-      print('Unable to fetch new version details');
+      print('Unable to fetch new version details $exception');
       return 'UNKNOWN';
     }
   }

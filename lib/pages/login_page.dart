@@ -17,7 +17,9 @@ class LoginPage extends StatelessWidget {
       drawer: DrawerBuilder.build(context, AppRouter.login),
       appBar: Toolbar.get(title: AppRouter.login, context: context),
       body: Container(
-        child: LoginForm(this.mode),
+        child: LoginForm(
+          mode: this.mode,
+        ),
       ),
     );
   }

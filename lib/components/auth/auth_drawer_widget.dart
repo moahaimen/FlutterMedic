@@ -23,8 +23,8 @@ class AuthDrawerWidget extends StatelessWidget {
                       translator.text('login'),
                       style: theme.textTheme.bodyText2,
                     ),
-                    onPressed: () => Navigator.of(context)
-                        .pushReplacementNamed(AppRouter.login),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(AppRouter.login),
                   ),
                   SizedBox(width: 6),
                   OutlineButton.icon(
@@ -34,8 +34,8 @@ class AuthDrawerWidget extends StatelessWidget {
                     ),
                     label: Text(translator.text('register'),
                         style: theme.textTheme.bodyText2),
-                    onPressed: () => Navigator.of(context)
-                        .pushReplacementNamed(AppRouter.register),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(AppRouter.register),
                   ),
                 ],
               )
@@ -47,8 +47,8 @@ class AuthDrawerWidget extends StatelessWidget {
                   ),
                   label: Text(translator.text('user_account'),
                       style: theme.textTheme.bodyText2),
-                  onPressed: () => Navigator.of(context)
-                      .pushReplacementNamed(AppRouter.userProfile),
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(AppRouter.userProfile),
                 ),
               );
 
