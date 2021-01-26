@@ -645,19 +645,21 @@ class StateModel extends Model {
         .toString();
   }
 
-  Future<List<Order>> fetchUserOrders() async {
+  Future<Result<List<Order>>> fetchUserOrders() async {
     if (this._user == null) {
       await this.restoreStoredUser();
     }
     final result = await Http.get(
-        Environment.userOrdersUrl, {'Authorization': 'Bearer ${user.token}'});
+        Environment.userOrdersUrl, {'Authorization': 'Bearer ${_user.token}'});
 
     if (result == null || result.error != null) {
-      return [];
+      return new Result(null, result.error, result.message);
     }
-    return result.result
+
+    final orders = result.result
         .map<Order>((e) => Order.full(_user, e, exchange))
         .toList();
+    return new Result(orders, null, result.message);
   }
 
   ///

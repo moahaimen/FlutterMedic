@@ -1,4 +1,5 @@
 import 'package:drugStore/models/order/order.dart';
+import 'package:drugStore/utils/http.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -10,7 +11,7 @@ class UserOrdersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = ScopedModel.of<StateModel>(context);
-    return FutureBuilder<List<Order>>(
+    return FutureBuilder<Result<List<Order>>>(
       future: state.fetchUserOrders(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
@@ -21,6 +22,7 @@ class UserOrdersList extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           case ConnectionState.done:
+            print(snapshot.data);
             return RefreshIndicator(
               onRefresh: () {
                 return state.fetchUserOrders();
@@ -34,8 +36,21 @@ class UserOrdersList extends StatelessWidget {
     );
   }
 
-  Widget _buildOrdersWidget(BuildContext context, List<Order> orders) {
-    if (orders == null || orders.length == 0) {
+  Widget _buildOrdersWidget(BuildContext context, Result<List<Order>> result) {
+    if (result == null || result.error != null) {
+      print(result.error);
+      return Center(
+        child: Column(
+          children: [
+            Icon(Icons.error_outline),
+            Text("Error"),
+          ],
+        ),
+      );
+    }
+
+    final orders = result.result;
+    if (orders.length == 0) {
       return UserOrdersListEmpty();
     }
 
