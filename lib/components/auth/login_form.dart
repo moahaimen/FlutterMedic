@@ -75,7 +75,7 @@ class _LoginFormState extends State<LoginForm> {
                         return "Email is required field";
                       }
                       if (!RegExp(
-                          r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
+                              r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
                           .hasMatch(email)) {
                         return "Email must be in a valid format";
                       }
@@ -120,10 +120,10 @@ class _LoginFormState extends State<LoginForm> {
                       return model.userLoading
                           ? CircularProgressIndicator()
                           : RaisedButton(
-                          textColor: Colors.white,
-                          child: Text(translator.text("login_button")),
-                          onPressed: () =>
-                              _login(context, model, translator));
+                              textColor: Colors.white,
+                              child: Text(translator.text("login_button")),
+                              onPressed: () =>
+                                  _login(context, model, translator));
                     },
                   ),
                 )
@@ -135,30 +135,33 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void _login(BuildContext ctx, StateModel state, AppTranslations trans) {
+  void _login(BuildContext ctx, StateModel state, AppTranslations t) async {
     if (!_form.currentState.validate()) {
       return;
     }
 
-    state.loginUser(_formData).then((result) {
-      if (result is User) {
+    final result = await state.loginUser(_formData);
+    if (result is User) {
+      if (mounted) {
         setState(() {
           _okay = true;
           _errors = null;
         });
+      }
 
-        if (this.widget.mode == LoginPageMode.LoginThenNavigate) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(AppRouter.home, (route) => false);
-        }
-        Toast.show(trans.text('user_logging_succeeded'), ctx);
-      } else {
+      if (this.widget.mode == LoginPageMode.LoginThenNavigate) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(AppRouter.home, (route) => false);
+      }
+      Toast.show(t.text('user_logging_succeeded'), ctx);
+    } else {
+      if (mounted) {
         setState(() {
           _okay = false;
           // _errors = Map.from(result);
         });
-        Toast.show(trans.text('user_logging_failed'), ctx);
       }
-    });
+      Toast.show(t.text('user_logging_failed'), ctx);
+    }
   }
 }

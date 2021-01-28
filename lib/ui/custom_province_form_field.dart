@@ -4,6 +4,7 @@ import 'package:drugStore/utils/state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:toast/toast.dart';
 
 class CustomProvinceFormField extends StatelessWidget {
   final String title;
@@ -21,14 +22,13 @@ class CustomProvinceFormField extends StatelessWidget {
     @required this.color,
   }) : this.controller = new TextEditingController(text: '');
 
-  void _configureInitialValue(StateModel model, String locale) {
-    final Province province =
-        model.provinces != null && model.provinces.length > 0
-            ? model.provinces.firstWhere(
-                (p) => p.id == this.initialValue,
-                orElse: () => model.provinces.first,
-              )
-            : null;
+  void _configureInitialValue(List<Province> provinces, String locale) {
+    final Province province = provinces != null && provinces.length > 0
+        ? provinces.firstWhere(
+            (p) => p.id == this.initialValue,
+            orElse: () => provinces.first,
+          )
+        : null;
     if (province != null) {
       this.onSave(province.id);
       this.controller.text = province.getName(locale);
@@ -62,7 +62,10 @@ class CustomProvinceFormField extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else {
-                  _configureInitialValue(model, translator.locale.languageCode);
+                  _configureInitialValue(
+                    model.provinces,
+                    translator.locale.languageCode,
+                  );
 
                   return TextFormField(
                     readOnly: true,
@@ -100,9 +103,9 @@ class CustomProvinceFormField extends StatelessWidget {
   }
 
   void _openProvincesModal(
-      BuildContext context, String locale, List<Province> provinces) async {
+      BuildContext ctx, String locale, List<Province> provinces) async {
     final result = await showDialog<Province>(
-      context: context,
+      context: ctx,
       builder: (BuildContext context) => SimpleDialog(
         title: Text(title),
         children: provinces
@@ -110,6 +113,10 @@ class CustomProvinceFormField extends StatelessWidget {
             .toList(),
       ),
     );
+    if (result == null) {
+      Toast.show('Something went wrong!', ctx);
+      return;
+    }
     onSave(result.id);
     controller.text = result.getName(locale);
   }

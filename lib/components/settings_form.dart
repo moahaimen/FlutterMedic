@@ -56,7 +56,7 @@ class _SettingsFormState extends State<SettingsForm> {
                       onPressed: (BuildContext context) async {
                         setState(() => setting1 = true);
                         final locale =
-                        model.settings['locale'] == 'en' ? 'ar' : 'en';
+                            model.settings['locale'] == 'en' ? 'ar' : 'en';
                         model.settings['locale'] = locale;
                         await model.setSettingsItem('locale', locale);
                         application.setLocale(locale);
@@ -68,14 +68,14 @@ class _SettingsFormState extends State<SettingsForm> {
                     SettingsTile(
                       title: translator.text('settings_exchange_currency'),
                       subtitle:
-                      model.settings['exchange'] == 'USD' ? 'USD' : 'IQD',
+                          model.settings['exchange'] == 'USD' ? 'USD' : 'IQD',
                       leading: setting2
                           ? CircularProgressIndicator()
                           : Icon(Icons.monetization_on),
                       onPressed: (BuildContext context) async {
                         setState(() => setting2 = true);
                         final exchange =
-                        model.settings['exchange'] == 'USD' ? 'IQD' : 'USD';
+                            model.settings['exchange'] == 'USD' ? 'IQD' : 'USD';
                         model.settings['exchange'] = exchange;
                         await model.setSettingsItem('exchange', exchange);
                         await model.fetchProducts();
@@ -90,8 +90,8 @@ class _SettingsFormState extends State<SettingsForm> {
                         leading: setting3
                             ? CircularProgressIndicator()
                             : Icon(
-                          Icons.notifications,
-                        ),
+                                Icons.notifications,
+                              ),
                         title: translator.text('settings_notifications'),
                         onToggle: (bool value) async {
                           setState(() => setting3 = false);
