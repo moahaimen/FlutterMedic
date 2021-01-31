@@ -455,6 +455,9 @@ class StateModel extends Model {
 
     this._orderUploading = false;
     if (response == null || response.error != null) {
+      if (response.statusCode == 401) {
+        await this.logout();
+      }
       this.notifyListeners();
       return false;
     }
@@ -653,13 +656,16 @@ class StateModel extends Model {
         Environment.userOrdersUrl, {'Authorization': 'Bearer ${_user.token}'});
 
     if (result == null || result.error != null) {
-      return new Result(null, result.error, result.message);
+      if (result.statusCode == 401) {
+        await this.logout();
+      }
+      return new Result(null, result.error, result.message, result.statusCode);
     }
 
     final orders = result.result
         .map<Order>((e) => Order.full(_user, e, exchange))
         .toList();
-    return new Result(orders, null, result.message);
+    return new Result(orders, null, result.message, 200);
   }
 
   ///
@@ -715,27 +721,25 @@ class StateModel extends Model {
   ///
   ///
   Future<String> restoreStoredUser() async {
-    this._userLoading = true;
-    notifyListeners();
-
-    final prefs = await SharedPreferences.getInstance();
-
-    if (prefs.getKeys().containsAll(['_user', '_token'])) {
-      try {
+    try {
+      await this.refreshUser();
+    } catch (e) {
+      this._userLoading = true;
+      notifyListeners();
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getKeys().containsAll(['_user', '_token'])) {
         final String token = prefs.getString('_token');
 
         final String userJson = prefs.getString('_user');
         final Map<String, dynamic> userData = jsonDecode(userJson);
+
         final User user = User.json(userData, token);
 
         this._user = user;
-      } catch (e) {
-        this._user = null;
       }
+      this._userLoading = false;
+      notifyListeners();
     }
-
-    this._userLoading = false;
-    notifyListeners();
     return 'Finishing user restoring';
   }
 
@@ -766,7 +770,8 @@ class StateModel extends Model {
     final Result<dynamic> result = await Http.post(Environment.logoutUrl,
         this.user.toJson(), {'Authorization': 'Bearer ${user.token}'});
 
-    if (result == null || result.error != null) {
+    if (result == null ||
+        !(result.statusCode == 200 || result.statusCode == 401)) {
       this._userLoading = false;
       this.notifyListeners();
       return false;
@@ -785,6 +790,9 @@ class StateModel extends Model {
         {'Authorization': 'Bearer ${user.token}'});
 
     if (response == null || response.error != null) {
+      if (response.statusCode == 401) {
+        await this.logout();
+      }
       return false;
     }
 
@@ -795,15 +803,29 @@ class StateModel extends Model {
   }
 
   Future<User> refreshUser() async {
-    final dynamic result = await Http.get(
-        Environment.userDetailsUrl, {'Authorization': 'Bearer ${user.token}'});
+    try {
+      final prefs = await SharedPreferences.getInstance();
 
-    if (result == null || result.error != null) {
-      return null;
+      if (!prefs.containsKey('_token')) {
+        throw new Exception('Token not found');
+      }
+      final token = prefs.getString('_token');
+
+      final Result<dynamic> result = await Http.get(
+          Environment.userDetailsUrl, {'Authorization': 'Bearer $token'});
+
+      if (result == null || result.error != null) {
+        if (result.statusCode == 401) {
+          await this.logout();
+        }
+        return null;
+      }
+      this._user = new User.json(result.result, this._user.token);
+      await this.saveUser();
+      this.notifyListeners();
+      return user;
+    } catch (e) {
+      throw e;
     }
-    this._user = new User.json(result, this._user.token);
-    await this.saveUser();
-    this.notifyListeners();
-    return user;
   }
 }

@@ -6,8 +6,9 @@ class Result<T> {
   final T result;
   final dynamic error;
   final String message;
+  final int statusCode;
 
-  Result(this.result, this.error, this.message)
+  Result(this.result, this.error, this.message, this.statusCode)
       : assert(result != null || error != null);
 }
 
@@ -22,12 +23,17 @@ class Http {
     if (response == null || response.statusCode != 200) {
       print(json.jsonDecode(response.body));
       return new Result(
-          null, json.jsonDecode(response.body), response.headers['Message']);
+        null,
+        json.jsonDecode(response.body),
+        response.headers['Message'],
+        response.statusCode,
+      );
     }
     return new Result(
       json.jsonDecode(response.body),
       null,
       response.headers['Message'],
+      response.statusCode,
     );
   }
 
@@ -47,13 +53,18 @@ class Http {
 
     if (response == null || response.statusCode != 200) {
       return new Result(
-          null, json.jsonDecode(response.body), response.headers['Message']);
+        null,
+        json.jsonDecode(response.body),
+        response.headers['Message'],
+        response.statusCode,
+      );
     }
 
     return new Result(
       json.jsonDecode(response.body),
       null,
       response.headers['Message'],
+      response.statusCode,
     );
   }
 
@@ -73,13 +84,18 @@ class Http {
       print(json.jsonEncode(response.headers));
       print(response.body);
       return new Result(
-          null, json.jsonDecode(response.body), response.headers['Message']);
+        null,
+        json.jsonDecode(response.body),
+        response.headers['Message'],
+        response.statusCode,
+      );
     }
 
     return new Result(
       json.jsonDecode(response.body),
       null,
       response.headers['Message'],
+      response.statusCode,
     );
   }
 
