@@ -153,7 +153,9 @@ class _LoginFormState extends State<LoginForm> {
         Navigator.of(context)
             .pushNamedAndRemoveUntil(AppRouter.home, (route) => false);
       }
-      Toast.show(t.text('user_logging_succeeded'), ctx);
+      if (mounted) {
+        Toast.show(t.text('user_logging_succeeded'), ctx);
+      }
     } else {
       if (mounted) {
         setState(() {

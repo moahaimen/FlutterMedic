@@ -770,17 +770,18 @@ class StateModel extends Model {
     final Result<dynamic> result = await Http.post(Environment.logoutUrl,
         this.user.toJson(), {'Authorization': 'Bearer ${user.token}'});
 
-    if (result == null ||
-        !(result.statusCode == 200 || result.statusCode == 401)) {
+    if (result != null &&
+        (result.statusCode == 200 || result.statusCode == 401)) {
+      this._userLoading = false;
+      this._user = null;
+      await this.saveUser();
+      this.notifyListeners();
+      return true;
+    } else {
       this._userLoading = false;
       this.notifyListeners();
       return false;
     }
-    this._userLoading = false;
-    this._user = null;
-    await this.saveUser();
-    this.notifyListeners();
-    return true;
   }
 
   Future<bool> updateUser(Map<String, dynamic> updateData) async {

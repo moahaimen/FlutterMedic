@@ -20,7 +20,7 @@ class Province {
           data['id'],
           data['en_name'],
           data['ar_name'],
-          data['fees'] * exchange,
+          data['fees'] != null ? data['fees'] * exchange : 0,
         );
 
   String getName(String locale) {

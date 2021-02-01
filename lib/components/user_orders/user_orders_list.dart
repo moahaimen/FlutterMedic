@@ -38,7 +38,6 @@ class UserOrdersList extends StatelessWidget {
 
   Widget _buildOrdersWidget(BuildContext context, Result<List<Order>> result) {
     if (result == null || result.error != null) {
-      print(result.error);
       return Center(
         child: Column(
           children: [

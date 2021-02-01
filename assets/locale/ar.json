@@ -98,6 +98,7 @@
   "USD": "د.أ",
   "IQD": "د.ع",
   "user_fetch_done": "تم التحديث بنجاح",
+  "user_fetch_failed": "فشل تحديث المعلومات",
   "cancel": "رجوع",
   "new_version_available": "يتوفر تحديث جديد",
   "buttons.update": "التحديث الآن",

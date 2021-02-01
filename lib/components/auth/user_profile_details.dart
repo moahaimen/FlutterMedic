@@ -25,8 +25,13 @@ class UserProfileDetails extends StatelessWidget {
           snap: false,
           pinned: true,
           onStretchTrigger: () {
-            state.refreshUser().then((value) =>
-                Toast.show(translator.text("user_fetch_done"), context));
+            state.refreshUser().then((value) {
+              if (value != null) {
+                Toast.show(translator.text("user_fetch_done"), context);
+              } else {
+                Toast.show(translator.text("user_fetch_failed"), context);
+              }
+            });
             return;
           },
           expandedHeight: 360.0,

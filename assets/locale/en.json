@@ -98,6 +98,7 @@
   "USD": "USD",
   "IQD": "IQD",
   "user_fetch_done": "User data loaded successfully",
+  "user_fetch_failed": "User loading failed",
   "cancel": "Cancel",
   "new_version_available": "New version available",
   "buttons.update": "Update Now",
