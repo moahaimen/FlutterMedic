@@ -4,7 +4,7 @@ class Environment {
   static final String fetchContactUsUrl =
       'https://molardentalmaterials.com/api/contactUs?all=true';
   static final String fetchProvincesUrl =
-      'https://molardentalmaterials.com/api/provinces?all=true';
+      'https://molardentalmaterials.com/api/prvncs';
   static final String fetchCategoriesUrl =
       'https://molardentalmaterials.com/api/categories?all=true';
   static final String fetchBrandsUrl =
