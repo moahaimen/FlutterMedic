@@ -155,12 +155,11 @@ class StateModel extends Model {
     this.messages = new Stream.fromFutures([
       this.restoreStoredUser(),
       this.loadSettings(),
-      this.fetchLatestExchange(),
+      this.fetchLatestExchange().then((e) => this.fetchProvinces()),
       this.fetchBrands(),
       this.fetchCategories(),
       this.fetchProducts().then((e) => this.restoreStoredOrder()),
       this.fetchContactUs(),
-      this.fetchProvinces(),
     ]);
     // this.fetchModelData();
   }
@@ -239,7 +238,7 @@ class StateModel extends Model {
       final json = jsonDecode(jsonString);
 
       this._provinces = json['data']
-          .map<Province>((e) => Province.json(e, exchange))
+          .map<Province>((e) => Province.json(e, exchange ?? 1))
           .toList();
 
       print('FETCH PROVINCES | $e');
