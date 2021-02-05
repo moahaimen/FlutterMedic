@@ -6,36 +6,63 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:toast/toast.dart';
 
-class CustomProvinceFormField extends StatelessWidget {
+class CustomProvinceFormField extends StatefulWidget {
   final String title;
   final int initialValue;
 
   final void Function(int value) onSave;
   final Color color;
 
-  final TextEditingController controller;
-
   CustomProvinceFormField({
     @required this.title,
     @required this.initialValue,
     @required this.onSave,
     @required this.color,
-  }) : this.controller = new TextEditingController(text: '');
+  });
 
-  void _configureInitialValue(List<Province> provinces, String locale) {
-    final Province province = provinces != null && provinces.length > 0
-        ? provinces.firstWhere(
-            (p) => p.id == this.initialValue,
-            orElse: () => provinces.first,
-          )
-        : null;
-    if (province != null) {
-      this.onSave(province.id);
-      this.controller.text = province.getName(locale);
+  @override
+  State<StatefulWidget> createState() {
+    return _CustomProvinceFormFieldState();
+  }
+}
+
+class _CustomProvinceFormFieldState extends State<CustomProvinceFormField> {
+  final TextEditingController controller = new TextEditingController();
+
+  void _setInitialValue() {
+    final provinces = ScopedModel
+        .of<StateModel>(context)
+        .provinces;
+
+    Province province;
+
+    if (provinces == null || provinces.length == 0) {
+      print('Provinces null or empty');
     } else {
-      this.onSave(null);
+      final id = this.widget.initialValue;
+      province = provinces.firstWhere((p) => p.id == id, orElse: () => null);
+
+      if (province == null) {
+        province = provinces.first;
+      }
+    }
+
+    if (province != null) {
+      final lang = "en";
+
+      this.widget.onSave(province.id);
+      this.controller.text = province.getName(lang);
+    } else {
+      this.widget.onSave(null);
       this.controller.text = '';
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _setInitialValue();
   }
 
   @override
@@ -47,7 +74,7 @@ class CustomProvinceFormField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title),
+          Text(this.widget.title),
           Container(
             decoration: BoxDecoration(
               color: Colors.black12,
@@ -62,11 +89,6 @@ class CustomProvinceFormField extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else {
-                  _configureInitialValue(
-                    model.provinces,
-                    translator.locale.languageCode,
-                  );
-
                   return TextFormField(
                     readOnly: true,
                     controller: controller,
@@ -74,9 +96,9 @@ class CustomProvinceFormField extends StatelessWidget {
                     maxLines: 1,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: title,
+                      hintText: this.widget.title,
                     ),
-                    cursorColor: color,
+                    cursorColor: this.widget.color,
                     textAlign: TextAlign.center,
                     textAlignVertical: TextAlignVertical.center,
                     textInputAction: TextInputAction.next,
@@ -107,7 +129,7 @@ class CustomProvinceFormField extends StatelessWidget {
     final result = await showDialog<Province>(
       context: ctx,
       builder: (BuildContext context) => SimpleDialog(
-        title: Text(title),
+        title: Text(this.widget.title),
         children: provinces
             .map((e) => _createSimpleDialogOption(context, locale, e))
             .toList(),
@@ -117,8 +139,8 @@ class CustomProvinceFormField extends StatelessWidget {
       Toast.show('Something went wrong!', ctx);
       return;
     }
-    onSave(result.id);
-    controller.text = result.getName(locale);
+    this.widget.onSave(result.id);
+    this.controller.text = result.getName(locale);
   }
 
   Widget _createSimpleDialogOption(
