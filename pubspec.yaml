@@ -74,6 +74,7 @@ flutter:
     - assets/images/molar.jpg
     - assets/images/molar-2.png
     - assets/images/facebook.png
+    - assets/provinces.json
 
   fonts:
     - family: Tajawal

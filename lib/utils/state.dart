@@ -8,6 +8,7 @@ import 'package:drugStore/models/order/order_product.dart';
 import 'package:drugStore/models/order/promo_code.dart';
 import 'package:drugStore/models/province.dart';
 import 'package:drugStore/models/user.dart';
+import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -234,7 +235,13 @@ class StateModel extends Model {
           .map<Province>((e) => Province.json(e, exchange))
           .toList();
     } catch (e) {
-      _provinces = [];
+      final jsonString = await rootBundle.loadString('assets/provinces.json');
+      final json = jsonDecode(jsonString);
+
+      this._provinces = json['data']
+          .map<Province>((e) => Province.json(e, exchange))
+          .toList();
+
       print('FETCH PROVINCES | $e');
     }
 
@@ -561,7 +568,7 @@ class StateModel extends Model {
     }
 
     if (provinceId != null) {
-      print(provinceId);
+//      print(provinceId);
       final province =
           this.provinces.firstWhere((e) => e.id == provinceId, orElse: null);
       this._order.client.province = province;
@@ -575,7 +582,7 @@ class StateModel extends Model {
       this._order.client.notes = notes;
     }
 
-    print(this._order.client.toJson(false));
+//    print(this._order.client.toJson(false));
     await this.persistOrder();
     if (notify) {
       notifyListeners();

@@ -57,7 +57,7 @@ class Order {
         ? this.products.map((e) => e.subTotal).reduce((value, e) => value + e)
         : 0;
 
-    if (code) {
+    if (code && this.promoCode != null) {
       try {
         assert(this.promoCode != null);
 
@@ -77,7 +77,7 @@ class Order {
       }
     }
 
-    if (fees) {
+    if (fees && this.client != null && this.client.province != null) {
       try {
         assert(this.client != null);
         assert(this.client.province != null);
