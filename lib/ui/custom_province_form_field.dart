@@ -30,9 +30,7 @@ class _CustomProvinceFormFieldState extends State<CustomProvinceFormField> {
   final TextEditingController controller = new TextEditingController();
 
   void _setInitialValue() {
-    final provinces = ScopedModel
-        .of<StateModel>(context)
-        .provinces;
+    final provinces = ScopedModel.of<StateModel>(context).provinces;
 
     Province province;
 
