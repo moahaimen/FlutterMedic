@@ -607,7 +607,7 @@ class StateModel extends Model {
         notifyListeners();
         return false;
       }
-      final code = OrderPromoCode.json(response as Map<String, dynamic>);
+      final code = OrderPromoCode.json(response.result as Map<String, dynamic>);
       _order.promoCode = code;
       _order.promoCode.valid = true;
 
