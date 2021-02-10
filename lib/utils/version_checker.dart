@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/constants/envirnoment.dart';
 import 'package:drugStore/constants/urls.dart';
 import 'package:drugStore/localization/app_translation.dart';
@@ -12,8 +14,9 @@ const PLAY_STORE_URL = Urls.PLAY_STORE_URL;
 class VersionChecker {
   static Future<String> checkVersion(BuildContext context) async {
     //Get Current installed version of app
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    double current = double.parse(info.version.trim().replaceAll(".", ""));
+    final PackageInfo package = await PackageInfo.fromPlatform();
+    final double current =
+        double.parse(package.version.trim().replaceAll(".", ""));
 
     try {
       final response = await Http.get(Environment.latestVersionUrl, {});
@@ -22,13 +25,14 @@ class VersionChecker {
         throw new Exception('Connection error');
       }
       final info = response.result;
-
       final double latest =
           double.parse(info['version'].trim().replaceAll(".", ""));
+
+      print('current $current, latest $latest');
       if (latest > current) {
         _openDialog(context, info['message']);
       }
-      return info['version'];
+      return package.version;
     } catch (exception) {
       print('Unable to fetch new version details $exception');
       return 'UNKNOWN';
@@ -54,7 +58,8 @@ class VersionChecker {
           actions: <Widget>[
             OutlineButton(
               child: Text(btn1),
-              onPressed: () => _launchURL(PLAY_STORE_URL),
+              onPressed: () => _launchURL(
+                  Platform.isAndroid ? PLAY_STORE_URL : APP_STORE_URL),
               textColor: theme.accentColor,
             ),
             OutlineButton(
