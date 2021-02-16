@@ -7,9 +7,6 @@ import 'package:flutter/material.dart';
 enum LoginPageMode { Login, LoginThenNavigate }
 
 class LoginPage extends StatelessWidget {
-  final LoginPageMode mode;
-
-  LoginPage(this.mode);
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +14,7 @@ class LoginPage extends StatelessWidget {
       drawer: DrawerBuilder.build(context, AppRouter.login),
       appBar: Toolbar.get(title: AppRouter.login, context: context),
       body: Container(
-        child: LoginForm(
-          mode: this.mode,
-        ),
+        child: LoginForm(),
       ),
     );
   }

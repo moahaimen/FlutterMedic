@@ -1,4 +1,5 @@
 import 'package:drugStore/localization/app_translation.dart';
+import 'package:drugStore/pages/login_page.dart';
 import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/utils/state.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,9 @@ class AuthDrawerWidget extends StatelessWidget {
                       translator.text('login'),
                       style: theme.textTheme.bodyText2,
                     ),
-                    onPressed: () =>
-                        Navigator.of(context).pushNamed(AppRouter.login),
+                    onPressed: () => Navigator.of(context).pushNamed(
+                        AppRouter.login,
+                        arguments: LoginPageMode.LoginThenNavigate),
                   ),
                   SizedBox(width: 6),
                   OutlineButton.icon(

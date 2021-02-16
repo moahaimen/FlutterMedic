@@ -44,7 +44,10 @@ class AppRouter {
       index: (BuildContext ctx) => _configureRoute(ctx, index, IndexPage()),
       // Authentication routes
       login: (BuildContext ctx) => _configureRoute(
-          ctx, login, LoginPage(LoginPageMode.LoginThenNavigate)),
+            ctx,
+            login,
+            LoginPage(),
+          ),
       register: (BuildContext ctx) =>
           _configureRoute(ctx, login, RegisterPage()),
       search: (BuildContext ctx) => _configureRoute(ctx, search, SearchPage()),
@@ -120,7 +123,7 @@ class AppRouter {
               ),
             );
           } else if (model.user == null) {
-            return LoginPage(LoginPageMode.Login);
+            return LoginPage();
           } else {
             return widget;
           }

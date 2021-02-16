@@ -12,10 +12,6 @@ import 'package:toast/toast.dart';
 import 'form_caption_widget.dart';
 
 class LoginForm extends StatefulWidget {
-  final LoginPageMode mode;
-
-  LoginForm({@required this.mode});
-
   @override
   State<StatefulWidget> createState() {
     return _LoginFormState();
@@ -149,7 +145,9 @@ class _LoginFormState extends State<LoginForm> {
         });
       }
 
-      if (this.widget.mode == LoginPageMode.LoginThenNavigate) {
+      final LoginPageMode mode =
+          ModalRoute.of(this.context).settings.arguments ?? LoginPageMode.Login;
+      if (mode == LoginPageMode.LoginThenNavigate) {
         Navigator.of(context)
             .pushNamedAndRemoveUntil(AppRouter.home, (route) => false);
       }
