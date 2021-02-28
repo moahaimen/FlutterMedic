@@ -18,8 +18,8 @@ class CartClientInformation extends StatefulWidget {
 }
 
 class _CartClientInformationState extends State<CartClientInformation> {
-  static String _validator(AppTranslations translator, String value,
-      String regex, int min, int max,
+  static String _validator(
+      AppTranslations translator, String value, String regex, int min, int max,
       {bool required = true}) {
     if (!required && (value == null || value.isEmpty)) {
       return null;
@@ -43,14 +43,14 @@ class _CartClientInformationState extends State<CartClientInformation> {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .95;
     final double paddingWidth =
-    Platform.isAndroid ? deviceWidth - targetWidth : 0;
+        Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     final theme = Theme.of(context);
     final translator = AppTranslations.of(context);
     final state = ScopedModel.of<StateModel>(context);
 
     data =
-    state.user != null ? state.user.toClient() : state.client.toJson(false);
+        state.user != null ? state.user.toClient() : state.client.toJson(false);
     state.setOrderClientDetails(provinceId: data['province']);
 
     return Padding(

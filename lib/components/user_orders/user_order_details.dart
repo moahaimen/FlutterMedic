@@ -21,7 +21,7 @@ class UserOrderDetails extends StatelessWidget {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
     final double paddingWidth =
-    Platform.isAndroid ? deviceWidth - targetWidth : 0;
+        Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     return ScopedModelDescendant<StateModel>(
       builder: (context, child, model) {
@@ -50,7 +50,7 @@ class UserOrderDetails extends StatelessWidget {
                             shape: BoxShape.rectangle,
                             borderRadius: BorderRadius.circular(15)),
                         padding:
-                        EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                            EdgeInsets.symmetric(vertical: 2, horizontal: 10),
                         child: TextField(
                           textDirection: TextDirection.ltr,
                           decoration: InputDecoration(

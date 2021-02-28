@@ -26,7 +26,7 @@ class CartPromoCode extends StatefulWidget {
 
   bool isEmpty(StateModel state) {
     return (state.order.promoCode == null ||
-        state.order.promoCode.code.isEmpty) &&
+            state.order.promoCode.code.isEmpty) &&
         _CartPromoCodeState.controller.text.isEmpty;
   }
 }
@@ -135,7 +135,7 @@ class _CartPromoCodeState extends State<CartPromoCode> {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
     final double paddingWidth =
-    Platform.isAndroid ? deviceWidth - targetWidth : 0;
+        Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     return Container(
       decoration: BoxDecoration(

@@ -49,13 +49,15 @@ class CartProductsList extends StatelessWidget {
     );
   }
 
-  Widget _getProductsList(BuildContext context,
-      List<OrderProduct> products,
-      void Function(int id) onDelete,) {
+  Widget _getProductsList(
+    BuildContext context,
+    List<OrderProduct> products,
+    void Function(int id) onDelete,
+  ) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
     final double paddingWidth =
-    Platform.isAndroid ? deviceWidth - targetWidth : 0;
+        Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     final ThemeData theme = Theme.of(context);
 
