@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order/order.dart';
 import 'package:drugStore/utils/state.dart';
@@ -24,7 +26,7 @@ class CartPromoCode extends StatefulWidget {
 
   bool isEmpty(StateModel state) {
     return (state.order.promoCode == null ||
-            state.order.promoCode.code.isEmpty) &&
+        state.order.promoCode.code.isEmpty) &&
         _CartPromoCodeState.controller.text.isEmpty;
   }
 }
@@ -132,7 +134,8 @@ class _CartPromoCodeState extends State<CartPromoCode> {
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
-    final double paddingWidth = deviceWidth - targetWidth;
+    final double paddingWidth =
+    Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     return Container(
       decoration: BoxDecoration(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/components/cart/ui/totals/order_total_ui.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order/order_product.dart';
@@ -47,14 +49,13 @@ class CartProductsList extends StatelessWidget {
     );
   }
 
-  Widget _getProductsList(
-    BuildContext context,
-    List<OrderProduct> products,
-    void Function(int id) onDelete,
-  ) {
+  Widget _getProductsList(BuildContext context,
+      List<OrderProduct> products,
+      void Function(int id) onDelete,) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
-    final double paddingWidth = deviceWidth - targetWidth;
+    final double paddingWidth =
+    Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     final ThemeData theme = Theme.of(context);
 

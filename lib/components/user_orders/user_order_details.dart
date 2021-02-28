@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/components/cart/ui/totals/order_total_ui.dart';
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/order/order.dart';
@@ -18,7 +20,8 @@ class UserOrderDetails extends StatelessWidget {
 
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .985;
-    final double paddingWidth = deviceWidth - targetWidth;
+    final double paddingWidth =
+    Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     return ScopedModelDescendant<StateModel>(
       builder: (context, child, model) {
@@ -47,7 +50,7 @@ class UserOrderDetails extends StatelessWidget {
                             shape: BoxShape.rectangle,
                             borderRadius: BorderRadius.circular(15)),
                         padding:
-                            EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                        EdgeInsets.symmetric(vertical: 2, horizontal: 10),
                         child: TextField(
                           textDirection: TextDirection.ltr,
                           decoration: InputDecoration(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/user.dart';
 import 'package:drugStore/partials/app_router.dart';
@@ -43,14 +45,15 @@ class _RegisterFormState extends State<RegisterForm> {
 
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .95;
-    final double paddingWidth = deviceWidth - targetWidth;
+    final double paddingWidth =
+        Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     return Directionality(
       textDirection: translator.locale.languageCode == 'en'
           ? TextDirection.ltr
           : TextDirection.rtl,
-      child: SingleChildScrollView(
-        child: Padding(
+      child: Container(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: paddingWidth, vertical: 10),
           child: Form(
             key: _form,

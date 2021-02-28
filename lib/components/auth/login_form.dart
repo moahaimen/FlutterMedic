@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/models/user.dart';
 import 'package:drugStore/pages/login_page.dart';
@@ -35,14 +37,15 @@ class _LoginFormState extends State<LoginForm> {
 
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .95;
-    final double paddingWidth = deviceWidth - targetWidth;
+    final double paddingWidth =
+    Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     return Directionality(
       textDirection: translator.locale.languageCode == 'en'
           ? TextDirection.ltr
           : TextDirection.rtl,
-      child: SingleChildScrollView(
-        child: Padding(
+      child: Container(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: paddingWidth, vertical: 10),
           child: Form(
             key: _form,
@@ -71,7 +74,7 @@ class _LoginFormState extends State<LoginForm> {
                         return "Email is required field";
                       }
                       if (!RegExp(
-                              r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
+                          r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
                           .hasMatch(email)) {
                         return "Email must be in a valid format";
                       }
@@ -116,10 +119,11 @@ class _LoginFormState extends State<LoginForm> {
                       return model.userLoading
                           ? CircularProgressIndicator()
                           : RaisedButton(
-                              textColor: Colors.white,
-                              child: Text(translator.text("login_button")),
-                              onPressed: () =>
-                                  _login(context, model, translator));
+                          textColor: Colors.white,
+                          child: Text(translator.text("login_button")),
+                          onPressed: () {
+                            _login(context, model, translator);
+                          });
                     },
                   ),
                 )

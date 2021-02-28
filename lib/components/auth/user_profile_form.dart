@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drugStore/localization/app_translation.dart';
 import 'package:drugStore/partials/app_router.dart';
 import 'package:drugStore/ui/custom_form_field.dart';
@@ -20,7 +22,8 @@ class UserProfileForm extends StatelessWidget {
 
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * .95;
-    final double paddingWidth = deviceWidth - targetWidth;
+    final double paddingWidth =
+    Platform.isAndroid ? deviceWidth - targetWidth : 0;
 
     final state = ScopedModel.of<StateModel>(context);
 
@@ -28,8 +31,8 @@ class UserProfileForm extends StatelessWidget {
       textDirection: translator.locale.languageCode == 'en'
           ? TextDirection.ltr
           : TextDirection.rtl,
-      child: SingleChildScrollView(
-        child: Padding(
+      child: Container(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: paddingWidth, vertical: 10),
           child: Form(
             key: _form,
@@ -94,7 +97,7 @@ class UserProfileForm extends StatelessWidget {
                       return "Email is required field";
                     }
                     if (!RegExp(
-                            r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
+                        r'([A-Za-z]+[A-Za-z0-9]+)(@)([A-Za-z]+).([A-Za-z0-9]+)')
                         .hasMatch(email)) {
                       return "Email must be in a valid format";
                     }
@@ -148,10 +151,11 @@ class UserProfileForm extends StatelessWidget {
                       return model.userLoading
                           ? CircularProgressIndicator()
                           : RaisedButton(
-                              textColor: Colors.white,
-                              child: Text(translator.text("save_button")),
-                              onPressed: () =>
-                                  _save(context, model, translator));
+                          textColor: Colors.white,
+                          child: Text(translator.text("save_button")),
+                          onPressed: () {
+                            _save(context, model, translator);
+                          });
                     },
                   ),
                 )
@@ -163,8 +167,7 @@ class UserProfileForm extends StatelessWidget {
     );
   }
 
-  void _save(
-      BuildContext context, StateModel state, AppTranslations translator) {
+  void _save(BuildContext context, StateModel state, AppTranslations translator) {
     if (!_form.currentState.validate()) {
       return;
     }
