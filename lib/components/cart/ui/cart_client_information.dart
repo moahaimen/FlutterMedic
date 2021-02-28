@@ -18,7 +18,8 @@ class CartClientInformation extends StatefulWidget {
 }
 
 class _CartClientInformationState extends State<CartClientInformation> {
-  static String _validator(AppTranslations translator, String value, String regex, int min, int max,
+  static String _validator(AppTranslations translator, String value,
+      String regex, int min, int max,
       {bool required = true}) {
     if (!required && (value == null || value.isEmpty)) {
       return null;
